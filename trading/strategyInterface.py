@@ -41,3 +41,8 @@ class StrategyManager:
         self.startBalance = balance
         self.actualBalance = PairBalance(balance.primaryContract.name, 0, balance.secondaryContract.name)
 
+    def trade(self, last, bid, ask, history):
+        raise NotImplementedError()
+
+    def report(self):
+        raise NotImplementedError()
