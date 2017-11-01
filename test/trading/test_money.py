@@ -3,6 +3,14 @@ from unittest import TestCase
 from trading.money import Contract, Wallet, Transaction, Trade
 
 
+class TestContract(TestCase):
+    def test___mul__(self):
+        self.fail()
+
+    def test___rmul__(self):
+        self.fail()
+
+
 class TestMoney(TestCase):
     @staticmethod
     def czk(value):
@@ -26,6 +34,18 @@ class TestWallet(TestMoney):
     def test_addExistingContractToWallet(self):
         wallet = self.nonEmptyWallet.addContract(self.contract)
         self.assertEqual(wallet, Wallet({"c1": 17.0, "c2": 5.0}))
+
+    def test___add__(self):
+        self.fail()
+
+    def test___radd__(self):
+        self.fail()
+
+    def test___sub__(self):
+        self.fail()
+
+    def test___rsub__(self):
+        self.fail()
 
     def test_addBuyTransaction(self):
         transaction = Transaction(timestamp=0, amount=self.btc(10.0), price=self.czk(100.0),
@@ -132,3 +152,4 @@ class TestTrade(TestCase):
     def test_relativeProfit_openedTradeShouldFail(self):
         with self.assertRaises(ValueError):
             self.openedLong.relativeProfit()
+

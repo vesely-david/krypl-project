@@ -6,6 +6,12 @@ class Contract:
         self.name = name
         self.value = value
 
+    def __mul__(self, other):
+        return NotImplemented
+
+    def __rmul__(self, other):
+        return NotImplemented
+
 
 class Wallet:
     def __init__(self, moneyDict=dict()):
@@ -14,21 +20,31 @@ class Wallet:
     def addContract(self, contract):
         self.money[contract.name] = self.money.get(contract.name, 0.0) + contract.value
 
+    def __add__(self, other):
+        return NotImplemented
+
+    def __radd__(self, other):
+        return NotImplemented
+
+    def __sub__(self, other):
+        return NotImplemented
+
+    def __rsub__(self, other):
+        return NotImplemented
+
     def addTransaction(self, transaction):
-        if transaction.type == Transaction.type.buy:
-            self.addContract()
+        raise NotImplementedError()
 
 
 class Transaction:
     Type = Enum('Type', 'buy sell')
 
-    def __init__(self, timestamp, amount, price, type, fee):
-        raise NotImplementedError()
-        self.timestamp = None
-        self.amount = None
-        self.price = None
-        self.type = None
-        self.fee = None
+    def __init__(self, timestamp, amount, price, transactionType, fee):
+        self.timestamp = timestamp
+        self.amount = amount
+        self.price = price
+        self.type = transactionType
+        self.fee = fee
 
 
 class Trade:
