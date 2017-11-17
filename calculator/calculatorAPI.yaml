@@ -1,0 +1,70 @@
+swagger: '2.0'
+info:
+  description: >-
+    This is calculator for adding technical analysis indicators to candlestick
+    data.
+  version: 1.0.0
+  title: Calculator Module
+basePath: /v2/calculator
+schemes:
+  - http
+paths:
+  /functions:
+    get:
+      tags:
+        - functions
+      summary: Returns a list of functions.
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+  '/functions/{name}':
+    get:
+      tags:
+        - functions
+      summary: Returns selected indicator calculated from data.
+      parameters:
+        - in: path
+          name: name
+          required: true
+          type: string
+        - in: query
+          name: data
+          type: string
+          required: true
+          description: >
+            Json input data in json fromat {"open": [...],"close": [...],"high":
+            [...],"low": [...],"volume": [...]}
+        - in: query
+          name: args
+          type: string
+          required: true
+          description: |
+            Function arguments in json format {"arg1": val1, "arg2": val2, ...}
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Invalid input.
+        '501':
+          description: Function of such name is not implemented.
+  '/functions/{name}/info':
+    get:
+      tags:
+        - functions
+      summary: Returns specification of wanted function.
+      parameters:
+        - in: path
+          name: name
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+        '501':
+          description: Function of such name is not implemented.
