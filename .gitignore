@@ -103,3 +103,5 @@ ENV/
 # pycharm
 .idea
 
+# falsy metadata
+calculator/static
