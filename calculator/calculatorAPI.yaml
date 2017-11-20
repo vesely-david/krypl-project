@@ -20,7 +20,7 @@ paths:
       responses:
         '200':
           description: OK
-  '/functions/{name}':
+  '/functions/{group}/{functionName}':
     post:
       tags:
         - functions
@@ -28,7 +28,11 @@ paths:
       operationId: api.calculateData
       parameters:
         - in: path
-          name: name
+          name: group
+          required: true
+          type: string
+        - in: path
+          name: functionName
           required: true
           type: string
         - in: body
@@ -53,7 +57,7 @@ paths:
           description: Invalid input.
         '501':
           description: Function of such name is not implemented.
-  '/functions/{name}/info':
+  '/functions/{group}/{functionName}/info':
     get:
       tags:
         - functions
@@ -61,7 +65,11 @@ paths:
       operationId: api.functionInfo
       parameters:
         - in: path
-          name: name
+          name: group
+          required: true
+          type: string
+        - in: path
+          name: functionName
           required: true
           type: string
       produces:
