@@ -18,7 +18,7 @@ paths:
         - application/json
       operationId: api.availableFunctions
       responses:
-        '200':
+        200:
           description: OK
   '/functions/{group}/{functionName}':
     post:
@@ -51,18 +51,17 @@ paths:
       produces:
         - application/json
       responses:
-        '200':
+        200:
           description: OK
-        '400':
+        400:
           description: Invalid input.
-        '501':
-          description: Function of such name is not implemented.
   '/functions/{group}/{functionName}/info':
     get:
       tags:
         - functions
       summary: Returns specification of wanted function.
-      operationId: api.functionInfo
+      operationId: calculator.api.functionInfo
+      validationId: calculator.api.isGroupAndNameValid
       parameters:
         - in: path
           name: group
@@ -75,9 +74,9 @@ paths:
       produces:
         - application/json
       responses:
-        '200':
+        200:
           description: OK
-        '501':
+        400:
           description: Function of such name is not implemented.
 definitions:
   ArrayOfDoubles:
