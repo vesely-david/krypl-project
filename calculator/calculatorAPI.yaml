@@ -82,7 +82,7 @@ definitions:
   ArrayOfDoubles:
     type: array
     items:
-      type: string
+      type: number
   FunctionArguments:
     type: object
     properties:

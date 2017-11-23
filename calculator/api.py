@@ -1,5 +1,6 @@
-from calculator.talibWrapper import allTalibFunctions, talibFunctionInfo
+from calculator.talibWrapper import allTalibFunctions, talibFunctionInfo, calculateTalib
 import calculator.talibWrapper as talibW
+from calculator.utils import paramsFromPayload, inputsFromPayload
 from enum import Enum
 
 
@@ -24,8 +25,14 @@ def functionInfo(group, functionName):
         return {functionName: fInfo}
 
 
-def calculateData():
-    raise
+def calculateData(group, functionName, functionArgs):
+    if group == FunctionGroups.TALIB.value:
+        inputs = inputsFromPayload(functionArgs)
+        params = paramsFromPayload(functionArgs)
+        result = calculateTalib(functionName, inputs, params)
+        return {
+            'result': [r.tolist() for r in result]
+        }
 
 
 def isGroupAndNameValid(group, functionName):
