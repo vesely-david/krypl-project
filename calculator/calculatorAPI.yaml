@@ -53,7 +53,7 @@ paths:
       responses:
         200:
           description: OK
-        400:
+        500:
           description: Invalid input.
   '/functions/{group}/{functionName}/info':
     get:

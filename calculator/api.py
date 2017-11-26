@@ -20,12 +20,14 @@ def availableFunctions():
 
 
 def functionInfo(group, functionName):
+    group, functionName = group.upper(), functionName.upper()
     if group == FunctionGroups.TALIB.value:
         fInfo = talibFunctionInfo(functionName)
         return {functionName: fInfo}
 
 
 def calculateData(group, functionName, functionArgs):
+    group, functionName = group.upper(), functionName.upper()
     if group == FunctionGroups.TALIB.value:
         inputs = inputsFromPayload(functionArgs)
         params = paramsFromPayload(functionArgs)
@@ -33,9 +35,11 @@ def calculateData(group, functionName, functionArgs):
         return {
             'result': [r.tolist() for r in result]
         }
+    raise Exception('Group {group} is not implemented by API.'.format(group=group))
 
 
 def isGroupAndNameValid(group, functionName):
+    group, functionName = group.upper(), functionName.upper()
     if group not in FunctionGroups.toList():
         return False, "Group {group} is not implemented.".format(**locals())
 
