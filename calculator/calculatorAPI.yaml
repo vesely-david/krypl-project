@@ -1,0 +1,109 @@
+swagger: '2.0'
+info:
+  description: >-
+    This is calculator for adding technical analysis indicators to candlestick
+    data.
+  version: 1.0.0
+  title: Calculator Module
+basePath: /v1/calculator
+schemes:
+  - http
+paths:
+  /functions:
+    get:
+      tags:
+        - functions
+      summary: Returns a list of functions.
+      produces:
+        - application/json
+      operationId: api.availableFunctions
+      responses:
+        200:
+          description: OK
+  '/functions/{group}/{functionName}':
+    post:
+      tags:
+        - functions
+      summary: Returns selected indicator calculated from data.
+      operationId: api.calculateData
+      parameters:
+        - in: path
+          name: group
+          required: true
+          type: string
+        - in: path
+          name: functionName
+          required: true
+          type: string
+        - in: body
+          name: functionArgs
+          description: Function arguments.
+          schema:
+            type: object
+            required:
+              - data
+              - args
+            properties:
+              data:
+                $ref: '#/definitions/InputData'
+              args:
+                $ref: '#/definitions/ArgsMap'
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+        500:
+          description: Invalid input.
+  '/functions/{group}/{functionName}/info':
+    get:
+      tags:
+        - functions
+      summary: Returns specification of wanted function.
+      operationId: calculator.api.functionInfo
+      validationId: calculator.api.isGroupAndNameValid
+      parameters:
+        - in: path
+          name: group
+          required: true
+          type: string
+        - in: path
+          name: functionName
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+        400:
+          description: Function of such name is not implemented.
+definitions:
+  ArrayOfDoubles:
+    type: array
+    items:
+      type: number
+  FunctionArguments:
+    type: object
+    properties:
+      name:
+        type: string
+      value:
+        type: string
+  ArgsMap:
+    type: array
+    items:
+      $ref: '#/definitions/FunctionArguments'
+  InputData:
+    type: object
+    properties:
+      open:
+        $ref: '#/definitions/ArrayOfDoubles'
+      close:
+        $ref: '#/definitions/ArrayOfDoubles'
+      high:
+        $ref: '#/definitions/ArrayOfDoubles'
+      low:
+        $ref: '#/definitions/ArrayOfDoubles'
+      volume:
+        $ref: '#/definitions/ArrayOfDoubles'
