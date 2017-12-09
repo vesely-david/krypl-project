@@ -1,12 +1,33 @@
-from enum import Enum
+from trading.money.contract import Contract, ContractPair
 
 
 class Transaction:
-    Type = Enum('Type', 'buy sell')
 
-    def __init__(self, timestamp, amount, price, transactionType, fee):
+    def __init__(self, contractPair: ContractPair, timestamp, amount, price, fee):
+        self.contractPair = contractPair
         self.timestamp = timestamp
-        self.amount = amount
-        self.price = price
-        self.type = transactionType
-        self.fee = fee
+        self.amount = Contract(contractPair.tradeContract, amount)
+        self.price = Contract(contractPair.priceContract, price)
+        self.fee = Contract(contractPair.priceContract, fee)
+
+    def gainedContract(self):
+        raise NotImplementedError()
+
+    def subtractedContract(self):
+        raise NotImplementedError()
+
+
+class SellTransaction(Transaction):
+    def gainedContract(self):
+        return self.amount.value * self.price
+
+    def subtractedContract(self):
+        return self.amount
+
+
+class BuyTransaction(Transaction):
+    def gainedContract(self):
+        return self.amount
+
+    def subtractedContract(self):
+        return self.amount.value * self.price

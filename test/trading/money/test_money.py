@@ -1,5 +1,5 @@
 from unittest import TestCase
-from trading.money.contract import Contract
+from trading.money.contract import Contract, ContractPair
 
 
 class TestMoney(TestCase):
@@ -10,3 +10,7 @@ class TestMoney(TestCase):
     @staticmethod
     def btc(value):
         return Contract('btc', value)
+
+    @staticmethod
+    def czkBtcContract():
+        return ContractPair('czk', 'btc')

@@ -53,3 +53,9 @@ class Contract:
 
     def __hash__(self) -> int:
         return objectHash(self)
+
+
+class ContractPair:
+    def __init__(self, priceContract, tradeContract):
+        self.priceContract = priceContract
+        self.tradeContract = tradeContract
