@@ -1,6 +1,5 @@
 from .test_money import TestMoney
 from trading.money.transaction import SellTransaction, BuyTransaction, Transaction
-from trading.money.contract import Contract
 
 
 class TestTransaction(TestMoney):

@@ -1,30 +1,36 @@
 class Statistics:
-    def __init__(self):
+    def __init__(self, currency, startAmount):
+        self.currency = currency
+        self.transactions = []
+
         self.numOfTrades = 0
         self.totalProfit = .0
-        self.wins = 0
-        self.losses = 0
-        self.lastPeak = 0
+        self.avgProfit = .0
+        self.winningPercentage = .0
+        self.avgWinningTrade = .0
+        self.avgLosingTrade = .0
+        self.profitFactor = .0
+        self.maxDrawdown = .0
 
-    def addTrade(self, trade, balanceBeforeTrade):
+    def addTransaction(self, transaction):
         raise NotImplementedError()
+
+    def evaluate(self, transactions):
+        raise NotImplementedError
 
     def totalProfit(self):
         raise NotImplementedError()
 
-    def profitPerTrade(self):
+    def avgProfit(self):
         raise NotImplementedError()
 
-    def winPercentage(self):
+    def winningPercentage(self):
         raise NotImplementedError()
 
-    def lossPercentage(self):
+    def avgWinningTrade(self):
         raise NotImplementedError()
 
-    def avgWinTrade(self):
-        raise NotImplementedError()
-
-    def avgLossTrade(self):
+    def avgLosingTrade(self):
         raise NotImplementedError()
 
     def profitFactor(self):
