@@ -30,14 +30,14 @@ class TestStatistics(TestCase):
         ]
 
     def assertStats(self, stats, valuesDict):
-        self.assertEqual(stats.numberOfTrades, valuesDict['numberOfTrades'])
-        self.assertEqual(stats.totalProfit, valuesDict['totalProfit'])
-        self.assertEqual(stats.avgProfit, valuesDict['avgProfit'])
-        self.assertEqual(stats.winPercentage, valuesDict['winPercentage'])
-        self.assertEqual(stats.avgWinTrade, valuesDict['avgWinTrade'])
-        self.assertEqual(stats.avgLossTrade, valuesDict['avgLossTrade'])
-        self.assertAlmostEqual(stats.profitFactor, valuesDict['profitFactor'], places=2)
-        self.assertAlmostEqual(stats.maxDrawdown, valuesDict['maxDrawdown'], places=3)
+        self.assertEqual(stats.numberOfTrades(), valuesDict['numberOfTrades'])
+        self.assertEqual(stats.totalProfit(), valuesDict['totalProfit'])
+        self.assertEqual(stats.avgProfit(), valuesDict['avgProfit'])
+        self.assertEqual(stats.winPercentage(), valuesDict['winPercentage'])
+        self.assertEqual(stats.avgWinTrade(), valuesDict['avgWinTrade'])
+        self.assertEqual(stats.avgLossTrade(), valuesDict['avgLossTrade'])
+        self.assertAlmostEqual(stats.profitFactor(), valuesDict['profitFactor'], places=2)
+        self.assertAlmostEqual(stats.maxDrawdown(), valuesDict['maxDrawdown'], places=3)
 
     def test_evaluatePrimaryContractLongWin(self):
         scenario = self.scenarioWinLong + self.scenarioWinLong
