@@ -59,3 +59,12 @@ class ContractPair:
     def __init__(self, priceContract, tradeContract):
         self.priceContract = priceContract
         self.tradeContract = tradeContract
+
+    def __hash__(self) -> int:
+        return objectHash(self)
+
+    def __eq__(self, o: object) -> bool:
+        if equals(self, o):
+            return True
+        else:
+            return super().__eq__(o)
