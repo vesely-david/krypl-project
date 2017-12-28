@@ -1,3 +1,6 @@
+import pandas as pd
+
+
 class Statistics:
     def __init__(self, contractName, startAmount):
         self.contractName = contractName
@@ -13,6 +16,23 @@ class Statistics:
         self.totalLoss = 0
         self.currentLoss = 0
         self.maxDrawdownVar = .0
+
+    def report(self):
+        cols = ['startAmount', 'numberOfTrades', 'totalProfit', 'avgProfit', 'winPercentage', 'avgWinTrade',
+                'avgLossTrade', 'profitFactor', 'maxDrawdown']
+        dfStats = pd.DataFrame({
+            'startAmount': [self.startAmount],
+            'numberOfTrades': [self.numberOfTrades()],
+            'totalProfit': [self.totalProfit()],
+            'avgProfit': [self.avgProfit()],
+            'winPercentage': [self.winPercentage()],
+            'avgWinTrade': [self.avgWinTrade()],
+            'avgLossTrade': [self.avgLossTrade()],
+            'profitFactor': [self.profitFactor()],
+            'maxDrawdown': [self.maxDrawdown()]
+        })[cols].transpose()
+        dfStats.columns = [self.contractName]
+        return dfStats
 
     def evaluate(self, transactions):
         for transaction in transactions:
