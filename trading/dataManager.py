@@ -8,8 +8,8 @@ class CurrencyDataManager(DataManager):
 
     # expected prices to be pandas dataframe with columns: timestamp, open, close, high, low, volume
     def __init__(self, prices):
-        cols = ['timestamp', 'open', 'close', 'high', 'low', 'volume']
-        self.prices = prices[cols]
+        # cols = ['timestamp', 'open', 'close', 'high', 'low', 'volume']
+        self.prices = prices
         self.time = 1
 
     def tick(self, historyLen):
