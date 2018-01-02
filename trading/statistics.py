@@ -65,10 +65,10 @@ class Statistics:
         return self.currentAmount - self.startAmount
 
     def avgProfit(self):
-        return float(self.totalProfit()) / self.numberOfTrades()
+        return float(self.totalProfit()) / self.numberOfTrades() if self.numberOfTrades() > 0 else 0
 
     def winPercentage(self):
-        return 100. * self.numOfWins / self.numberOfTrades()
+        return 100. * self.numOfWins / self.numberOfTrades() if self.numberOfTrades() > 0 else 0
 
     def avgWinTrade(self):
         return float(self.totalWon) / self.numOfWins if self.numOfWins > 0 else 0
