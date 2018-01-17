@@ -105,3 +105,6 @@ ENV/
 
 # falsy metadata
 calculator/static
+
+# data
+*.tsv
