@@ -4,6 +4,7 @@ import Overview from './Overview'
 import Real from './Real'
 import Paper from './Paper'
 import Backtest from './Backtest'
+import Strategy from './Strategy'
 import { getTokenIfValid } from '../helpers'
 
 function requireAuth (nextState, replace, cb) {
@@ -35,7 +36,7 @@ export const createRoutes = (store) => ({
         Real(store),
         Paper(store),
         Backtest(store),
-        
+        Strategy(store),
       ]
     },
     {

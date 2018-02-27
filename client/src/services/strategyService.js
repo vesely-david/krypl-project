@@ -1,28 +1,47 @@
-import { authHeader } from '../helpers'
+import { authHeader, authHeaderJsonType } from '../helpers'
 
-export const userService = {
+export const strategyService = {
   getRealStrategies,
+  getRealOverview,
   getPaperStrategies,
   getBacktestStrategies,
   getStrategy,
   stopStrategy,
-  registerStrategy,
+  registerReal,
+  forgetAllRealNews,
+  forgetRealNews,
+  forgetAllPaperNews,
+  forgetPaperNews,
+  forgetAllBacktestNews,
+  forgetBacktestNews,
 }
 
 const addr = 'http://localhost:54849/api/client/'
 
-function getRealStrategies () {
+async function getRealStrategies () {
   const requestOptions = {
     method: 'GET',
     headers: authHeader()
   }
-  return fetch(addr + 'realStrategies', requestOptions)
-    .then(response => {
-      if (!response.ok) {
-        return Promise.reject(response.statusText)
-      }
-      return response.json()
-    })
+  var response = await fetch(addr + 'realStrategies', requestOptions)
+
+  if (response.ok) {
+    return response.json()
+  }
+  throw new Error(response.status)
+}
+
+async function getRealOverview () {
+  const requestOptions = {
+    method: 'GET',
+    headers: authHeader()
+  }
+  var response = await fetch(addr + 'realOverview', requestOptions)
+
+  if (response.ok) {
+    return response.json()
+  }
+  throw new Error(response.status)
 }
 
 function getPaperStrategies () {
@@ -67,19 +86,19 @@ function getStrategy (strategyId) {
     })
 }
 
-function registerStrategy (type, title, describtion, assetArray) {
+async function registerReal (name, exchange, description, assets) {
   const requestOptions = {
     method: 'POST',
-    headers: authHeader(),
-    body: JSON.stringify({ type, title, describtion, assetArray })
+    headers: authHeaderJsonType(),
+    body: JSON.stringify({ name, exchangeId: exchange, description, assets })
   }
-  return fetch(`${addr}register`, requestOptions)
-    .then(response => {
-      if (!response.ok) {
-        return Promise.reject(response.statusText)
-      }
-      return response.json()
-    })
+
+  const response = await fetch(`${addr}register`, requestOptions)
+  if (response.ok) {
+    const parsed = await response.json()
+    return parsed
+  }
+  throw new Error(response.status)
 }
 
 function stopStrategy (strategyId) {
@@ -95,4 +114,22 @@ function stopStrategy (strategyId) {
       }
       return response.json()
     })
+}
+
+function forgetAllRealNews () {
+}
+
+function forgetRealNews () {
+}
+
+function forgetAllPaperNews () {
+}
+
+function forgetPaperNews () {
+}
+
+function forgetAllBacktestNews () {
+}
+
+function forgetBacktestNews () {
 }

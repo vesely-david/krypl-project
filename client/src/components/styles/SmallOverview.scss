@@ -1,0 +1,41 @@
+.smallOverview{
+  margin-bottom: 1rem;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.strategyScoreTable{
+  width: 50%;
+  float: right;
+
+  thead th{
+    border-top: none;
+  }
+}
+
+.strategyOverviewTable{
+  width: 50%;
+  float: left;
+
+  button{
+    margin-left: 2rem !important;
+  }
+
+  td {
+    border: none !important;
+    padding: 3px !important;
+    vertical-align: middle;
+
+    &:nth-child(1)::after{
+      content: ":"
+    }
+  }
+
+  tr td:nth-child(1){
+    font-weight: bold;
+  }
+
+  thead th{
+    border-top: none;
+  }
+}

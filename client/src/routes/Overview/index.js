@@ -8,10 +8,10 @@ export default (store) => ({
       /*  Webpack - use require callback to define
           dependencies for bundling   */
       const Overview = require('./containers/OverviewContainer').default
-      //const reducer = require('./modules/overview').default
+      const reducer = require('./modules/overview').default
 
       /*  Add the reducer to the store on key 'overview'  */
-      //injectReducer(store, { key: 'overview', reducer })
+      injectReducer(store, { key: 'overview', reducer })
 
       /*  Return getComponent   */
       cb(null, Overview)

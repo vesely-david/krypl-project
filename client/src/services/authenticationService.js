@@ -1,4 +1,4 @@
-import { authHeader, getTokenIfValid } from '../helpers'
+import { getTokenIfValid } from '../helpers'
 
 export const authenticationService = {
   login,

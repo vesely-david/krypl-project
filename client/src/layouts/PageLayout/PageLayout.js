@@ -30,10 +30,10 @@ class PageLayout extends React.Component {
         <Menu size='large'>
           {indexLink}
           {this.props.isAuthenticated && [
-            <Menu.Item as={Link} to='real' activeClassName='page-layout__nav-item--active' name='real' />,
-            <Menu.Item as={Link} to='paper' activeClassName='page-layout__nav-item--active' name='paper' />,
-            <Menu.Item as={Link} to='backtest' activeClassName='page-layout__nav-item--active' name='backtest' />,
-            <Menu.Menu position='right'>
+            <Menu.Item as={Link} to='real' key='realLink' activeClassName='page-layout__nav-item--active' name='real' />,
+            <Menu.Item as={Link} to='paper' key='paperLink' activeClassName='page-layout__nav-item--active' name='paper' />,
+            <Menu.Item as={Link} to='backtest' key='backtestLink' activeClassName='page-layout__nav-item--active' name='backtest' />,
+            <Menu.Menu key='righSection' position='right'>
               <Menu.Item>
                 <Button onClick={() => this.props.actions.logout()}>Log out</Button>
               </Menu.Item>
