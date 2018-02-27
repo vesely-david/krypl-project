@@ -1,4 +1,4 @@
-import { injectReducer } from '../../store/reducers'
+//import { injectReducer } from '../../store/reducers'
 
 export default (store) => ({
   path : 'real',
@@ -10,10 +10,10 @@ export default (store) => ({
       /*  Webpack - use require callback to define
           dependencies for bundling   */
       const Real = require('./containers/RealContainer').default
-      const reducer = require('./modules/real').default
+   //   const reducer = require('./modules/real').default
 
       /*  Add the reducer to the store on key 'real'  */
-      injectReducer(store, { key: 'real', reducer })
+   //   injectReducer(store, { key: 'real', reducer })
 
       /*  Return getComponent   */
       cb(null, Real)

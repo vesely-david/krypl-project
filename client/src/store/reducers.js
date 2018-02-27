@@ -2,11 +2,13 @@ import { combineReducers } from 'redux'
 import locationReducer from '../commonModules/location'
 import authenticationReducer from '../commonModules/authentication'
 // import alertReducer from '../commonModules/authentication'
+import realReducer from '../routes/Real/modules/real'
 
 export const makeRootReducer = (asyncReducers) => {
   return combineReducers({
     location: locationReducer,
     isAuthenticated : authenticationReducer,
+    real: realReducer,
     ...asyncReducers
   })
 }

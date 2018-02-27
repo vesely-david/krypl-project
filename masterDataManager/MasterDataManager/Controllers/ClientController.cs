@@ -13,9 +13,6 @@ using DataLayer.Enums;
 using DataLayer.Infrastructure.Interfaces;
 using MasterDataManager.Services.Interfaces;
 using MasterDataManager.Models;
-using Microsoft.EntityFrameworkCore;
-using System.Web.Http.Cors;
-using System.Security.Claims;
 
 namespace MasterDataManager.Controllers
 {

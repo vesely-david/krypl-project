@@ -1,5 +1,5 @@
 import { strategyService } from '../../../services'
-
+import { MAIN_OVERVIEW_SUCCESS } from '../../Overview/modules/overview'
 // ------------------------------------
 // Constants
 // ------------------------------------
@@ -145,6 +145,11 @@ const ACTION_HANDLERS = {
       else return o
     })
   }),
+
+  [MAIN_OVERVIEW_SUCCESS] : (state, action) => ({
+    ...state,
+    overview: action.payload.real
+  })
 }
 
 // ------------------------------------
@@ -160,7 +165,7 @@ const initialState = {
     assets: [],
   }
 }
-export default function counterReducer (state = initialState, action) {
+export default function realReducer (state = initialState, action) {
   const handler = ACTION_HANDLERS[action.type]
   return handler ? handler(state, action) : state
 }

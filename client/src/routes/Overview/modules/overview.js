@@ -12,6 +12,10 @@ export const MAIN_OVERVIEW_REQUEST = 'MAIN_OVERVIEW_REQUEST'
 export const MAIN_OVERVIEW_SUCCESS = 'MAIN_OVERVIEW_SUCCESS'
 export const MAIN_OVERVIEW_ERROR = 'MAIN_OVERVIEW_ERROR'
 
+export const ASSET_OPTIONS_REQUEST = 'ASSET_OPTIONS_REQUEST'
+export const ASSET_OPTIONS_SUCCESS = 'ASSET_OPTIONS_SUCCESS'
+export const ASSET_OPTIONS_ERROR = 'ASSET_OPTIONS_ERROR'
+
 // ------------------------------------
 // Actions
 // ------------------------------------
@@ -19,16 +23,16 @@ export const MAIN_OVERVIEW_ERROR = 'MAIN_OVERVIEW_ERROR'
 export function fetchMainOverview () {
   return async dispatch => {
     dispatch(mainOverviewRequest())
-    function onSuccess (strategies) {
-      dispatch(mainOverviewSuccess(strategies))
+    function onSuccess (mainOverview) {
+      dispatch(mainOverviewSuccess(mainOverview))
     }
     function onError (error) {
       dispatch(mainOverviewFailure(error))
     }
 
     try {
-      const strategies = await strategyService.getMainOverview()
-      return onSuccess(strategies)
+      const mainOverview = await strategyService.getMainOverview()
+      return onSuccess(mainOverview)
     } catch (error) {
       return onError(error)
     }
@@ -39,21 +43,50 @@ export function fetchMainOverview () {
   function mainOverviewFailure () { return { type: MAIN_OVERVIEW_ERROR } }
 }
 
+export function fetchAssetOptions () {
+  return async dispatch => {
+    dispatch(assetOptionsRequest())
+    function onSuccess (assetOptions) {
+      dispatch(assetOptionsSuccess(assetOptions))
+    }
+    function onError (error) {
+      dispatch(assetOptionsFailure(error))
+    }
+
+    try {
+      const assetOptions = await strategyService.getMainOverview()
+      return onSuccess(assetOptions)
+    } catch (error) {
+      return onError(error)
+    }
+  }
+
+  function assetOptionsRequest () { return { type: MAIN_OVERVIEW_REQUEST } }
+  function assetOptionsSuccess (assetOptions) { return { type: MAIN_OVERVIEW_SUCCESS, payload: assetOptions } }
+  function assetOptionsFailure () { return { type: MAIN_OVERVIEW_ERROR } }
+}
+
 export const actions = {
-  fetchMainOverview
+  fetchMainOverview,
+  fetchAssetOptions,
 }
 
 // ------------------------------------
 // Action Handlers
 // ------------------------------------
 const ACTION_HANDLERS = {
-  [MAIN_OVERVIEW_REQUEST]    : (state, action) => ({ isFetching: true }),
-  [MAIN_OVERVIEW_SUCCESS]    : (state, action) => ({ isFetching: false }),
-  [MAIN_OVERVIEW_ERROR]      : (state, action) => ({ isFetching: false }),
+  [MAIN_OVERVIEW_REQUEST]    : (state, action) => ({ ...state, isFetching: true }),
+  [MAIN_OVERVIEW_SUCCESS]    : (state, action) => ({ ...state, isFetching: false }),
+  [MAIN_OVERVIEW_ERROR]      : (state, action) => ({ ...state, isFetching: false }),
 
-  [REAL_OVERVIEW_REQUEST]    : (state, action) => ({ isFetching: true }),
-  [REAL_OVERVIEW_SUCCESS]    : (state, action) => ({ isFetching: false }),
-  [REAL_OVERVIEW_ERROR]      : (state, action) => ({ isFetching: false })
+  [REAL_OVERVIEW_REQUEST]    : (state, action) => ({ ...state, isFetching: true }),
+  [REAL_OVERVIEW_SUCCESS]    : (state, action) => ({ ...state, isFetching: false }),
+  [REAL_OVERVIEW_ERROR]      : (state, action) => ({ ...state, isFetching: false }),
+
+  [ASSET_OPTIONS_REQUEST]    : (state, action) => ({ ...state, assetOptionsFetching: true }),
+  [ASSET_OPTIONS_SUCCESS]    : (state, action) =>
+    ({ ...state, assetOptions: action.payload, assetOptionsFetching: false }),
+  [ASSET_OPTIONS_ERROR]      : (state, action) => ({ ...state, assetOptionsFetching: false })
 }
 
 // ------------------------------------
@@ -61,9 +94,11 @@ const ACTION_HANDLERS = {
 // ------------------------------------
 const initialState = {
   isFetching: false,
+  assetOptions: null,
+  assetOptionsFetching: false,
+  assetUpdateFetching: false,
 }
-export default function counterReducer (state = initialState, action) {
+export default function overviewReducer (state = initialState, action) {
   const handler = ACTION_HANDLERS[action.type]
-
   return handler ? handler(state, action) : state
 }

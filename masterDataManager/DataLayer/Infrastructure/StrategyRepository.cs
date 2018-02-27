@@ -17,14 +17,18 @@ namespace DataLayer.Infrastructure
 
         public IEnumerable<Strategy> GetByUserId(int userId)
         {
-            return _dbContext.Strategies.Include(o => o.StrategyAssets.Select(p => p.UserAsset))
-                .Include(o => o.Trades).Include(o => o.Evaluation).Where(o => o.UserId == userId);
+            return _dbContext.Strategies
+                .Include(o => o.Trades)
+                .Include(o => o.Evaluation)
+                .Include(o => o.StrategyAssets).ThenInclude(p => p.UserAsset)
+                .Where(o => o.UserId == userId);
         }
 
         public IEnumerable<Strategy> GetAllForEvaluation()
         {
-            return _dbContext.Strategies.Include(o => o.StrategyAssets.Select(p => p.UserAsset).Select(p => p.Currency))
-                .Include(o => o.Trades);
+            return _dbContext.Strategies
+                .Include(o => o.Trades)
+                .Include(o => o.StrategyAssets).ThenInclude(p => p.UserAsset).ThenInclude(p => p.Currency);
         }
     }
 }
