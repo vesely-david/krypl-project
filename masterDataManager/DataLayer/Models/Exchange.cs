@@ -10,7 +10,8 @@ namespace DataLayer.Models
         public string Name { get; set; }
         public string Web { get; set; }
 
-        public virtual IEnumerable<ExchangeMarket> Markets { get; set; }
+        public virtual IEnumerable<ExchangeMarket> ExchangeMarkets { get; set; }
+        public virtual IEnumerable<ExchangeCurrency> ExchangeCurrencies { get; set; }
         public virtual IEnumerable<ExchangeSecret> ExchangeSecrets { get; set; }
     }
 }

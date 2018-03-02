@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace MasterDataManager.Services.Interfaces
 {
-    public interface IBittrexService : IExchangeService
+    public interface IBinanceWrapper : IExchangeService
     {
     }
 }

@@ -1,5 +1,6 @@
 ﻿using DataLayer.Infrastructure.Interfaces;
 using DataLayer.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,10 +14,23 @@ namespace DataLayer.Infrastructure
         {
         }
 
+        public Exchange GetByExchangeId(int id)
+        {
+            return _dbContext.Exchanges
+                .Include(o => o.ExchangeSecrets)
+                .Include(o => o.ExchangeMarkets).ThenInclude(o => o.Market)
+                .FirstOrDefault(o => o.Id == id);
+        }
+
         public Exchange GetByName(string name)
         {
-            return (name != null) ? _dbContext.Exchanges
-                .FirstOrDefault(o => o.Name.Equals(name, StringComparison.OrdinalIgnoreCase)) : null;
+            if (name == null) return null;
+
+            return _dbContext.Exchanges
+                .Include(o => o.ExchangeSecrets)
+                .Include(o => o.ExchangeMarkets).ThenInclude(o => o.Market)
+                .FirstOrDefault(o => o.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
         }
+
     }
 }

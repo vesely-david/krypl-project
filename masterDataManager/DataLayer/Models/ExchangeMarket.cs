@@ -6,6 +6,8 @@ namespace DataLayer.Models
 {
     public class ExchangeMarket
     {
+        public string ExchangeMarketName { get; set; }
+
         public int ExchangeId { get; set; }
         public Exchange Exchange { get; set; }
         public int MarketId { get; set; }

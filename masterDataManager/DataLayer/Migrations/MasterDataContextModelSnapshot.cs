@@ -34,6 +34,26 @@ namespace DataLayer.Migrations
                     b.ToTable("Currencies");
                 });
 
+            modelBuilder.Entity("DataLayer.Models.EvaluationTick", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<double>("BtcValue");
+
+                    b.Property<int?>("StrategyId");
+
+                    b.Property<DateTime>("TimeStamp");
+
+                    b.Property<double>("UsdValue");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StrategyId");
+
+                    b.ToTable("EvaluationTick");
+                });
+
             modelBuilder.Entity("DataLayer.Models.Exchange", b =>
                 {
                     b.Property<int>("Id")
@@ -48,11 +68,30 @@ namespace DataLayer.Migrations
                     b.ToTable("Exchanges");
                 });
 
+            modelBuilder.Entity("DataLayer.Models.ExchangeCurrency", b =>
+                {
+                    b.Property<int>("ExchangeId");
+
+                    b.Property<int>("CurrencyId");
+
+                    b.Property<string>("ExchangeCurrencyName");
+
+                    b.Property<int>("Id");
+
+                    b.HasKey("ExchangeId", "CurrencyId");
+
+                    b.HasIndex("CurrencyId");
+
+                    b.ToTable("ExchangeCurrency");
+                });
+
             modelBuilder.Entity("DataLayer.Models.ExchangeMarket", b =>
                 {
                     b.Property<int>("ExchangeId");
 
                     b.Property<int>("MarketId");
+
+                    b.Property<string>("ExchangeMarketName");
 
                     b.HasKey("ExchangeId", "MarketId");
 
@@ -292,28 +331,6 @@ namespace DataLayer.Migrations
                     b.ToTable("UserAssets");
                 });
 
-            modelBuilder.Entity("DataLayer.Models.ValuePair", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int?>("StrategyId");
-
-                    b.Property<int?>("StrategyId1");
-
-                    b.Property<DateTime>("TimeStamp");
-
-                    b.Property<decimal>("Value");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("StrategyId");
-
-                    b.HasIndex("StrategyId1");
-
-                    b.ToTable("ValuePair");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
                 {
                     b.Property<int>("Id")
@@ -395,10 +412,30 @@ namespace DataLayer.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("DataLayer.Models.EvaluationTick", b =>
+                {
+                    b.HasOne("DataLayer.Models.Strategy")
+                        .WithMany("Evaluation")
+                        .HasForeignKey("StrategyId");
+                });
+
+            modelBuilder.Entity("DataLayer.Models.ExchangeCurrency", b =>
+                {
+                    b.HasOne("DataLayer.Models.Currency", "Currency")
+                        .WithMany()
+                        .HasForeignKey("CurrencyId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("DataLayer.Models.Exchange", "Exchange")
+                        .WithMany("ExchangeCurrencies")
+                        .HasForeignKey("ExchangeId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("DataLayer.Models.ExchangeMarket", b =>
                 {
                     b.HasOne("DataLayer.Models.Exchange", "Exchange")
-                        .WithMany("Markets")
+                        .WithMany("ExchangeMarkets")
                         .HasForeignKey("ExchangeId")
                         .OnDelete(DeleteBehavior.Cascade);
 
@@ -494,17 +531,6 @@ namespace DataLayer.Migrations
                         .WithMany("UserAssets")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("DataLayer.Models.ValuePair", b =>
-                {
-                    b.HasOne("DataLayer.Models.Strategy")
-                        .WithMany("BtcValue")
-                        .HasForeignKey("StrategyId");
-
-                    b.HasOne("DataLayer.Models.Strategy")
-                        .WithMany("UsdValue")
-                        .HasForeignKey("StrategyId1");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>

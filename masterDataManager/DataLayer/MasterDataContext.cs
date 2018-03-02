@@ -17,10 +17,6 @@ namespace DataLayer
         public DbSet<Market> Markets { get; set; }
         public DbSet<ExchangeSecret> ExchangeSecrets { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlite("Data Source=develop.db");
-        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -36,8 +32,21 @@ namespace DataLayer
 
             modelBuilder.Entity<ExchangeMarket>()
                 .HasOne(em => em.Exchange)
-                .WithMany(e => e.Markets)
+                .WithMany(e => e.ExchangeMarkets)
                 .HasForeignKey(em => em.ExchangeId);
+
+            modelBuilder.Entity<ExchangeCurrency>()
+                .HasKey(t => new { t.ExchangeId, t.CurrencyId });
+
+            modelBuilder.Entity<ExchangeCurrency>()
+                .HasOne(pt => pt.Currency)
+                .WithMany()
+                .HasForeignKey(pt => pt.CurrencyId);
+
+            modelBuilder.Entity<ExchangeCurrency>()
+                .HasOne(ec => ec.Exchange)
+                .WithMany(e => e.ExchangeCurrencies)
+                .HasForeignKey(ec => ec.ExchangeId);
 
         }
         public MasterDataContext(DbContextOptions<MasterDataContext> options) : base(options)

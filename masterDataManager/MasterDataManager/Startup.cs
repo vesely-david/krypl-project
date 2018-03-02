@@ -22,6 +22,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using System.Web.Http.Cors;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace MasterDataManager
 {
@@ -45,8 +46,9 @@ namespace MasterDataManager
             services.AddScoped<IMarketRepository, MarketRepository>();
             services.AddScoped<IExchangeRepository, ExchangeRepository>();
             services.AddScoped<ICurrencyRepository, CurrencyRepository>();
-            services.AddScoped<IBittrexService, BittrexService>();
+            //services.AddScoped<IBittrexService, BittrexService>();
             services.AddSingleton<IHostedService, StrategyEvaluationService>();
+            services.AddScoped<IExchangeDataProvider, ExchangeDataProvider>();
 
             services.AddSingleton(Configuration);
 
@@ -72,6 +74,8 @@ namespace MasterDataManager
             });
 
             services.AddCors();
+
+            services.AddMemoryCache();
 
             services.AddMvc();
 

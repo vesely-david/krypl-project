@@ -8,5 +8,6 @@ namespace DataLayer.Infrastructure.Interfaces
     public interface IExchangeRepository : IRepository<Exchange>
     {
         Exchange GetByName(string name);
+        Exchange GetByExchangeId(int id);
     }
 }

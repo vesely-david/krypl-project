@@ -14,10 +14,14 @@ using MasterDataManager.Models;
 
 namespace MasterDataManager.Controllers
 {
+
     [Produces("application/json")]
     [Route("api/bittrex")]
     public class BittrexController : Controller
-    {
+
+    { }
+}
+        /*
         private ITradeRepository _tradeRepository;
         private IStrategyRepository _strategyRepository;
         private IBittrexService _bittrexService;
@@ -145,5 +149,7 @@ namespace MasterDataManager.Controllers
             return null;
         }
         */
-    }
-}
+        
+    //}
+    
+///}
