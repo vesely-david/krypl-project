@@ -29,6 +29,7 @@ namespace MasterDataManager.Controllers
         private ICurrencyRepository _currencyRepository;
         private ITradeRepository _tradeRepository;
         private IExchangeObjectFactory _exchangeFactory;
+        private IBalanceService _balanceService;
 
         public ClientController(
             UserManager<User> userManager, 
@@ -38,7 +39,8 @@ namespace MasterDataManager.Controllers
             IExchangeRepository exchangeRepository,
             ICurrencyRepository currencyRepository,
             ITradeRepository tradeRepository,
-            IExchangeObjectFactory exchangeFactory)
+            IExchangeObjectFactory exchangeFactory,
+            IBalanceService balanceService)
         {
             _userManager = userManager;
             _configuration = configuration;
@@ -48,6 +50,8 @@ namespace MasterDataManager.Controllers
             _currencyRepository = currencyRepository;
             _tradeRepository = tradeRepository;
             _exchangeFactory = exchangeFactory;
+            _balanceService = balanceService;
+
 
         }
         //======== GET STRATEGY LIST =========
@@ -108,12 +112,25 @@ namespace MasterDataManager.Controllers
 
         //======== MANAGE ASSETS =========
         [HttpPost("mirrorRealAssets")]
-        public IActionResult MirrorRealAssets([FromBody]string exchangeName)
+        public async Task<IActionResult> MirrorRealAssets([FromBody]string exchangeName)
         {
-            var balances = _exchangeFactory.GetExchange(exchangeName)?.GetBalances();
-            return GetOverview(TradingMode.Real);
-        }
+            var userId = HttpContext.User.GetUserId();
+            if (userId == null) return BadRequest("User not found");
 
+            var exchangeService = _exchangeFactory.GetExchange(exchangeName);
+            if (exchangeService == null) return BadRequest("Exchange not found");
+
+            var exchangeId = exchangeService.GetExchangeId();
+            if (exchangeId == -1) return BadRequest("Unspecific error"); //Should not happen
+
+            var balances = await exchangeService.GetBalances();
+            var insufficient = new List<string>();
+            var result = _balanceService
+                .UpdateUserAssets(balances, userId.Value, exchangeId, TradingMode.Real, out insufficient);
+
+            return result ? (IActionResult)Ok() : (IActionResult)BadRequest(Json(insufficient));
+        }
+         
 
         private IActionResult GetStrategiesAsync(TradingMode strategyMode)
         {

@@ -10,6 +10,7 @@ namespace MasterDataManager.Services
 {
     public interface IExchangeService
     {
+        int GetExchangeId();
         Task<List<Asset>> GetBalances();
         //UserAsset GetBalance(Currency currency);
         //string SellOrder(Market market, double quantity, double rate);

@@ -23,6 +23,8 @@ namespace MasterDataManager.Services
         {
             var url = @"/api/v3/account";
 
+            var timestamp = DateTime.Now.Subtract(DateTime.MinValue.AddYears(1969)).TotalMilliseconds;
+
             var rawResponse = await _client.GetStringAsync(url);
 
             var response = JsonConvert.DeserializeObject<BinanceAccountInfo>(rawResponse);

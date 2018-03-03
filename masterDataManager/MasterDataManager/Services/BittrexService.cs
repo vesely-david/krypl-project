@@ -12,6 +12,10 @@ namespace MasterDataManager.Services
 {
     public class BittrexService : IExchangeService
     {
+        public int GetExchangeId()
+        {
+            throw new NotImplementedException();
+        }
 
         Task<List<Asset>> IExchangeService.GetBalances()
         {

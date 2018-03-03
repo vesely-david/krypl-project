@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DataLayer.Models;
+using DataLayer.Infrastructure.Interfaces;
 
 namespace MasterDataManager.Services
 {
@@ -12,13 +13,16 @@ namespace MasterDataManager.Services
     {
         private BinanceWrapper _binanceWrapper;
         private IExchangeDataProvider _exchangeDataProvider;
+        private IExchangeRepository _exchangeRepository;
         private readonly string _exchangeName  = "binance";
 
         public BinanceService(
-            IExchangeDataProvider exchangeDataProvider)
+            IExchangeDataProvider exchangeDataProvider,
+            IExchangeRepository exchangeRepository)
         {
             _binanceWrapper = new BinanceWrapper();
             _exchangeDataProvider = exchangeDataProvider;
+            _exchangeRepository = exchangeRepository;
         }
 
         public async Task<List<Asset> > GetBalances()
@@ -40,6 +44,12 @@ namespace MasterDataManager.Services
                 }
             }
             return assets;
+        }
+
+        public int GetExchangeId()
+        {
+            var exchange = _exchangeRepository.GetByName(_exchangeName);
+            return exchange == null ? -1 : exchange.Id;
         }
 
         public int GetHistoryPrice(Currency currency, DateTime time)
