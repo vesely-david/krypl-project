@@ -74,7 +74,7 @@ namespace DataLayer.Migrations
 
                     b.Property<int>("CurrencyId");
 
-                    b.Property<string>("ExchangeCurrencyName");
+                    b.Property<string>("ExchangeCurrencyCode");
 
                     b.Property<int>("Id");
 
@@ -82,7 +82,7 @@ namespace DataLayer.Migrations
 
                     b.HasIndex("CurrencyId");
 
-                    b.ToTable("ExchangeCurrency");
+                    b.ToTable("ExchangeCurrencies");
                 });
 
             modelBuilder.Entity("DataLayer.Models.ExchangeMarket", b =>
@@ -97,7 +97,7 @@ namespace DataLayer.Migrations
 
                     b.HasIndex("MarketId");
 
-                    b.ToTable("ExchangeMarket");
+                    b.ToTable("ExchangeMarkets");
                 });
 
             modelBuilder.Entity("DataLayer.Models.ExchangeSecret", b =>

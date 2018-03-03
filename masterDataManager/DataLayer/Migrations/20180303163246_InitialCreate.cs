@@ -211,25 +211,25 @@ namespace DataLayer.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ExchangeCurrency",
+                name: "ExchangeCurrencies",
                 columns: table => new
                 {
                     ExchangeId = table.Column<int>(nullable: false),
                     CurrencyId = table.Column<int>(nullable: false),
-                    ExchangeCurrencyName = table.Column<string>(nullable: true),
+                    ExchangeCurrencyCode = table.Column<string>(nullable: true),
                     Id = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ExchangeCurrency", x => new { x.ExchangeId, x.CurrencyId });
+                    table.PrimaryKey("PK_ExchangeCurrencies", x => new { x.ExchangeId, x.CurrencyId });
                     table.ForeignKey(
-                        name: "FK_ExchangeCurrency_Currencies_CurrencyId",
+                        name: "FK_ExchangeCurrencies_Currencies_CurrencyId",
                         column: x => x.CurrencyId,
                         principalTable: "Currencies",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ExchangeCurrency_Exchanges_ExchangeId",
+                        name: "FK_ExchangeCurrencies_Exchanges_ExchangeId",
                         column: x => x.ExchangeId,
                         principalTable: "Exchanges",
                         principalColumn: "Id",
@@ -333,7 +333,7 @@ namespace DataLayer.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ExchangeMarket",
+                name: "ExchangeMarkets",
                 columns: table => new
                 {
                     ExchangeId = table.Column<int>(nullable: false),
@@ -342,15 +342,15 @@ namespace DataLayer.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ExchangeMarket", x => new { x.ExchangeId, x.MarketId });
+                    table.PrimaryKey("PK_ExchangeMarkets", x => new { x.ExchangeId, x.MarketId });
                     table.ForeignKey(
-                        name: "FK_ExchangeMarket_Exchanges_ExchangeId",
+                        name: "FK_ExchangeMarkets_Exchanges_ExchangeId",
                         column: x => x.ExchangeId,
                         principalTable: "Exchanges",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ExchangeMarket_Markets_MarketId",
+                        name: "FK_ExchangeMarkets_Markets_MarketId",
                         column: x => x.MarketId,
                         principalTable: "Markets",
                         principalColumn: "Id",
@@ -490,13 +490,13 @@ namespace DataLayer.Migrations
                 column: "StrategyId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ExchangeCurrency_CurrencyId",
-                table: "ExchangeCurrency",
+                name: "IX_ExchangeCurrencies_CurrencyId",
+                table: "ExchangeCurrencies",
                 column: "CurrencyId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ExchangeMarket_MarketId",
-                table: "ExchangeMarket",
+                name: "IX_ExchangeMarkets_MarketId",
+                table: "ExchangeMarkets",
                 column: "MarketId");
 
             migrationBuilder.CreateIndex(
@@ -591,10 +591,10 @@ namespace DataLayer.Migrations
                 name: "EvaluationTick");
 
             migrationBuilder.DropTable(
-                name: "ExchangeCurrency");
+                name: "ExchangeCurrencies");
 
             migrationBuilder.DropTable(
-                name: "ExchangeMarket");
+                name: "ExchangeMarkets");
 
             migrationBuilder.DropTable(
                 name: "ExchangeSecrets");

@@ -10,7 +10,7 @@ using MasterDataManager.Services.ServiceModels;
 
 namespace MasterDataManager.Services
 {
-    public class BinanceWrapper : IHistoryExchangeService, IExchangeService
+    public class BinanceWrapper
     {
         private HttpClient _client;
 
@@ -19,14 +19,15 @@ namespace MasterDataManager.Services
             _client = new HttpClient();
         }
 
-        public async Task<List<UserAsset> > GetBalances()
+        public async Task<List<BinanceAsset> > GetBalances()
         {
             var url = @"/api/v3/account";
 
             var rawResponse = await _client.GetStringAsync(url);
 
             var response = JsonConvert.DeserializeObject<BinanceAccountInfo>(rawResponse);
-            throw new NotImplementedException();
+
+            return response.balances.ToList();
         }
 
         public int GetHistoryPrice(Currency currency, DateTime time)

@@ -16,12 +16,15 @@ namespace DataLayer
         public DbSet<Exchange> Exchanges { get; set; }
         public DbSet<Market> Markets { get; set; }
         public DbSet<ExchangeSecret> ExchangeSecrets { get; set; }
+        public DbSet<ExchangeMarket> ExchangeMarkets { get; set; }
+        public DbSet<ExchangeCurrency> ExchangeCurrencies { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
+            // Exchange-Market OneToMany
             modelBuilder.Entity<ExchangeMarket>()
                 .HasKey(t => new { t.ExchangeId, t.MarketId});
 
@@ -35,6 +38,7 @@ namespace DataLayer
                 .WithMany(e => e.ExchangeMarkets)
                 .HasForeignKey(em => em.ExchangeId);
 
+            // Exchange-Currency OneToMany
             modelBuilder.Entity<ExchangeCurrency>()
                 .HasKey(t => new { t.ExchangeId, t.CurrencyId });
 

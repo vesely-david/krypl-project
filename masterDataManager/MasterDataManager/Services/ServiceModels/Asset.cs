@@ -8,8 +8,8 @@ namespace MasterDataManager.Services.ServiceModels
 {
     public class Asset
     {
+        public Currency Currency { get; set; }
         public int CurrencyId { get; set; }
-        public virtual Currency Currency { get; set; }
         public double Amount { get; set; }
     }
 }

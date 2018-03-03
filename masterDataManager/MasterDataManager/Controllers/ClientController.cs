@@ -25,29 +25,29 @@ namespace MasterDataManager.Controllers
         private IConfiguration _configuration;
         private IStrategyRepository _strategyRepository;
         private IUserAssetRepository _userAssetRepository;
-        //private IBittrexService _bittrexService;
         private IExchangeRepository _exchangeRepository;
         private ICurrencyRepository _currencyRepository;
         private ITradeRepository _tradeRepository;
+        private IExchangeObjectFactory _exchangeFactory;
 
         public ClientController(
             UserManager<User> userManager, 
             IConfiguration configuration,
             IStrategyRepository strategyRepository,
-          //  IBittrexService bittrexService,
             IUserAssetRepository userAssetRepository,
             IExchangeRepository exchangeRepository,
             ICurrencyRepository currencyRepository,
-            ITradeRepository tradeRepository)
+            ITradeRepository tradeRepository,
+            IExchangeObjectFactory exchangeFactory)
         {
             _userManager = userManager;
             _configuration = configuration;
             _strategyRepository = strategyRepository;
             _userAssetRepository = userAssetRepository;
-            //_bittrexService = bittrexService;
             _exchangeRepository = exchangeRepository;
             _currencyRepository = currencyRepository;
             _tradeRepository = tradeRepository;
+            _exchangeFactory = exchangeFactory;
 
         }
         //======== GET STRATEGY LIST =========
@@ -106,7 +106,13 @@ namespace MasterDataManager.Controllers
             return GetOverview(TradingMode.BackTesting);
         }
 
-        //======== FORGOT ALL NEW TRADES =========
+        //======== MANAGE ASSETS =========
+        [HttpPost("mirrorRealAssets")]
+        public IActionResult MirrorRealAssets([FromBody]string exchangeName)
+        {
+            var balances = _exchangeFactory.GetExchange(exchangeName)?.GetBalances();
+            return GetOverview(TradingMode.Real);
+        }
 
 
         private IActionResult GetStrategiesAsync(TradingMode strategyMode)

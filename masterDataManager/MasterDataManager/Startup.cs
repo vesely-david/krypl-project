@@ -46,9 +46,11 @@ namespace MasterDataManager
             services.AddScoped<IMarketRepository, MarketRepository>();
             services.AddScoped<IExchangeRepository, ExchangeRepository>();
             services.AddScoped<ICurrencyRepository, CurrencyRepository>();
-            //services.AddScoped<IBittrexService, BittrexService>();
             services.AddSingleton<IHostedService, StrategyEvaluationService>();
             services.AddScoped<IExchangeDataProvider, ExchangeDataProvider>();
+            services.AddScoped<IExchangeObjectFactory, ExchangeObjectFactory>();
+            services.AddScoped<BinanceService>();
+            services.AddScoped<BittrexService>();
 
             services.AddSingleton(Configuration);
 

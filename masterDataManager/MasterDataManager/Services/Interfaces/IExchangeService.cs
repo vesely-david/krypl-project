@@ -1,5 +1,6 @@
 ﻿using DataLayer.Enums;
 using DataLayer.Models;
+using MasterDataManager.Services.ServiceModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ namespace MasterDataManager.Services
 {
     public interface IExchangeService
     {
-        Task<List<UserAsset>> GetBalances();
+        Task<List<Asset>> GetBalances();
         //UserAsset GetBalance(Currency currency);
         //string SellOrder(Market market, double quantity, double rate);
         //string BuyOrder(Market market, double quantity, double rate);

@@ -4,20 +4,20 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DataLayer.Models;
 
 namespace MasterDataManager.Services
 {
-    public class BinanceService
+    public class BinanceService : IHistoryExchangeService, IExchangeService
     {
-        private IBinanceWrapper _binanceWrapper;
+        private BinanceWrapper _binanceWrapper;
         private IExchangeDataProvider _exchangeDataProvider;
         private readonly string _exchangeName  = "binance";
 
         public BinanceService(
-            IBinanceWrapper binanceWrapper,
             IExchangeDataProvider exchangeDataProvider)
         {
-            _binanceWrapper = binanceWrapper;
+            _binanceWrapper = new BinanceWrapper();
             _exchangeDataProvider = exchangeDataProvider;
         }
 
@@ -26,13 +26,25 @@ namespace MasterDataManager.Services
             var binanceBalances = await _binanceWrapper.GetBalances();
             var assets = new List<Asset>();
 
-            var binanceMarkets = _exchangeDataProvider.GetExchangeMarkets(_exchangeName);
-
             foreach(var balance in binanceBalances)
             {
-
+                var currency = _exchangeDataProvider.GetCurrency(_exchangeName, balance.asset);
+                if(currency != null)
+                {
+                    assets.Add(new Asset
+                    {
+                        Currency = currency,
+                        CurrencyId = currency.Id,
+                        Amount = Double.Parse(balance.free) + Double.Parse(balance.locked)
+                    });
+                }
             }
             return assets;
+        }
+
+        public int GetHistoryPrice(Currency currency, DateTime time)
+        {
+            throw new NotImplementedException();
         }
     }
 }

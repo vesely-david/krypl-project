@@ -7,7 +7,7 @@ namespace DataLayer.Models
 {
     public class ExchangeCurrency : IdEntity
     {
-        public string ExchangeCurrencyName { get; set; }
+        public string ExchangeCurrencyCode { get; set; }
 
         public int ExchangeId { get; set; }
         public Exchange Exchange { get; set; }
