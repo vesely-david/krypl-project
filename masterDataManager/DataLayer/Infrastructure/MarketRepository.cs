@@ -17,8 +17,8 @@ namespace DataLayer.Infrastructure
         public Market GetMarketByCurrencies(int firstCurrencyId, int secondCurrencyId)
         {
             return _dbContext.Markets
-                .FirstOrDefault(o => (o.BaseCurrencyId == firstCurrencyId  && o.SecondaryCurrencyId == secondCurrencyId)
-                 || (o.BaseCurrencyId == secondCurrencyId && o.SecondaryCurrencyId == firstCurrencyId));
+                .FirstOrDefault(o => (o.BaseCurrencyId == firstCurrencyId  && o.MarketCurrencyId == secondCurrencyId)
+                 || (o.BaseCurrencyId == secondCurrencyId && o.MarketCurrencyId == firstCurrencyId));
         }
 
         public Market GetByCode(string marketCode)

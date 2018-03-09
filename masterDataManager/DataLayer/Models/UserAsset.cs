@@ -17,7 +17,7 @@ namespace DataLayer.Models
         public virtual User User { get; set; }
         public int ExchangeId { get; set; }
         public virtual Exchange Exchange { get; set; }
-        public List<StrategyAsset> StrategyAssets { get; set; }
+        public ICollection<StrategyAsset> StrategyAssets { get; set; }
 
         public double GetFreeAmount()
         {

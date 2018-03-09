@@ -11,7 +11,7 @@ namespace DataLayer.Models
 
         public int BaseCurrencyId { get; set; }
         public virtual Currency BaseCurrency { get; set; }
-        public int SecondaryCurrencyId { get; set; }
-        public virtual Currency SecondaryCurrency { get; set; }
+        public int MarketCurrencyId { get; set; }
+        public virtual Currency MarketCurrency { get; set; }
     }
 }

@@ -9,8 +9,8 @@ namespace DataLayer.Models
 {
     public class User : IdentityUser<int>
     {
-        public virtual IEnumerable<Strategy> Strategies { get; set; }
-        public virtual IEnumerable<UserAsset> UserAssets { get; set; }
-        public virtual IEnumerable<ExchangeSecret> ExchangeSecrets { get; set; }
+        public virtual ICollection<Strategy> Strategies { get; set; }
+        public virtual ICollection<UserAsset> UserAssets { get; set; }
+        public virtual ICollection<ExchangeSecret> ExchangeSecrets { get; set; }
     }
 }

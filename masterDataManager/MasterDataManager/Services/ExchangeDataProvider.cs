@@ -31,7 +31,7 @@ namespace MasterDataManager.Services
                 var exchange = _exchangeRepository.GetByName(exchangeName);
                 return new ExchangeDataDict
                 {
-                    Markets = exchange.ExchangeMarkets?.ToDictionary(o => o.ExchangeMarketName, o => o.Market),
+                    Markets = exchange.ExchangeMarkets?.ToDictionary(o => o.ExchangeMarketCode, o => o.Market),
                     Currencies = exchange.ExchangeCurrencies?.ToDictionary(o => o.ExchangeCurrencyCode, o => o.Currency),
                     Exchange = exchange
                 };

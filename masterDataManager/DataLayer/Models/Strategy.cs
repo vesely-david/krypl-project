@@ -16,14 +16,14 @@ namespace DataLayer.Models
         public StrategyState StrategyState { get; set; }
         public TradingMode TradingMode { get; set; }
         public int NewTrades { get; set; }
-        public IEnumerable<EvaluationTick> Evaluation { get; set; }
 
         public int ExchangeId { get; set; }
         public Exchange Exchange { get; set; }
         public int UserId { get; set; }
         public virtual User User { get; set; }
-        public virtual IEnumerable<StrategyAsset> StrategyAssets { get; set; }
-        public virtual IEnumerable<Trade> Trades { get; set; }
+        public virtual ICollection<EvaluationTick> Evaluation { get; set; }
+        public virtual ICollection<StrategyAsset> StrategyAssets { get; set; }
+        public virtual ICollection<Trade> Trades { get; set; }
 
         //public virtual IEnumerable<SomeError> Errors { get; set; } in case of error (insufficient funds)
 

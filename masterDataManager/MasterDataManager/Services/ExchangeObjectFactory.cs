@@ -11,7 +11,7 @@ namespace MasterDataManager.Services
     public class ExchangeObjectFactory : IExchangeObjectFactory
     {
         public IServiceProvider Services { get; }
-        private readonly Dictionary<string, IExchangeService> _serviceDictionary;
+        private Dictionary<string, IExchangeService> _serviceDictionary = new Dictionary<string, IExchangeService>();
 
         public ExchangeObjectFactory(IServiceProvider services)
         {

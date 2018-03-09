@@ -7,6 +7,7 @@ using DataLayer.Models;
 using System.Net.Http;
 using Newtonsoft.Json;
 using MasterDataManager.Services.ServiceModels;
+using MasterDataManager.Utils;
 
 namespace MasterDataManager.Services
 {
@@ -19,12 +20,11 @@ namespace MasterDataManager.Services
             _client = new HttpClient();
         }
 
-        public async Task<List<BinanceAsset> > GetBalances()
+        public async Task<List<BinanceAsset> > GetBalances(string apiKey, string apiSecret)
         {
             var url = @"/api/v3/account";
 
-            var timestamp = DateTime.Now.Subtract(DateTime.MinValue.AddYears(1969)).TotalMilliseconds;
-
+            var x = await _client.BinanceSignedRequest<BinanceAccountInfo>(url, HttpMethod.Get, null, apiKey, apiKey);
             var rawResponse = await _client.GetStringAsync(url);
 
             var response = JsonConvert.DeserializeObject<BinanceAccountInfo>(rawResponse);

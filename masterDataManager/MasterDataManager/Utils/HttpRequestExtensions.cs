@@ -12,24 +12,35 @@ namespace MasterDataManager.Utils
 {
     public static class HttpRequestExtensions
     {
+        public static int Pokus(this HttpClient client)
+        {
+            return 1;
+        }
+
         public static async Task<T> BinanceSignedRequest<T>(
             this HttpClient client,
-            string baseUrl, 
+            string baseUrl,
+            HttpMethod httpMethod,
             Dictionary<string, string> requestParameters, 
-            string apiKey, 
+            string apiKey,
             string apiSecret)
         {
+            requestParameters = requestParameters ?? new Dictionary<string, string>();
 
+            var timestamp = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
+            requestParameters.Add("timestamp", timestamp.ToString());
             var urlToSign = QueryHelpers.AddQueryString(String.Empty, requestParameters);
             var signature = HashHMAC(apiSecret, urlToSign);
 
             var url = baseUrl + urlToSign + "&signature=" + signature;
 
-            var requestMessage = new HttpRequestMessage(HttpMethod.Get, url);
+            var requestMessage = new HttpRequestMessage(httpMethod, url);
             requestMessage.Headers.Add("X-MBX-APIKEY", apiKey);
             var rawResponse = await client.SendAsync(requestMessage);
-            var responseContent = await rawResponse.Content.ReadAsStringAsync();
 
+            rawResponse.EnsureSuccessStatusCode();
+
+            var responseContent = await rawResponse.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<T>(responseContent);
         }
 

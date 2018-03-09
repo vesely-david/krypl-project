@@ -191,7 +191,7 @@ namespace DataLayer.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     BaseCurrencyId = table.Column<int>(nullable: false),
                     Code = table.Column<string>(nullable: true),
-                    SecondaryCurrencyId = table.Column<int>(nullable: false)
+                    MarketCurrencyId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -203,8 +203,8 @@ namespace DataLayer.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Markets_Currencies_SecondaryCurrencyId",
-                        column: x => x.SecondaryCurrencyId,
+                        name: "FK_Markets_Currencies_MarketCurrencyId",
+                        column: x => x.MarketCurrencyId,
                         principalTable: "Currencies",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -338,7 +338,8 @@ namespace DataLayer.Migrations
                 {
                     ExchangeId = table.Column<int>(nullable: false),
                     MarketId = table.Column<int>(nullable: false),
-                    ExchangeMarketName = table.Column<string>(nullable: true)
+                    ExchangeMarketCode = table.Column<string>(nullable: true),
+                    Id = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -515,9 +516,9 @@ namespace DataLayer.Migrations
                 column: "BaseCurrencyId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Markets_SecondaryCurrencyId",
+                name: "IX_Markets_MarketCurrencyId",
                 table: "Markets",
-                column: "SecondaryCurrencyId");
+                column: "MarketCurrencyId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Strategies_ExchangeId",

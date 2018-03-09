@@ -12,7 +12,7 @@ using System;
 namespace DataLayer.Migrations
 {
     [DbContext(typeof(MasterDataContext))]
-    [Migration("20180303163246_InitialCreate")]
+    [Migration("20180309152524_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -92,7 +92,9 @@ namespace DataLayer.Migrations
 
                     b.Property<int>("MarketId");
 
-                    b.Property<string>("ExchangeMarketName");
+                    b.Property<string>("ExchangeMarketCode");
+
+                    b.Property<int>("Id");
 
                     b.HasKey("ExchangeId", "MarketId");
 
@@ -132,13 +134,13 @@ namespace DataLayer.Migrations
 
                     b.Property<string>("Code");
 
-                    b.Property<int>("SecondaryCurrencyId");
+                    b.Property<int>("MarketCurrencyId");
 
                     b.HasKey("Id");
 
                     b.HasIndex("BaseCurrencyId");
 
-                    b.HasIndex("SecondaryCurrencyId");
+                    b.HasIndex("MarketCurrencyId");
 
                     b.ToTable("Markets");
                 });
@@ -466,9 +468,9 @@ namespace DataLayer.Migrations
                         .HasForeignKey("BaseCurrencyId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("DataLayer.Models.Currency", "SecondaryCurrency")
+                    b.HasOne("DataLayer.Models.Currency", "MarketCurrency")
                         .WithMany()
-                        .HasForeignKey("SecondaryCurrencyId")
+                        .HasForeignKey("MarketCurrencyId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

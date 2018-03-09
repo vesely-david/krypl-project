@@ -120,10 +120,9 @@ namespace MasterDataManager.Controllers
             var exchangeService = _exchangeFactory.GetExchange(exchangeName);
             if (exchangeService == null) return BadRequest("Exchange not found");
 
-            var exchangeId = exchangeService.GetExchangeId();
-            if (exchangeId == -1) return BadRequest("Unspecific error"); //Should not happen
+            var exchangeId = exchangeService.GetExchangeId();   
 
-            var balances = await exchangeService.GetBalances();
+            var balances = await exchangeService.GetBalances(userId.Value);
             var insufficient = new List<string>();
             var result = _balanceService
                 .UpdateUserAssets(balances, userId.Value, exchangeId, TradingMode.Real, out insufficient);
