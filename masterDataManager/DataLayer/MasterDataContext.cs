@@ -26,7 +26,7 @@ namespace DataLayer
 
             // Exchange-Market OneToMany
             modelBuilder.Entity<ExchangeMarket>()
-                .HasKey(t => new { t.ExchangeId, t.MarketId});
+                .HasAlternateKey(t => new { t.ExchangeId, t.MarketId });
 
             modelBuilder.Entity<ExchangeMarket>()
                 .HasOne(pt => pt.Market)
@@ -40,7 +40,7 @@ namespace DataLayer
 
             // Exchange-Currency OneToMany
             modelBuilder.Entity<ExchangeCurrency>()
-                .HasKey(t => new { t.ExchangeId, t.CurrencyId });
+                .HasAlternateKey(t => new { t.ExchangeId, t.CurrencyId });
 
             modelBuilder.Entity<ExchangeCurrency>()
                 .HasOne(pt => pt.Currency)

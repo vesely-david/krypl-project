@@ -61,7 +61,7 @@ namespace MasterDataManager.Services
         {
             if (!_exchangeId.HasValue)
             {
-                var _exchangeId = _exchangeRepository.GetByName(_exchangeName).Id;
+                _exchangeId = _exchangeRepository.GetByName(_exchangeName).Id;
             }
             return _exchangeId.Value;
         }

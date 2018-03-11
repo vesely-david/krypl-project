@@ -22,13 +22,8 @@ namespace MasterDataManager.Services
 
         public async Task<List<BinanceAsset> > GetBalances(string apiKey, string apiSecret)
         {
-            var url = @"/api/v3/account";
-
-            var x = await _client.BinanceSignedRequest<BinanceAccountInfo>(url, HttpMethod.Get, null, apiKey, apiKey);
-            var rawResponse = await _client.GetStringAsync(url);
-
-            var response = JsonConvert.DeserializeObject<BinanceAccountInfo>(rawResponse);
-
+            var url = @"https://www.binance.com/api//v3/account";
+            var response = await _client.BinanceSignedRequest<BinanceAccountInfo>(url, HttpMethod.Get, null, apiKey, apiSecret);
             return response.balances.ToList();
         }
 

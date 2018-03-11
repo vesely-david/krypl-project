@@ -517,12 +517,7 @@ namespace MasterDataManager.Controllers
                 ExchangeId = bittrex.Id,
                 ExchangeCurrencyCode = "TRX"
             });
-            _exchangeCurrencyRepository.Add(new ExchangeCurrency
-            {
-                CurrencyId = vtc.Id,
-                ExchangeId = binance.Id,
-                ExchangeCurrencyCode = "VTC"
-            });
+
             _exchangeCurrencyRepository.Add(new ExchangeCurrency
             {
                 CurrencyId = vtc.Id,

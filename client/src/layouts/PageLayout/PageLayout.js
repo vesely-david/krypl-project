@@ -9,13 +9,25 @@ import './PageLayout.scss'
 import DuckImage from './assets/Duck.jpg'
 
 class PageLayout extends React.Component {
+  constructor (props) {
+    super(props)
+    this.state = {
+      menuClass: null,
+    }
+  }
   componentWillMount () {
     this.props.actions.checkTokenValidity()
   }
 
+  onMenuColorChange (color) {
+    this.setState({
+      menuClass: color
+    })
+  }
+
   render () {
     const indexLink = this.props.isAuthenticated ? (
-      <Menu.Item as={IndexLink} to='/' activeClassName='page-layout__nav-item--active'>
+      <Menu.Item as={IndexLink} onClick={() => this.onMenuColorChange(null)} to='/' activeClassName='page-layout__nav-item--active'>
         <img src={DuckImage} />
         Krypl project
       </Menu.Item>
@@ -27,12 +39,12 @@ class PageLayout extends React.Component {
     )
     return (
       <div>
-        <Menu size='large'>
+        <Menu size='large' className={this.state.menuClass}>
           {indexLink}
           {this.props.isAuthenticated && [
-            <Menu.Item as={Link} to='real' key='realLink' activeClassName='page-layout__nav-item--active' name='real' />,
-            <Menu.Item as={Link} to='paper' key='paperLink' activeClassName='page-layout__nav-item--active' name='paper' />,
-            <Menu.Item as={Link} to='backtest' key='backtestLink' activeClassName='page-layout__nav-item--active' name='backtest' />,
+            <Menu.Item as={Link} onClick={() => this.onMenuColorChange('greenMenu')} to='real' key='realLink' activeClassName='page-layout__nav-item--active' name='real' />,
+            <Menu.Item as={Link} onClick={() => this.onMenuColorChange('tealMenu')} to='paper' key='paperLink' activeClassName='page-layout__nav-item--active' name='paper' />,
+            <Menu.Item as={Link} onClick={() => this.onMenuColorChange('blueMenu')} to='backtest' key='backtestLink' activeClassName='page-layout__nav-item--active' name='backtest' />,
             <Menu.Menu key='righSection' position='right'>
               <Menu.Item>
                 <Button onClick={() => this.props.actions.logout()}>Log out</Button>
@@ -40,7 +52,9 @@ class PageLayout extends React.Component {
             </Menu.Menu>
           ]}
         </Menu>
-        {this.props.children}
+        <div className='bodyElement'>
+          {this.props.children}
+        </div>
       </div>
 
     )

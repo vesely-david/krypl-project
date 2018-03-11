@@ -70,15 +70,18 @@ namespace DataLayer.Migrations
 
             modelBuilder.Entity("DataLayer.Models.ExchangeCurrency", b =>
                 {
-                    b.Property<int>("ExchangeId");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<int>("CurrencyId");
 
                     b.Property<string>("ExchangeCurrencyCode");
 
-                    b.Property<int>("Id");
+                    b.Property<int>("ExchangeId");
 
-                    b.HasKey("ExchangeId", "CurrencyId");
+                    b.HasKey("Id");
+
+                    b.HasAlternateKey("ExchangeId", "CurrencyId");
 
                     b.HasIndex("CurrencyId");
 
@@ -87,15 +90,18 @@ namespace DataLayer.Migrations
 
             modelBuilder.Entity("DataLayer.Models.ExchangeMarket", b =>
                 {
-                    b.Property<int>("ExchangeId");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
 
-                    b.Property<int>("MarketId");
+                    b.Property<int>("ExchangeId");
 
                     b.Property<string>("ExchangeMarketCode");
 
-                    b.Property<int>("Id");
+                    b.Property<int>("MarketId");
 
-                    b.HasKey("ExchangeId", "MarketId");
+                    b.HasKey("Id");
+
+                    b.HasAlternateKey("ExchangeId", "MarketId");
 
                     b.HasIndex("MarketId");
 

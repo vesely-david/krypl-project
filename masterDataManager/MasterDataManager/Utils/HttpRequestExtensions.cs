@@ -12,11 +12,6 @@ namespace MasterDataManager.Utils
 {
     public static class HttpRequestExtensions
     {
-        public static int Pokus(this HttpClient client)
-        {
-            return 1;
-        }
-
         public static async Task<T> BinanceSignedRequest<T>(
             this HttpClient client,
             string baseUrl,
@@ -27,15 +22,19 @@ namespace MasterDataManager.Utils
         {
             requestParameters = requestParameters ?? new Dictionary<string, string>();
 
-            var timestamp = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
-            requestParameters.Add("timestamp", timestamp.ToString());
+            if(!requestParameters.ContainsKey("timestamp"))
+            {
+                var timestamp = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
+                requestParameters.Add("timestamp", timestamp.ToString());
+            }
             var urlToSign = QueryHelpers.AddQueryString(String.Empty, requestParameters);
-            var signature = HashHMAC(apiSecret, urlToSign);
+            var signature = HashHMAC(apiSecret, urlToSign.Substring(1)); //Without '?' on the beginning
 
             var url = baseUrl + urlToSign + "&signature=" + signature;
 
             var requestMessage = new HttpRequestMessage(httpMethod, url);
             requestMessage.Headers.Add("X-MBX-APIKEY", apiKey);
+
             var rawResponse = await client.SendAsync(requestMessage);
 
             rawResponse.EnsureSuccessStatusCode();
@@ -44,10 +43,12 @@ namespace MasterDataManager.Utils
             return JsonConvert.DeserializeObject<T>(responseContent);
         }
 
-        private static byte[] HashHMAC(string key, string message)
+
+        private static string HashHMAC(string key, string message)
         {
             var hash = new HMACSHA256(key.ToByteArray());
-            return hash.ComputeHash(message.ToByteArray());
+            var rawHash = hash.ComputeHash(message.ToByteArray());
+            return BitConverter.ToString(rawHash).Replace("-", "").ToLower();
         }
 
         public static byte[] ToByteArray(this string text)

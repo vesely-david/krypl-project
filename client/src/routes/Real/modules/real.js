@@ -1,5 +1,4 @@
 import { strategyService } from '../../../services'
-import { MAIN_OVERVIEW_SUCCESS } from '../../Overview/modules/overview'
 // ------------------------------------
 // Constants
 // ------------------------------------
@@ -145,11 +144,6 @@ const ACTION_HANDLERS = {
       else return o
     })
   }),
-
-  [MAIN_OVERVIEW_SUCCESS] : (state, action) => ({
-    ...state,
-    overview: action.payload.real
-  })
 }
 
 // ------------------------------------

@@ -13,6 +13,7 @@ using DataLayer.Enums;
 using DataLayer.Infrastructure.Interfaces;
 using MasterDataManager.Services.Interfaces;
 using MasterDataManager.Models;
+using System.Text;
 
 namespace MasterDataManager.Controllers
 {
@@ -111,8 +112,8 @@ namespace MasterDataManager.Controllers
         }
 
         //======== MANAGE ASSETS =========
-        [HttpPost("mirrorRealAssets")]
-        public async Task<IActionResult> MirrorRealAssets([FromBody]string exchangeName)
+        [HttpPost("mirrorRealAssets/{exchangeName}")]
+        public async Task<IActionResult> MirrorRealAssets(string exchangeName)
         {
             var userId = HttpContext.User.GetUserId();
             if (userId == null) return BadRequest("User not found");
@@ -120,16 +121,42 @@ namespace MasterDataManager.Controllers
             var exchangeService = _exchangeFactory.GetExchange(exchangeName);
             if (exchangeService == null) return BadRequest("Exchange not found");
 
-            var exchangeId = exchangeService.GetExchangeId();   
+            var exchangeId = exchangeService.GetExchangeId();
 
             var balances = await exchangeService.GetBalances(userId.Value);
             var insufficient = new List<string>();
             var result = _balanceService
                 .UpdateUserAssets(balances, userId.Value, exchangeId, TradingMode.Real, out insufficient);
+            if (result) return Ok();
 
-            return result ? (IActionResult)Ok() : (IActionResult)BadRequest(Json(insufficient));
+            var str = new StringBuilder();
+            foreach (var ins in insufficient) str.AppendLine(ins);
+            return BadRequest(str.ToString());
         }
-         
+
+        [HttpGet("exchangesOverview")]
+        public IActionResult ExchangesOverview()
+        {
+            var exchanges = _exchangeRepository.GetAllWithCurrencies();
+            var obj = exchanges.Select(o => new
+            {
+                text = o.Name,
+                value = o.Name.ToLower(),
+                currencies = o.ExchangeCurrencies.Select(p => new
+                {
+                    text = p.Currency.Code,
+                    value = p.Currency.Code.ToLower()
+                })
+            });
+
+            return Ok(new {
+                real = obj,
+                paper = obj,
+                backtest = obj
+            });
+        }
+
+
 
         private IActionResult GetStrategiesAsync(TradingMode strategyMode)
         {
@@ -336,19 +363,34 @@ namespace MasterDataManager.Controllers
                 changeDayUsd = 12.67,
             };
 
+            var exchanges = _exchangeRepository.List();
             var grouped = userAssets.Where(o => o.TradingMode == tradingMode).GroupBy(o => o.Exchange);
             var assets = grouped.Select(group => new
             {
                 text = group.Key.Name,
-                value = group.Key.Id,
+                value = group.Key.Name.ToLower(),
                 assets = group.Select(o => new
                 {
                     text = o.Currency.Code,
-                    value = o.Currency.Id,
+                    value = o.Currency.Code.ToLower(),
                     sum = o.Amount,
                     free = o.GetFreeAmount()
                 })
-            });
+            }).ToList();
+
+            foreach(var exchange in exchanges)
+            {
+                if(assets.FirstOrDefault(o => o.text == exchange.Name) == null)
+                {
+                    assets.Add(new
+                    {
+                        text = exchange.Name,
+                        value = exchange.Name.ToLower(),
+                        assets = Enumerable.Empty<object>().Select(r => new { text = "", value = "", sum = (double)0, free = (double)0 }) // Bacause anonymus objects can suck
+                    });
+                }
+            }
+
             return new
             {
                 overview = overview,

@@ -6,3 +6,32 @@
   font-weight: bold !important;
   text-decoration: underline;
 }
+
+.bodyElement{
+  width: 75vw;
+  margin: auto;
+}
+
+.noColorMenu{
+  border-bottom: 2px transparent!important;
+}
+
+.greenMenu{
+  border-bottom: 2px solid #21ba45!important;
+}
+.tealMenu{
+  border-bottom: 2px solid #00b5ad!important;
+}
+.blueMenu{
+  border-bottom: 2px solid #2185d0!important;  
+}
+
+.form{
+ & .modalButton{
+    margin-top: auto!important;
+
+    button{
+      height: 38px!important;
+    }
+  }
+}

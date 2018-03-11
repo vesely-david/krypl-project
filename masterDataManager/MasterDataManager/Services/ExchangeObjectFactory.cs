@@ -21,6 +21,8 @@ namespace MasterDataManager.Services
 
         public IExchangeService GetExchange(string exchangeName)
         {
+            var normalized = exchangeName.ToLower();
+            if (!_serviceDictionary.ContainsKey(normalized)) return null;
             return _serviceDictionary[exchangeName];
         }
     }

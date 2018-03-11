@@ -14,7 +14,6 @@ export const strategyService = {
   forgetPaperNews,
   forgetAllBacktestNews,
   forgetBacktestNews,
-  getMainOverview,
 }
 
 const addr = 'http://localhost:54849/api/client/'
@@ -133,17 +132,4 @@ function forgetAllBacktestNews () {
 }
 
 function forgetBacktestNews () {
-}
-
-async function getMainOverview () {
-  const requestOptions = {
-    method: 'GET',
-    headers: authHeader()
-  }
-  var response = await fetch(addr + 'mainOverview', requestOptions)
-
-  if (response.ok) {
-    return response.json()
-  }
-  throw new Error(response.status)
 }

@@ -14,6 +14,12 @@ namespace DataLayer.Infrastructure
         {
         }
 
+        public IEnumerable<Exchange> GetAllWithCurrencies()
+        {
+            return _dbContext.Exchanges
+                .Include(o => o.ExchangeCurrencies).ThenInclude(o => o.Currency);
+        }
+
         public Exchange GetByExchangeId(int id)
         {
             return _dbContext.Exchanges
@@ -21,6 +27,7 @@ namespace DataLayer.Infrastructure
                 .Include(o => o.ExchangeMarkets).ThenInclude(o => o.Market)
                 .FirstOrDefault(o => o.Id == id);
         }
+
 
         public Exchange GetByName(string name)
         {

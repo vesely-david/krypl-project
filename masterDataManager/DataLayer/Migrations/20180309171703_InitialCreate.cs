@@ -214,14 +214,16 @@ namespace DataLayer.Migrations
                 name: "ExchangeCurrencies",
                 columns: table => new
                 {
-                    ExchangeId = table.Column<int>(nullable: false),
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
                     CurrencyId = table.Column<int>(nullable: false),
                     ExchangeCurrencyCode = table.Column<string>(nullable: true),
-                    Id = table.Column<int>(nullable: false)
+                    ExchangeId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ExchangeCurrencies", x => new { x.ExchangeId, x.CurrencyId });
+                    table.PrimaryKey("PK_ExchangeCurrencies", x => x.Id);
+                    table.UniqueConstraint("AK_ExchangeCurrencies_ExchangeId_CurrencyId", x => new { x.ExchangeId, x.CurrencyId });
                     table.ForeignKey(
                         name: "FK_ExchangeCurrencies_Currencies_CurrencyId",
                         column: x => x.CurrencyId,
@@ -336,14 +338,16 @@ namespace DataLayer.Migrations
                 name: "ExchangeMarkets",
                 columns: table => new
                 {
-                    ExchangeId = table.Column<int>(nullable: false),
-                    MarketId = table.Column<int>(nullable: false),
-                    ExchangeMarketCode = table.Column<string>(nullable: true),
                     Id = table.Column<int>(nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    ExchangeId = table.Column<int>(nullable: false),
+                    ExchangeMarketCode = table.Column<string>(nullable: true),
+                    MarketId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ExchangeMarkets", x => new { x.ExchangeId, x.MarketId });
+                    table.PrimaryKey("PK_ExchangeMarkets", x => x.Id);
+                    table.UniqueConstraint("AK_ExchangeMarkets_ExchangeId_MarketId", x => new { x.ExchangeId, x.MarketId });
                     table.ForeignKey(
                         name: "FK_ExchangeMarkets_Exchanges_ExchangeId",
                         column: x => x.ExchangeId,

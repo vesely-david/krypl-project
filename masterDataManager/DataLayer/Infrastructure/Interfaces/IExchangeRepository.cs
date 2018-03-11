@@ -9,5 +9,6 @@ namespace DataLayer.Infrastructure.Interfaces
     {
         Exchange GetByName(string name);
         Exchange GetByExchangeId(int id);
+        IEnumerable<Exchange> GetAllWithCurrencies();
     }
 }
