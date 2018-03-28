@@ -25,6 +25,7 @@ namespace DataLayer.Infrastructure
             return _dbContext.Exchanges
                 .Include(o => o.ExchangeSecrets)
                 .Include(o => o.ExchangeMarkets).ThenInclude(o => o.Market)
+                .Include(o => o.ExchangeCurrencies).ThenInclude(o => o.Currency)
                 .FirstOrDefault(o => o.Id == id);
         }
 
@@ -36,6 +37,7 @@ namespace DataLayer.Infrastructure
             return _dbContext.Exchanges
                 .Include(o => o.ExchangeSecrets)
                 .Include(o => o.ExchangeMarkets).ThenInclude(o => o.Market)
+                .Include(o => o.ExchangeCurrencies).ThenInclude(o => o.Currency)
                 .FirstOrDefault(o => o.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
         }
 

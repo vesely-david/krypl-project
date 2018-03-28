@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using DataLayer.Models;
 using DataLayer.Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Identity;
+using DataLayer.Enums;
 
 namespace MasterDataManager.Services
 {
@@ -33,15 +34,15 @@ namespace MasterDataManager.Services
             _exchangeRepository = exchangeRepository;
         }
 
-        public async Task<List<Asset> > GetBalances(int userId)
+        public async Task<List<Asset> > GetRealBalances(int userId)
         {
             var assets = new List<Asset>(); // IResult implementation???
             var userSecret = _exchangeSecretRepository.GetByUserAndExchange(userId,GetExchangeId());
             if (userSecret == null) return assets;
         
             var binanceBalances = await _binanceWrapper.GetBalances(userSecret.ApiKey, userSecret.ApiSecret);
-
-            foreach(var balance in binanceBalances)
+            var notNullBalances = binanceBalances.Where(o => Double.Parse(o.free) != 0 || Double.Parse(o.locked) != 0);
+            foreach (var balance in notNullBalances)
             {
                 var currency = _exchangeDataProvider.GetCurrency(_exchangeName, balance.asset);
                 if(currency != null)
@@ -63,7 +64,7 @@ namespace MasterDataManager.Services
             {
                 _exchangeId = _exchangeRepository.GetByName(_exchangeName).Id;
             }
-            return _exchangeId.Value;
+            return _exchangeId.Value; //Get Id from staticDataProvider?? 
         }
 
         public int GetHistoryPrice(Currency currency, DateTime time)

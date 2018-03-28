@@ -24,7 +24,7 @@ namespace MasterDataManager.Utils
 
             if(!requestParameters.ContainsKey("timestamp"))
             {
-                var timestamp = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
+                var timestamp = ToUnixTimestamp(DateTime.UtcNow).ToString();
                 requestParameters.Add("timestamp", timestamp.ToString());
             }
             var urlToSign = QueryHelpers.AddQueryString(String.Empty, requestParameters);
@@ -55,6 +55,16 @@ namespace MasterDataManager.Utils
         {
             var encoding = new ASCIIEncoding();
             return encoding.GetBytes(text);
+        }
+
+        private static long ToUnixTimestamp(DateTime time)
+        {
+            return (long)(time - new DateTime(1970, 1, 1)).TotalMilliseconds;
+        }
+
+        private static string GetTimestamp()
+        {
+            return ToUnixTimestamp(DateTime.UtcNow).ToString();
         }
     }
 }

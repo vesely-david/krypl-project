@@ -7,7 +7,7 @@ namespace MasterDataManager.Models
 {
     public class AssetModel
     {
-        public int currencyId { get; set; }
+        public string currency { get; set; }
         public double amount { get; set; }
     }
 }

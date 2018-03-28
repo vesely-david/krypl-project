@@ -11,5 +11,6 @@ namespace DataLayer.Infrastructure.Interfaces
 
         IEnumerable<UserAsset> GetByUserId(int userId);
         IEnumerable<UserAsset> GetUserAssetsIncludingStrategies();
+        IEnumerable<UserAsset> GetByUserAndExchange(int userId, int exchangeId);
     }
 }

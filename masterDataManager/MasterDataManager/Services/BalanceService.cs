@@ -1,6 +1,7 @@
 ﻿using DataLayer.Enums;
 using DataLayer.Infrastructure.Interfaces;
 using DataLayer.Models;
+using MasterDataManager.Models;
 using MasterDataManager.Services.Interfaces;
 using MasterDataManager.Services.ServiceModels;
 using System;
@@ -20,16 +21,20 @@ namespace MasterDataManager.Services
             _userAssetRepository = userAssetRepository;
         }
 
-        public bool UpdateUserAssets(List<Asset> assets, int userId, int exchangeId, TradingMode tradingMode, out List<string> insufficient)
+        public void UpdateUserAssets(IEnumerable<Asset> assets, int userId, int exchangeId, TradingMode tradingMode)
         {
-            insufficient = new List<string>();
-            var userAssets = _userAssetRepository.GetByUserId(userId).Where(o => o.TradingMode == tradingMode);
+            var userAssets = _userAssetRepository.GetByUserAndExchange(userId, exchangeId).Where(o => o.TradingMode == tradingMode);
+
+            var toDelete = userAssets.Where(o => !assets.Any(p => p.CurrencyId == o.CurrencyId));
+
+            foreach (var userAsset in toDelete) DeleteUserAsset(userAsset);
 
             foreach(var asset in assets)
             {
                 var userAsset = userAssets.FirstOrDefault(o => o.CurrencyId == asset.CurrencyId);
                 if (userAsset == null)
                 {
+                    if (asset.Amount <= 0) continue;
                     _userAssetRepository.AddNotSave(new UserAsset
                     {
                         Amount = asset.Amount,
@@ -42,15 +47,29 @@ namespace MasterDataManager.Services
                 }
                 else
                 {
-                    userAsset.Amount = asset.Amount;
-                    _userAssetRepository.EditNotSave(userAsset);
-                    var freeAmount = userAsset.GetFreeAmount();
-                    if (freeAmount < 0) insufficient.Add(userAsset.Currency.Code + " : " + freeAmount);
+                    if (asset.Amount <= 0)
+                    {
+                        DeleteUserAsset(userAsset);
+                    }
+                    else
+                    {
+                        userAsset.Amount = asset.Amount;
+                        _userAssetRepository.EditNotSave(userAsset);
+                    }
                 }
             }
             _userAssetRepository.Save();
-            return true;
-        } 
+        }
 
+        private void DeleteUserAsset(UserAsset userAsset)
+        {
+            // Preserve asset for running strategies
+            if (userAsset.StrategyAssets != null && userAsset.StrategyAssets.Any())
+            {
+                userAsset.Amount = 0;
+                _userAssetRepository.EditNotSave(userAsset);
+            } 
+            _userAssetRepository.DeleteNotSave(userAsset);
+        }
     }
 }

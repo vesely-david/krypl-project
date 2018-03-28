@@ -1,4 +1,6 @@
-import { balanceService, strategyService } from '../../../services'
+import { balanceService } from '../../../services'
+import { realActions } from '../../Real/modules/real'
+import { paperActions } from '../../Paper/modules/paper'
 
 // ------------------------------------
 // Constants
@@ -11,20 +13,54 @@ export const MIRROR_ASSETS_REQUEST = 'MIRROR_ASSETS_REQUEST'
 export const MIRROR_ASSETS_SUCCESS = 'MIRROR_ASSETS_SUCCESS'
 export const MIRROR_ASSETS_ERROR = 'MIRROR_ASSETS_ERROR'
 
+export const SUBMIT_PAPER_ASSETS_REQUEST = 'SUBMIT_PAPER_ASSETS_REQUEST'
+export const SUBMIT_PAPER_ASSETS_SUCCESS = 'SUBMIT_PAPER_ASSETS_SUCCESS'
+export const SUBMIT_PAPER_ASSETS_ERROR = 'SUBMIT_PAPER_ASSETS_ERROR'
+
 // ------------------------------------
 // Actions
 // ------------------------------------
+
+export function fetchAllOverviews () {
+  return dispatch => {
+    dispatch(realActions.fetchRealOverview())
+    dispatch(paperActions.fetchPaperOverview())
+  }
+}
+
+export function submitPaperAssets (exchange, assets) {
+  return async dispatch => {
+    dispatch(submitPaperAssetsRequest())
+    function onSuccess () {
+      dispatch(submitPaperAssetsSuccess())
+      dispatch(paperActions.fetchPaperOverview())
+    }
+    function onError () {
+      dispatch(submitPaperAssetsFailure())
+    }
+    try {
+      await balanceService.mirrorPaperAssets(exchange, assets)
+      return onSuccess()
+    } catch (error) {
+      return onError()
+    }
+  }
+  function submitPaperAssetsRequest () { return { type: SUBMIT_PAPER_ASSETS_REQUEST } }
+  function submitPaperAssetsSuccess () { return { type: SUBMIT_PAPER_ASSETS_SUCCESS } }
+  function submitPaperAssetsFailure () { return { type: SUBMIT_PAPER_ASSETS_ERROR } }
+}
 
 export function mirrorExchangeAssets (exchange) {
   return async dispatch => {
     dispatch(mirrorAssetsRequest())
     function onSuccess () {
       dispatch(mirrorAssetsSuccess())
+      dispatch(realActions.fetchRealOverview())
       return null
     }
-    function onError (errore) {
+    function onError (error) {
       dispatch(mirrorAssetsFailure())
-      return errore
+      return error
     }
 
     try {
@@ -64,7 +100,9 @@ export function fetchExchangesOverview () {
 
 export const actions = {
   fetchExchangesOverview,
+  submitPaperAssets,
   mirrorExchangeAssets,
+  fetchAllOverviews
 }
 
 // ------------------------------------
@@ -80,6 +118,10 @@ const ACTION_HANDLERS = {
   [MIRROR_ASSETS_REQUEST]       : (state, action) => ({ ...state, mirrorExchangeAssetsFetching: true }),
   [MIRROR_ASSETS_SUCCESS]       : (state, action) => ({ ...state, mirrorExchangeAssetsFetching: false }),
   [MIRROR_ASSETS_ERROR]         : (state, action) => ({ ...state, mirrorExchangeAssetsFetching: false }),
+
+  [SUBMIT_PAPER_ASSETS_REQUEST]       : (state, action) => ({ ...state, submitPaperAssetsFetching: true }),
+  [SUBMIT_PAPER_ASSETS_SUCCESS]       : (state, action) => ({ ...state, submitPaperAssetsFetching: false }),
+  [SUBMIT_PAPER_ASSETS_ERROR]         : (state, action) => ({ ...state, submitPaperAssetsFetching: false }),  
 }
 
 // ------------------------------------
@@ -87,12 +129,13 @@ const ACTION_HANDLERS = {
 // ------------------------------------
 const initialState = {
   exchangesOverview: {
-    real: null,
-    paper: null,
-    backtest: null
+    real: [],
+    paper: [],
+    backtest: []
   },
   exchangesOverviewFetching: false,
-  mirrorExchangeAssetsFetching: false
+  mirrorExchangeAssetsFetching: false,
+  submitPaperAssetsFetching: false,
 }
 export default function overviewReducer (state = initialState, action) {
   const handler = ACTION_HANDLERS[action.type]

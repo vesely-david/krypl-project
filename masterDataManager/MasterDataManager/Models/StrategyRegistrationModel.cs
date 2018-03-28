@@ -8,7 +8,7 @@ namespace MasterDataManager.Models
     public class StrategyRegistrationModel
     {
         public string name { get; set; }
-        public int exchangeId { get; set; }
+        public string exchange { get; set; }
         public string description { get; set; }
         public List<AssetModel> assets { get; set; }
     }

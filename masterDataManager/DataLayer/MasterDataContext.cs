@@ -52,6 +52,9 @@ namespace DataLayer
                 .WithMany(e => e.ExchangeCurrencies)
                 .HasForeignKey(ec => ec.ExchangeId);
 
+            //modelBuilder.Entity<UserAsset>()
+              //  .HasAlternateKey(t => new { t.CurrencyId, t.TradingMode });  //ADD LATER!!!
+
         }
         public MasterDataContext(DbContextOptions<MasterDataContext> options) : base(options)
         {

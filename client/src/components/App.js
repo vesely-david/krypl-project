@@ -3,7 +3,6 @@ import { Router } from 'react-router'
 import { history } from '../helpers'
 import { Provider } from 'react-redux'
 import PropTypes from 'prop-types'
-import './styles/App.scss'
 
 class App extends React.Component {
   static propTypes = {

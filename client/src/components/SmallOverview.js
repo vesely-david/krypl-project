@@ -74,7 +74,7 @@ const StrategyList = ({
           </Table>
         </div>
       </div>)
-    : (<div>No Currencies to display</div>)
+    : (<div style={{ textAlign: 'center', padding: '0.5rem' }}>No info to display</div>)
 }
 
 StrategyList.propTypes = {

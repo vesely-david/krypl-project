@@ -1,0 +1,16 @@
+.exchangeBlock{
+
+  .assetWrapper{
+    display: flex;
+    flex-wrap: wrap;
+
+    &>div{
+      width: 16.666%;
+    }
+  }
+
+
+  h4{
+    margin-bottom: 5px;
+  }
+}

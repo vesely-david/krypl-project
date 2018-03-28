@@ -14,6 +14,7 @@ namespace MasterDataManager.Services
     public class BinanceWrapper
     {
         private HttpClient _client;
+        private readonly string _baseEndpoint = "https://api.binance.com";
 
         public BinanceWrapper()
         {
@@ -22,7 +23,7 @@ namespace MasterDataManager.Services
 
         public async Task<List<BinanceAsset> > GetBalances(string apiKey, string apiSecret)
         {
-            var url = @"https://www.binance.com/api//v3/account";
+            var url = _baseEndpoint + "/api/v3/account";
             var response = await _client.BinanceSignedRequest<BinanceAccountInfo>(url, HttpMethod.Get, null, apiKey, apiSecret);
             return response.balances.ToList();
         }

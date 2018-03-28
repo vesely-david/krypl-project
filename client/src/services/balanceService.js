@@ -1,7 +1,8 @@
-import { authHeader } from '../helpers'
+import { authHeader, authHeaderJsonType } from '../helpers'
 
 export const balanceService = {
   mirrorRealAssets,
+  mirrorPaperAssets,
   getExchangesOverview
 }
 
@@ -13,7 +14,21 @@ async function mirrorRealAssets (exchange) {
     headers: authHeader()
   }
   var response = await fetch(addr + 'mirrorRealAssets/' + exchange, requestOptions)
+  if (response.ok) {
+    return null
+  }
+  var error = await response.json()
+  throw new Error(error)
+}
 
+async function mirrorPaperAssets (exchange, assets) {
+  const requestOptions = {
+    method: 'POST',
+    headers: authHeaderJsonType(),
+    body: JSON.stringify(assets)
+
+  }
+  var response = await fetch(addr + 'mirrorPaperAssets/' + exchange, requestOptions)
   if (response.ok) {
     return null
   }

@@ -71,7 +71,7 @@ class NewStrategyModal extends React.Component {
     const { name, description, assetOptions, selectedExchange } = this.state
     const id = await this.props.registerStrategy(name, selectedExchange, description, assetOptions
       .filter(o => !o.available)
-      .map(o => ({ currencyId: o.value, amount: o.taken })))
+      .map(o => ({ currency: o.value, amount: o.taken })))
     this.setState({ returnedId: id })
     if (id > 0) this.cleanForm()
   }

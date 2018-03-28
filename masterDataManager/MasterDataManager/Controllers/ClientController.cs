@@ -14,6 +14,7 @@ using DataLayer.Infrastructure.Interfaces;
 using MasterDataManager.Services.Interfaces;
 using MasterDataManager.Models;
 using System.Text;
+using MasterDataManager.Services.ServiceModels;
 
 namespace MasterDataManager.Controllers
 {
@@ -31,6 +32,7 @@ namespace MasterDataManager.Controllers
         private ITradeRepository _tradeRepository;
         private IExchangeObjectFactory _exchangeFactory;
         private IBalanceService _balanceService;
+        private IExchangeDataProvider _exchangeDataProvider;
 
         public ClientController(
             UserManager<User> userManager, 
@@ -41,7 +43,8 @@ namespace MasterDataManager.Controllers
             ICurrencyRepository currencyRepository,
             ITradeRepository tradeRepository,
             IExchangeObjectFactory exchangeFactory,
-            IBalanceService balanceService)
+            IBalanceService balanceService,
+            IExchangeDataProvider exchangeDataProvider)
         {
             _userManager = userManager;
             _configuration = configuration;
@@ -52,6 +55,7 @@ namespace MasterDataManager.Controllers
             _tradeRepository = tradeRepository;
             _exchangeFactory = exchangeFactory;
             _balanceService = balanceService;
+            _exchangeDataProvider = exchangeDataProvider;
 
 
         }
@@ -91,25 +95,7 @@ namespace MasterDataManager.Controllers
         {
             return GetOverview(TradingMode.BackTesting);
         }
-        //======== REGISTER STRATEGY =========
 
-        [HttpPost("registerReal")]
-        public IActionResult RegisterReal()
-        {
-            return GetOverview(TradingMode.Real);
-        }
-
-        [HttpPost("registerPaper")]
-        public IActionResult RegisterPaper()
-        {
-            return GetOverview(TradingMode.PaperTesting);
-        }
-
-        [HttpPost("registerBackTest")]
-        public IActionResult RegisterBackTest()
-        {
-            return GetOverview(TradingMode.BackTesting);
-        }
 
         //======== MANAGE ASSETS =========
         [HttpPost("mirrorRealAssets/{exchangeName}")]
@@ -123,15 +109,44 @@ namespace MasterDataManager.Controllers
 
             var exchangeId = exchangeService.GetExchangeId();
 
-            var balances = await exchangeService.GetBalances(userId.Value);
-            var insufficient = new List<string>();
-            var result = _balanceService
-                .UpdateUserAssets(balances, userId.Value, exchangeId, TradingMode.Real, out insufficient);
-            if (result) return Ok();
+            var balances = await exchangeService.GetRealBalances(userId.Value);
+            _balanceService.UpdateUserAssets(balances, userId.Value, exchangeId, TradingMode.Real);
+            return Ok();
+        }
+        [HttpPost("mirrorPaperAssets/{exchangeName}")]
+        public IActionResult ManagePaperAssets([FromBody]IEnumerable<AssetModel> assets, string exchangeName)
+        {
+            return MirrorFakeAssets(assets, exchangeName, TradingMode.PaperTesting);
+        }
+        [HttpPost("mirrorBacktestAssets/{exchangeName}")]
+        public IActionResult ManageBacktestAssets(IEnumerable<AssetModel> assets, string exchangeName)
+        {
+            return MirrorFakeAssets(assets, exchangeName, TradingMode.BackTesting);
+        }
 
-            var str = new StringBuilder();
-            foreach (var ins in insufficient) str.AppendLine(ins);
-            return BadRequest(str.ToString());
+        public IActionResult MirrorFakeAssets(IEnumerable<AssetModel> assets, string exchangeName, TradingMode tradingMode)
+        {
+            var userId = HttpContext.User.GetUserId();
+            if (userId == null) return BadRequest("User not found");
+
+            var exchangeService = _exchangeFactory.GetExchange(exchangeName);
+            if (exchangeService == null) return BadRequest("Exchange not found");
+
+            var exchangeId = exchangeService.GetExchangeId();
+
+            var balances = assets.Select(o =>
+            {
+                var currency = _exchangeDataProvider.GetCurrency(exchangeName, o.currency);
+                return currency == null ? null : new Asset
+                {
+                    Amount = o.amount,
+                    Currency = currency,
+                    CurrencyId = currency.Id
+                };
+            });
+
+            _balanceService.UpdateUserAssets(balances, userId.Value, exchangeId, tradingMode);
+            return Ok();
         }
 
         [HttpGet("exchangesOverview")]
@@ -141,11 +156,11 @@ namespace MasterDataManager.Controllers
             var obj = exchanges.Select(o => new
             {
                 text = o.Name,
-                value = o.Name.ToLower(),
+                value = o.Name,
                 currencies = o.ExchangeCurrencies.Select(p => new
                 {
                     text = p.Currency.Code,
-                    value = p.Currency.Code.ToLower()
+                    value = p.Currency.Code
                 })
             });
 
@@ -155,8 +170,6 @@ namespace MasterDataManager.Controllers
                 backtest = obj
             });
         }
-
-
 
         private IActionResult GetStrategiesAsync(TradingMode strategyMode)
         {
@@ -202,39 +215,25 @@ namespace MasterDataManager.Controllers
             return Ok(GetOverviewObject(userId.Value, tradingMode));
         }
 
-        [HttpGet("mainOverview")]
-        public IActionResult GetMainOverview()
-        {
-            var userId = HttpContext.User.GetUserId();
-            if (userId == null) return BadRequest("User not found");
-
-            var real = GetOverviewObject(userId.Value, TradingMode.Real);
-            var paper = GetOverviewObject(userId.Value, TradingMode.PaperTesting);
-            var backtest = GetOverviewObject(userId.Value, TradingMode.BackTesting);
-
-            return Ok(new
-            {
-                real = real,
-                paper = paper,
-                backtest = backtest
-            });
-        }
-
         [HttpPost("register")]
         public IActionResult RegisterStrategyAsync([FromBody] StrategyRegistrationModel model)
         {
             var userId = HttpContext.User.GetUserId();
             if (userId == null) return BadRequest("User not found");
 
+            var exchange = _exchangeRepository.GetByName(model.exchange);
+            if (exchange == null) return BadRequest("Exchange not found");
+
+
             var assets = _userAssetRepository.GetByUserId(userId.Value)
-                .Where(o => o.ExchangeId == model.exchangeId)
+                .Where(o => o.ExchangeId == exchange.Id)
                 .Where(o => o.TradingMode == TradingMode.Real);
             if (assets == null) return BadRequest("No assets found");
 
             var strategyAssets = new List<StrategyAsset>();
             foreach (var modelAsset in model.assets)
             {                     
-                var asset = assets.FirstOrDefault(o => o.CurrencyId == modelAsset.currencyId);
+                var asset = assets.FirstOrDefault(o => o.Currency.Code == modelAsset.currency);
                 if(asset == null || (asset.GetFreeAmount() < modelAsset.amount))
                 {
                     return BadRequest("Insufficient funds" + asset != null ? " for" + asset.Currency.Name : "");
@@ -259,7 +258,7 @@ namespace MasterDataManager.Controllers
                 StrategyAssets = strategyAssets,
                 NewTrades = 0,
                 UserId = userId.Value,
-                ExchangeId = model.exchangeId
+                ExchangeId = exchange.Id
             };
 
             _strategyRepository.Add(strategy);
@@ -363,33 +362,19 @@ namespace MasterDataManager.Controllers
                 changeDayUsd = 12.67,
             };
 
-            var exchanges = _exchangeRepository.List();
             var grouped = userAssets.Where(o => o.TradingMode == tradingMode).GroupBy(o => o.Exchange);
             var assets = grouped.Select(group => new
             {
                 text = group.Key.Name,
-                value = group.Key.Name.ToLower(),
+                value = group.Key.Name,
                 assets = group.Select(o => new
                 {
                     text = o.Currency.Code,
-                    value = o.Currency.Code.ToLower(),
+                    value = o.Currency.Code,
                     sum = o.Amount,
                     free = o.GetFreeAmount()
                 })
             }).ToList();
-
-            foreach(var exchange in exchanges)
-            {
-                if(assets.FirstOrDefault(o => o.text == exchange.Name) == null)
-                {
-                    assets.Add(new
-                    {
-                        text = exchange.Name,
-                        value = exchange.Name.ToLower(),
-                        assets = Enumerable.Empty<object>().Select(r => new { text = "", value = "", sum = (double)0, free = (double)0 }) // Bacause anonymus objects can suck
-                    });
-                }
-            }
 
             return new
             {

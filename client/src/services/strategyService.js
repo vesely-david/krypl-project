@@ -4,6 +4,7 @@ export const strategyService = {
   getRealStrategies,
   getRealOverview,
   getPaperStrategies,
+  getPaperOverview,
   getBacktestStrategies,
   getStrategy,
   stopStrategy,
@@ -37,6 +38,19 @@ async function getRealOverview () {
     headers: authHeader()
   }
   var response = await fetch(addr + 'realOverview', requestOptions)
+
+  if (response.ok) {
+    return response.json()
+  }
+  throw new Error(response.status)
+}
+
+async function getPaperOverview () {
+  const requestOptions = {
+    method: 'GET',
+    headers: authHeader()
+  }
+  var response = await fetch(addr + 'paperOverview', requestOptions)
 
   if (response.ok) {
     return response.json()
@@ -90,7 +104,7 @@ async function registerReal (name, exchange, description, assets) {
   const requestOptions = {
     method: 'POST',
     headers: authHeaderJsonType(),
-    body: JSON.stringify({ name, exchangeId: exchange, description, assets })
+    body: JSON.stringify({ name, exchange, description, assets })
   }
 
   const response = await fetch(`${addr}register`, requestOptions)

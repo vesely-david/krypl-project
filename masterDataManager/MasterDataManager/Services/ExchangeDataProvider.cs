@@ -28,11 +28,13 @@ namespace MasterDataManager.Services
             return _memoryCache.GetOrCreate(exchangeName, entry =>
             {
                 entry.SlidingExpiration = TimeSpan.FromDays(2);
+
                 var exchange = _exchangeRepository.GetByName(exchangeName);
+                if (exchange == null) return null;
                 return new ExchangeDataDict
                 {
-                    Markets = exchange.ExchangeMarkets?.ToDictionary(o => o.ExchangeMarketCode, o => o.Market),
-                    Currencies = exchange.ExchangeCurrencies?.ToDictionary(o => o.ExchangeCurrencyCode, o => o.Currency),
+                    Markets = exchange.ExchangeMarkets.ToDictionary(o => o.ExchangeMarketCode, o => o.Market),
+                    Currencies = exchange.ExchangeCurrencies.ToDictionary(o => o.ExchangeCurrencyCode, o => o.Currency),
                     Exchange = exchange
                 };
             });
@@ -60,7 +62,10 @@ namespace MasterDataManager.Services
 
         public Currency GetCurrency(string exchangeName, string currencyCode)
         {
-            return GetExchange(exchangeName)?.Currencies[currencyCode];
+            var exchange = GetExchange(exchangeName);
+            if (exchange == null || !exchange.Currencies.ContainsKey(currencyCode)) return null;
+            
+            return GetExchange(exchangeName).Currencies[currencyCode];
         }
 
         public Market GetMarket(string exchangeName, string marketCode)

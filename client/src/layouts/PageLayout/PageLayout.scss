@@ -15,7 +15,6 @@
 .noColorMenu{
   border-bottom: 2px transparent!important;
 }
-
 .greenMenu{
   border-bottom: 2px solid #21ba45!important;
 }
@@ -34,4 +33,27 @@
       height: 38px!important;
     }
   }
+}
+.divider{
+  margin: 0.5rem 0;
+  width: 100%;
+  border-bottom: 1px solid #dfdfdf;
+}
+
+.smallPaddingLeft{
+  padding-left: 5px;
+}
+
+.littlePaddingLeft{
+  padding-left: 2px;
+}
+
+.mainMenu{
+  border-top: none!important;
+  border-left: none!important;
+  border-right: none!important;
+}
+
+.currencyLabel{
+  margin: 3px!important;
 }

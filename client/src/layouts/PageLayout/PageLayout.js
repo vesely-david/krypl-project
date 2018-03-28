@@ -39,7 +39,7 @@ class PageLayout extends React.Component {
     )
     return (
       <div>
-        <Menu size='large' className={this.state.menuClass}>
+        <Menu size='large' className={`mainMenu ${this.state.menuClass ? this.state.menuClass : ''}`}>
           {indexLink}
           {this.props.isAuthenticated && [
             <Menu.Item as={Link} onClick={() => this.onMenuColorChange('greenMenu')} to='real' key='realLink' activeClassName='page-layout__nav-item--active' name='real' />,

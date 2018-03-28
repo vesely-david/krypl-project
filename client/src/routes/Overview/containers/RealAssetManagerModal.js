@@ -7,7 +7,7 @@ class RealAssetManagerModal extends React.Component {
     super(props)
     this.state = {
       selectedExchange: null,
-      error: [],
+      error: null,
       showMessage: false
     }
   }

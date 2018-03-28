@@ -21,5 +21,10 @@ namespace MasterDataManager.Services
         {
             throw new NotImplementedException();
         }
+
+        public Task<List<Asset>> GetRealBalances(int userId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -36,7 +36,7 @@ const StrategyList = ({
             ? strategyList.map(o => <StrategyRow key={o.id} strategy={o} forgetNews={forgetNews} />)
             : (
               <Table.Row>
-                <Table.Cell colSpan='7'>
+                <Table.Cell colSpan='10'>
                   No strategies found
                 </Table.Cell>
               </Table.Row>

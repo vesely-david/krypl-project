@@ -23,7 +23,7 @@ namespace MasterDataManager.Services
         {
             var normalized = exchangeName.ToLower();
             if (!_serviceDictionary.ContainsKey(normalized)) return null;
-            return _serviceDictionary[exchangeName];
+            return _serviceDictionary[normalized];
         }
     }
 }
