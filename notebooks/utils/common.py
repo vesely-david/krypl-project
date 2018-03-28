@@ -1,3 +1,4 @@
+import pandas as pd
 import datetime as dt
 import pickle
 import numpy as np
@@ -11,8 +12,12 @@ def timestampToDate(timestamp):
     return dt.datetime.fromtimestamp(int(timestamp))
 
 
+def strTimeToDatetime(strTime):
+    return dt.datetime.strptime(strTime, "%Y-%m-%d %H:%M:%S")
+
+
 def strTimeToTimestamp(strTime):
-    return dt.datetime.strptime(strTime, "%Y-%m-%d %H:%M:%S").timestamp()
+    return strTimeToDatetime(strTime).timestamp()
 
 
 def plotCandles(ohlc):
@@ -59,3 +64,11 @@ def loadData(fileName):
 def saveData(data, fileName):
     with open(fileName, "wb") as f:
         pickle.dump(data, f)
+
+
+def readTsv(file):
+    return pd.read_csv(file, sep='\t')
+
+
+def writeTsv(df, file):
+    df.to_csv(file, index=False, sep='\t')
