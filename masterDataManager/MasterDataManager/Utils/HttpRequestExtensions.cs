@@ -24,7 +24,7 @@ namespace MasterDataManager.Utils
 
             if(!requestParameters.ContainsKey("timestamp"))
             {
-                var timestamp = ToUnixTimestamp(DateTime.UtcNow).ToString();
+                var timestamp = GetTimestamp();
                 requestParameters.Add("timestamp", timestamp.ToString());
             }
             var urlToSign = QueryHelpers.AddQueryString(String.Empty, requestParameters);

@@ -31,6 +31,7 @@ class OverviewContainer extends React.Component {
       isRealDataFetching,
       isPaperDataFetching,
     } = this.props
+    // debugger;
     return (
       <div className='mainOverview'>
         <h2>Overview</h2>

@@ -68,6 +68,7 @@ class NewStrategyModal extends React.Component {
   }
 
   onSubmit = async () => {
+    debugger;
     const { name, description, assetOptions, selectedExchange } = this.state
     const id = await this.props.registerStrategy(name, selectedExchange, description, assetOptions
       .filter(o => !o.available)

@@ -96,6 +96,17 @@ namespace MasterDataManager.Controllers
             return GetOverview(TradingMode.BackTesting);
         }
 
+        [HttpPost("registerReal")]
+        public IActionResult RegisterReal([FromBody]StrategyRegistrationModel model)
+        {
+            return RegisterStrategy(model, TradingMode.Real);
+        }
+
+        [HttpPost("registerPaper")]
+        public IActionResult RegisterPaper([FromBody]StrategyRegistrationModel model)
+        {
+            return RegisterStrategy(model, TradingMode.PaperTesting);
+        }
 
         //======== MANAGE ASSETS =========
         [HttpPost("mirrorRealAssets/{exchangeName}")]
@@ -113,11 +124,13 @@ namespace MasterDataManager.Controllers
             _balanceService.UpdateUserAssets(balances, userId.Value, exchangeId, TradingMode.Real);
             return Ok();
         }
+
         [HttpPost("mirrorPaperAssets/{exchangeName}")]
         public IActionResult ManagePaperAssets([FromBody]IEnumerable<AssetModel> assets, string exchangeName)
         {
             return MirrorFakeAssets(assets, exchangeName, TradingMode.PaperTesting);
         }
+
         [HttpPost("mirrorBacktestAssets/{exchangeName}")]
         public IActionResult ManageBacktestAssets(IEnumerable<AssetModel> assets, string exchangeName)
         {
@@ -215,8 +228,7 @@ namespace MasterDataManager.Controllers
             return Ok(GetOverviewObject(userId.Value, tradingMode));
         }
 
-        [HttpPost("register")]
-        public IActionResult RegisterStrategyAsync([FromBody] StrategyRegistrationModel model)
+        public IActionResult RegisterStrategy(StrategyRegistrationModel model, TradingMode tradingMode)
         {
             var userId = HttpContext.User.GetUserId();
             if (userId == null) return BadRequest("User not found");
@@ -227,8 +239,7 @@ namespace MasterDataManager.Controllers
 
             var assets = _userAssetRepository.GetByUserId(userId.Value)
                 .Where(o => o.ExchangeId == exchange.Id)
-                .Where(o => o.TradingMode == TradingMode.Real);
-            if (assets == null) return BadRequest("No assets found");
+                .Where(o => o.TradingMode == tradingMode);
 
             var strategyAssets = new List<StrategyAsset>();
             foreach (var modelAsset in model.assets)
@@ -254,7 +265,7 @@ namespace MasterDataManager.Controllers
                 Description = model.description,
                 Start = DateTime.Now,
                 StrategyState = StrategyState.Running,
-                TradingMode = TradingMode.Real,
+                TradingMode = tradingMode,
                 StrategyAssets = strategyAssets,
                 NewTrades = 0,
                 UserId = userId.Value,

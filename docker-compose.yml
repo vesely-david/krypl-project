@@ -1,0 +1,48 @@
+version: '2'
+
+services:
+  masterdatamanager:
+    image: masterdatamanager
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    expose:
+      - "80"
+    volumes:
+      - "./database/Database.db:/app/database/Database.db"
+    build:
+      context: ./masterDataManager
+      dockerfile: Dockerfile
+    environment:
+      VIRTUAL_HOST: api.kryplproject.cz,www.api.kryplproject.cz
+      LETSENCRYPT_HOST: api.kryplproject.cz,www.api.kryplproject.cz
+      LETSENCRYPT_EMAIL: h.kirchner@seznam.cz
+
+  web:
+    image: kryplweb
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    expose:
+      - "80"
+    environment:
+      VIRTUAL_HOST: kryplproject.cz,www.kryplproject.cz
+      LETSENCRYPT_HOST: kryplproject.cz,www.kryplproject.cz
+      LETSENCRYPT_EMAIL: h.kirchner@seznam.cz      
+
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "/etc/nginx/vhost.d"
+      - "/usr/share/nginx/html"
+      - "/var/run/docker.sock:/tmp/docker.sock:ro"
+      - "/etc/nginx/certs"
+
+  letsencrypt-nginx-proxy-companion:
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    volumes_from:
+      - "nginx-proxy"

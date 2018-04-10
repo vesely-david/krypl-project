@@ -9,6 +9,7 @@ export const strategyService = {
   getStrategy,
   stopStrategy,
   registerReal,
+  registerPaper,
   forgetAllRealNews,
   forgetRealNews,
   forgetAllPaperNews,
@@ -107,7 +108,22 @@ async function registerReal (name, exchange, description, assets) {
     body: JSON.stringify({ name, exchange, description, assets })
   }
 
-  const response = await fetch(`${addr}register`, requestOptions)
+  const response = await fetch(`${addr}registerReal`, requestOptions)
+  if (response.ok) {
+    const parsed = await response.json()
+    return parsed
+  }
+  throw new Error(response.status)
+}
+
+async function registerPaper (name, exchange, description, assets) {
+  const requestOptions = {
+    method: 'POST',
+    headers: authHeaderJsonType(),
+    body: JSON.stringify({ name, exchange, description, assets })
+  }
+
+  const response = await fetch(`${addr}registerPaper`, requestOptions)
   if (response.ok) {
     const parsed = await response.json()
     return parsed

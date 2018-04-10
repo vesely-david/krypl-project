@@ -28,7 +28,7 @@ export function fetchPaperStrategies () {
     }
 
     try {
-      const strategies = await strategyService.getPealStrategies()
+      const strategies = await strategyService.getPaperStrategies()
       return onSuccess(strategies)
     } catch (error) {
       return onError(error)
