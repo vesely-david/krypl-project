@@ -6,3 +6,4 @@ coverage
 .idea/
 .yarn-cache
 !build/
+!build/lib
