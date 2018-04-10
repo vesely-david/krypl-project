@@ -24,9 +24,11 @@ class ExchangeEnv(Env):
         self.dataManager = CurrencyDataManager(prices)
         self.exchange = BackTestExchange(self.dataManager, wallet, fee)
         self.historyLen = historyLen
-        self.action_space = Discrete(3)
         self.priceContract = contractPair.priceContract
         self.tradeContract = contractPair.tradeContract
+
+        self.lastAction = HOLD
+        self.action_space = Discrete(3)
         self.observation_space = Dict({
             'open': boxFromData(prices, 'open', historyLen),
             'close': boxFromData(prices, 'close', historyLen),
@@ -35,7 +37,8 @@ class ExchangeEnv(Env):
             'volume': boxFromData(prices, 'volume', historyLen),
             'price': Box(low=-np.inf, high=np.inf, shape=1),
             'amountOfPriceContract': Box(low=-np.inf, high=np.inf, shape=1),
-            'amountOfTradeContract': Box(low=-np.inf, high=np.inf, shape=1)
+            'amountOfTradeContract': Box(low=-np.inf, high=np.inf, shape=1),
+            'lastAction': Discrete(3)
         })
 
     def _getObservation(self, i):
@@ -50,6 +53,7 @@ class ExchangeEnv(Env):
             'price': price,
             'amountOfPriceContract': self.exchange.balance(self.priceContract),
             'amountOfTradeContract': self.exchange.balance(self.tradeContract),
+            'lastAction': self.lastAction
         }
 
     def reset(self):
