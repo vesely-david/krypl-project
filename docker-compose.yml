@@ -22,10 +22,10 @@ services:
     build:
       context: ./client
       dockerfile: Dockerfile
+      args:
+        - PORT=80
     expose:
       - "80"
-    args:
-      - PORT=80
     environment:
       VIRTUAL_HOST: kryplproject.cz,www.kryplproject.cz
       LETSENCRYPT_HOST: kryplproject.cz,www.kryplproject.cz
