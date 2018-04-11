@@ -16,7 +16,7 @@ namespace MasterDataManager.Controllers
 {
 
     [Produces("application/json")]
-    [Route("api/bittrex")]
+    [Route("exchange/bittrex")]
     public class BittrexController : Controller
 
     { }

@@ -20,7 +20,7 @@ namespace MasterDataManager.Controllers
 {
     [Authorize]
     [Produces("application/json")]
-    [Route("api/client")]
+    [Route("client")]
     public class ClientController : Controller
     {
         private UserManager<User> _userManager;

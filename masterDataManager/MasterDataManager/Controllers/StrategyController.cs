@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace MasterDataManager.Controllers
 {
     [Produces("application/json")]
-    [Route("api/Strategy")]
+    [Route("strategy")]
     public class StrategyController : Controller
     {
     }

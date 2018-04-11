@@ -14,7 +14,7 @@ using DataLayer.Enums;
 namespace MasterDataManager.Controllers
 {
     [Produces("application/json")]
-    [Route("api/admin")]
+    [Route("admin")]
     [Authorize]
     public class AdminController : Controller
     {

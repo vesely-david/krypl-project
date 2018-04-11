@@ -24,6 +24,8 @@ services:
       dockerfile: Dockerfile
     expose:
       - "80"
+    args:
+      - PORT=80
     environment:
       VIRTUAL_HOST: kryplproject.cz,www.kryplproject.cz
       LETSENCRYPT_HOST: kryplproject.cz,www.kryplproject.cz
