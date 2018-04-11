@@ -1,12 +1,11 @@
 FROM node:8.0.0
 
-ARG port
 # Override the base log level (info).
 ENV NPM_CONFIG_LOGLEVEL warn
 
 # Install and configure `serve`.
 RUN npm install -g serve
-CMD serve -p ${port:80}  dist
+CMD serve -p 80 dist
 
 # Install all dependencies of the current project.
 COPY package.json package.json

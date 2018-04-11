@@ -22,8 +22,6 @@ services:
     build:
       context: ./client
       dockerfile: Dockerfile
-      args:
-        - port="80"
     expose:
       - "80"
     environment:
