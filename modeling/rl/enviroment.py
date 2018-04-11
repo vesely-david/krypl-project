@@ -30,11 +30,62 @@ class ExchangeEnv(Env):
         self.historyLen = historyLen
         self.contractPair = contractPair
         self.buyAmount = buyAmount
-        self.lastPrice = -1
-
         self.lastAction = HOLD
+
         self.action_space = Discrete(3)
-        self.observation_space = Dict({
+        self.observationClass = Observation
+        self.observation_space = self.observationClass.observationSpace(prices, historyLen)
+        self.metadata = {'render.modes': ['human']}
+        self.lastObservation = None
+
+    def _getObservation(self):
+        history, price = self.dataManager.tick(self.historyLen)
+        self.lastObservation = self.observationClass(history, self.lastAction, price, self.exchange)
+        return self.lastObservation.toDict()
+
+    def reset(self):
+        self.startTime = randint(self.historyLen, self.dataSize-self.historyLen-1)
+        self.dataManager.time = self.startTime
+        return self._getObservation()
+
+    def render(self, mode='human'):
+        if mode == 'human':
+            pass
+        else:
+            super(ExchangeEnv, self).render(mode=mode)
+
+    def _isDone(self):
+        return self.dataManager.time - self.startTime == self.epochLen
+
+    def _reward(self):
+        initialBalance = self.initialExchange.balance(self.contractPair.priceContract)
+        currentBalance = self.exchange.balance(self.contractPair.priceContract)
+        return (currentBalance / initialBalance) - 1
+
+    def step(self, action):
+        self.lastAction = action
+        if action == HOLD:
+            return self._getObservation(), 0.0, self._isDone(), {}
+        elif action == BUY:
+            self.exchange.buy(self.contractPair, self.buyAmount, self.lastPrice)
+            return self._getObservation(), 0.0, self._isDone(), {}
+        elif action == SELL:
+            amount = self.exchange.balance(self.contractPair.tradeContract)
+            self.exchange.sell(self.contractPair, amount, self.lastPrice)
+            return self._getObservation(), self._reward(), self._isDone(), {}
+
+
+class Observation(object):
+
+    def __init__(self, history, lastAction, lastPrice, exchange):
+        self.history = history
+        self.lastAction = lastAction
+        self.lastPrice = lastPrice
+        self.exchange = exchange
+
+    @staticmethod
+    def observationSpace(prices, historyLen):
+        return Dict({
             'open': boxFromData(prices, 'open', historyLen),
             'close': boxFromData(prices, 'close', historyLen),
             'high': boxFromData(prices, 'high', historyLen),
@@ -46,43 +97,15 @@ class ExchangeEnv(Env):
             'lastAction': Discrete(3)
         })
 
-    def _getObservation(self):
-        history, self.lastPrice = self.dataManager.tick(self.historyLen)
+    def toDict(self):
         return {
-            'open': history['open'],
-            'close': history['close'],
-            'high': history['high'],
-            'low': history['low'],
-            'volume': history['volume'],
+            'open': self.history['open'],
+            'close': self.history['close'],
+            'high': self.history['high'],
+            'low': self.history['low'],
+            'volume': self.history['volume'],
             'price': self.lastPrice,
             'amountOfPriceContract': self.exchange.balance(self.contractPair.priceContract),
             'amountOfTradeContract': self.exchange.balance(self.contractPair.tradeContract),
             'lastAction': self.lastAction
         }
-
-    def reset(self):
-        self.startTime = randint(self.historyLen, self.dataSize-self.historyLen-1)
-        self.dataManager.time = self.startTime
-        return self._getObservation()
-
-    def render(self, mode='human'):
-        pass
-
-    def isDone(self):
-        return self.dataManager.time - self.startTime == self.epochLen
-
-    def reward(self):
-        initialBalance = self.initialExchange.balance(self.contractPair.priceContract)
-        currentBalance = self.exchange.balance(self.contractPair.priceContract)
-        return (currentBalance / initialBalance) - 1
-
-    def step(self, action):
-        if action == HOLD:
-            return self._getObservation(), 0.0, self.isDone(), {}
-        elif action == BUY:
-            self.exchange.buy(self.contractPair, self.buyAmount, self.lastPrice)
-            return self._getObservation(), 0.0, self.isDone(), {}
-        elif action == SELL:
-            amount = self.exchange.balance(self.contractPair.tradeContract)
-            self.exchange.sell(self.contractPair, amount, self.lastPrice)
-            return self._getObservation(), self.reward(), self.isDone(), {}
