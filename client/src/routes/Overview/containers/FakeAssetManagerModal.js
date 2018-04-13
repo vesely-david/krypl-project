@@ -10,6 +10,7 @@ class FakeAssetManagerModal extends React.Component {
       selectedExchange: null,
       selectedCurrency: null,
       error: null,
+      assetValue: '',
       assetValueMinimum: 0,
       assetValueError: false,
       showMessage: false,
@@ -77,6 +78,7 @@ class FakeAssetManagerModal extends React.Component {
     var newFinalObject = Object.assign({}, finalObject)
     const curr = finalObject[selectedExchange][selectedCurrency]
 
+    debugger;
     if (!assetValue.match(/^(0\.\d+)$|^([1-9]\d*(\.\d+)?)$/) || parseFloat(assetValue) < curr.min) { // Not OK
       this.setState({
         assetValueError: true,
@@ -84,7 +86,7 @@ class FakeAssetManagerModal extends React.Component {
       return
     }
 
-    newFinalObject[selectedExchange][selectedCurrency].value = assetValue
+    newFinalObject[selectedExchange][selectedCurrency].value = parseFloat(assetValue)
     this.setState({
       assetValue: '',
       selectedCurrency: null,
@@ -98,7 +100,7 @@ class FakeAssetManagerModal extends React.Component {
   onAssetRemove = (currency) => {
     const {
       selectedExchange,
-      finalObject
+      finalObject,
     } = this.state
 
     var newFinalObject = Object.assign({}, finalObject)
@@ -108,7 +110,10 @@ class FakeAssetManagerModal extends React.Component {
     } else {
       newFinalObject[selectedExchange][currency].value = 0
     }
-    this.setState({ finalObject: newFinalObject })
+    this.setState({
+      finalObject: newFinalObject,
+      submitUnclocked: true
+    })
   }
 
   onSubmit = async () => {
@@ -123,6 +128,19 @@ class FakeAssetManagerModal extends React.Component {
     if (error !== null) this.setState({ error: error })
     else this.setState({ selectedExchange: null })
     this.setState({ showMessage: true })
+  }
+
+  cleanForm = () => {
+    this.setState({
+      selectedExchange: null,
+      selectedCurrency: null,
+      error: null,
+      assetValueMinimum: 0,
+      assetValueError: false,
+      showMessage: false,
+      finalObject: {},
+      submitUnclocked: false
+    })
   }
 
   render () {
@@ -161,7 +179,7 @@ class FakeAssetManagerModal extends React.Component {
         >
           Manage assets
         </Button>
-        } closeIcon size='small' onOpen={this.onModalOpen}>
+        } closeIcon onClose={this.cleanForm} size='small' onOpen={this.onModalOpen}>
         <Header icon='money' content='Asset Management' />
         <Modal.Content>
           <div className='newStrategyModalContent'>
@@ -210,18 +228,18 @@ class FakeAssetManagerModal extends React.Component {
               </Form.Group>
             </Form>
             <div style={{ minHeight: '30px' }}>
-              {selectedExchange && Object.keys(finalObject[selectedExchange]).map(o => {
-                const curr = finalObject[selectedExchange][o]
-                if (curr.value > 0) {
+              {selectedExchange && Object.keys(finalObject[selectedExchange])
+                .filter(o => finalObject[selectedExchange][o].value > 0)
+                .map(o => {
+                  const curr = finalObject[selectedExchange][o]
                   return (
-                    <Label className='currencyLabel' color={color} key={curr.value}>
+                    <Label className='currencyLabel' color={color} key={curr.currValue}>
                       {`${curr.text} ${curr.value}`}
                       <Label.Detail>{o.taken}</Label.Detail>
                       { curr.min !== curr.value &&
                         <Icon name='close' onClick={() => this.onAssetRemove(curr.currValue)} />}
                     </Label>)
-                }
-              })}
+                })}
             </div>
           </div>
           <Message

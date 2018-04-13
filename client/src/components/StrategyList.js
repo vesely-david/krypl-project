@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import StrategyRow from './StrategyRow'
-import { Table, Icon } from 'semantic-ui-react'
+import { Table, Icon, Dimmer, Loader, Segment } from 'semantic-ui-react'
 import './styles/StrategyList.scss'
 
 const StrategyList = ({
@@ -10,7 +10,10 @@ const StrategyList = ({
   isFetching,
 }) => {
   return (
-    <div className='strategyList'>
+    <Segment className='strategyList'>
+      <Dimmer inverted active={isFetching}>
+        <Loader />
+      </Dimmer>
       <Table basic='very' textAlign='center' verticalAlign='middle' selectable>
         <Table.Header>
           <Table.Row>
@@ -32,18 +35,11 @@ const StrategyList = ({
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {(!isFetching && strategyList && strategyList.length > 0)
-            ? strategyList.map(o => <StrategyRow key={o.id} strategy={o} forgetNews={forgetNews} />)
-            : (
-              <Table.Row>
-                <Table.Cell colSpan='10'>
-                  No strategies found
-                </Table.Cell>
-              </Table.Row>
-            )}
+          {(!isFetching && strategyList && strategyList.length > 0) &&
+            strategyList.map(o => <StrategyRow key={o.id} strategy={o} forgetNews={forgetNews} />)}
         </Table.Body>
       </Table>
-    </div>
+    </Segment>
   )
 }
 

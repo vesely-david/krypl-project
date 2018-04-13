@@ -27,12 +27,12 @@ class PageLayout extends React.Component {
 
   render () {
     const indexLink = this.props.isAuthenticated ? (
-      <Menu.Item as={IndexLink} onClick={() => this.onMenuColorChange(null)} to='/' activeClassName='page-layout__nav-item--active'>
+      <Menu.Item className='mainItem' as={IndexLink} onClick={() => this.onMenuColorChange(null)} to='/' activeClassName='page-layout__nav-item--active'>
         <img src={DuckImage} />
         Krypl project
       </Menu.Item>
     ) : (
-      <Menu.Item>
+      <Menu.Item className='mainItem'>
         <img src={DuckImage} />
         Krypl project
       </Menu.Item>

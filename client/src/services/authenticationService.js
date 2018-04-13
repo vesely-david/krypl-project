@@ -6,7 +6,7 @@ export const authenticationService = {
   logout
 }
 
-const addr = 'http://localhost:54849/api/client/'
+const addr = 'https://api.kryplproject.cz/client/'
 
 function login (username, password) {
   const requestOptions = {

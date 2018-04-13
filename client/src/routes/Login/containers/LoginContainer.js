@@ -32,8 +32,10 @@ class LoginContainer extends React.Component {
       <div>
         <h1>Log in</h1>
         <Form loading={isAuthenticated === null} onSubmit={this.onSubmit}>
-          <Form.Input label='Username' name='username' onChange={this.onInputChange} />
-          <Form.Input label='Password' name='password' type='password' onChange={this.onInputChange} />
+          <Form.Group widths='equal'>
+            <Form.Input label='Username' name='username' onChange={this.onInputChange} width={6} />
+            <Form.Input label='Password' name='password' type='password' onChange={this.onInputChange} width={6} />
+          </Form.Group>
           <Button disabled={isAuthenticated === null}>Submit</Button>
         </Form>
       </div>

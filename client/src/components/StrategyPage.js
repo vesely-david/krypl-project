@@ -26,7 +26,6 @@ const StrategyPage = ({
       registrationPending={registrationPending}
       registerStrategy={registerStrategy}
       overviewObject={overview}
-      fetch={() => alert()}
       forgetAllNews={forgetAllNews}
     />
     <StrategyList

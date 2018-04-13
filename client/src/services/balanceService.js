@@ -6,7 +6,7 @@ export const balanceService = {
   getExchangesOverview
 }
 
-const addr = 'http://localhost:54849/api/client/'
+const addr = 'https://api.kryplproject.cz/client/'
 
 async function mirrorRealAssets (exchange) {
   const requestOptions = {
