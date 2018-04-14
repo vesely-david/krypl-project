@@ -78,7 +78,6 @@ class FakeAssetManagerModal extends React.Component {
     var newFinalObject = Object.assign({}, finalObject)
     const curr = finalObject[selectedExchange][selectedCurrency]
 
-    debugger;
     if (!assetValue.match(/^(0\.\d+)$|^([1-9]\d*(\.\d+)?)$/) || parseFloat(assetValue) < curr.min) { // Not OK
       this.setState({
         assetValueError: true,

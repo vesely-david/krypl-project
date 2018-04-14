@@ -2,23 +2,20 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Button, Header, Icon, Modal, Form, Message, Label } from 'semantic-ui-react'
 import './styles/NewStrategyModalContent.scss'
-// import { connect } from 'react-redux'
-// import { bindActionCreators } from 'redux'
 
 class NewStrategyModal extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
       selectedExchange: null,
-      assetCurrency: null,
+      selectedCurrency: null,
       assetValueError: false,
       name: '',
       description: '',
       assetValue: '',
-      assetValueMaximum: null,
-      assetOptions: null,
+      submitUnlocked: false,
       returnedId: null,
-      allAssets: this.props.allAssets
+      strategyAssets: []
     }
   }
 
@@ -30,64 +27,79 @@ class NewStrategyModal extends React.Component {
   onExchangeSelect = (e, { value }) => {
     if (value === this.state.selectedExchange) return
     this.setState({
-      selectedExchange:value,
-      assetOptions: this.state.allAssets
-        .find(o => o.value === value).assets
-        .filter(o => o.free > 0)
-        .map(o => ({ ...o, taken: 0, available: true })),
-      assetCurrency: null,
-      assetValue: '',
+      selectedExchange: value,
       assetValueError: false,
-      assetValueMaximum: null,
+      selectedCurrency: null
     })
   }
 
   onCurrencySelect = (e, { value }) => {
+    if (value === this.state.selectedCurrency) return
     this.setState({
-      assetCurrency: value,
-      assetValue: '',
       assetValueError: false,
-      assetValueMaximum: this.state.assetOptions.find(o => o.value === value).free
+      selectedCurrency: value
     })
   }
 
-  onAddAsset = () => {
-    const { assetCurrency, assetValue, assetValueMaximum } = this.state
-    if (!assetValue.match(/^(0\.\d+)$|^([1-9]\d*(\.\d+)?)$/) || parseFloat(assetValue) > assetValueMaximum) {
-      this.setState({ assetValueError: true })
+  onAssetAdd = () => {
+    const {
+      selectedCurrency,
+      selectedExchange,
+      assetValue,
+      strategyAssets
+    } = this.state
+    const allAssets = this.props.allAssets
+
+    const curr = allAssets.find(o => o.value === selectedExchange).assets.find(o => o.value === selectedCurrency)
+    const amount = parseFloat(assetValue)
+    if (!assetValue.match(/^(0\.\d+)$|^([1-9]\d*(\.\d+)?)$/) || amount > curr.free || amount <= 0) { // Not OK
+      this.setState({
+        assetValueError: true,
+      })
       return
     }
-    this.setState({ assetOptions: this.state.assetOptions.map(
-      o => o.value === assetCurrency ? { ...o, available: false, taken: assetValue } : o) })
-    this.setState({ assetValue: '', assetCurrency: null, assetValueMaximum: null })
+    this.setState({
+      strategyAssets: [ ...strategyAssets, { currency: selectedCurrency, amount } ],
+      assetValue: '',
+      selectedCurrency: null,
+      assetValueError: false,
+      submitUnclocked: true
+    })
   }
 
-  onRemoveAsset = (currency) => {
-    this.setState({ assetOptions: this.state.assetOptions.map(
-      o => o.value === currency ? { ...o, available: true, taken: 0 } : o) })
+  onAssetRemove = (currency) => {
+    const {
+      strategyAssets,
+    } = this.state
+
+    this.setState({
+      strategyAssets: strategyAssets.filter(o => o.currency !== currency),
+      submitUnclocked: true
+    })
   }
 
   onSubmit = async () => {
-    const { name, description, assetOptions, selectedExchange } = this.state
-    const id = await this.props.registerStrategy(name, selectedExchange, description, assetOptions
-      .filter(o => !o.available)
-      .map(o => ({ currency: o.value, amount: o.taken })))
+    const {
+      name,
+      description,
+      selectedExchange,
+      strategyAssets
+    } = this.state
+
+    const id = await this.props.registerStrategy(name, selectedExchange, description, strategyAssets)
     this.setState({ returnedId: id })
     if (id > 0) this.cleanForm()
   }
 
   cleanForm = () => {
     this.setState({
-      assetCurrency: null,
       name: '',
       description: '',
       selectedExchange: null,
+      selectedCurrency: null,
       assetValueError: false,
-      assetValueMaximum: null,
       assetValue: '',
-      assetOptions: this.state.assetOptions
-        ? this.state.assetOptions.map(o => ({ ...o, available: true, taken: 0 }))
-        : null
+      strategyAssets: []
     })
   }
 
@@ -95,86 +107,96 @@ class NewStrategyModal extends React.Component {
     const {
       name,
       description,
-      assetCurrency,
       assetValue,
-      assetOptions,
       assetValueError,
-      allAssets,
       selectedExchange,
-      assetValueMaximum,
-      returnedId
+      selectedCurrency,
+      returnedId,
+      submitUnclocked,
+      strategyAssets
     } = this.state
-    const submitEnabled = name && description && assetOptions && assetOptions.find(o => !o.available)
-    const possibleExchanges = allAssets.map(o => ({ key: o.value, text: o.text, value: o.value }))
-    const possibleOptions = assetOptions ? assetOptions
-      .filter(o => o.available).map(o => ({ key: o.value, value: o.value, text: o.text })) : []
+    const {
+      allAssets,
+    } = this.props
+
+    const possibleExchanges = allAssets
+      ? allAssets.map(o => ({ key: o.value, text: o.text, value: o.value }))
+      : []
+    const exchange = selectedExchange
+      ? allAssets.find(o => o.value === selectedExchange).assets : null
+    const possibleCurrencies = selectedExchange
+      ? exchange.filter(o => o.free > 0)
+        .map(o => ({ key: o.value, text: o.text, value: o.value }))
+      : []
+    const currency = selectedExchange && selectedCurrency
+      ? exchange.find(o => o.value === selectedCurrency) : null
     return (
-      <Modal trigger={<Button primary>New Strategy</Button>} closeIcon onClose={this.cleanForm}>
+      <Modal trigger={
+        <Button primary>New Strategy</Button>
+        } closeIcon onClose={this.cleanForm} onOpen={this.onModalOpen}>
         <Header icon='plug' content='New Strategy' />
-        <Modal.Content>
-          <div className='newStrategyModalContent'>
-            <Form loading={this.props.registrationPending}>
-              <Form.Group>
-                <Form.Input
-                  fluid
-                  width={11}
-                  value={name}
-                  label='Name'
-                  name='name'
-                  placeholder='Name'
-                  onChange={this.onInputChange} />
-                <Form.Select
-                  fluid
-                  width={5}
-                  label='Exchange'
-                  placeholder='Exchange'
-                  name='exchange'
-                  value={selectedExchange}
-                  options={possibleExchanges}
-                  onChange={this.onExchangeSelect} />
-              </Form.Group>
-              <Form.TextArea
-                label='Description'
-                name='description'
-                value={description}
-                placeholder='Tell me more...'
+        <Modal.Content className='newStrategyModalContent'>
+          <Form loading={this.props.registrationPending}>
+            <Form.Group>
+              <Form.Input
+                fluid
+                width={11}
+                value={name}
+                label='Name'
+                name='name'
+                placeholder='Name'
                 onChange={this.onInputChange} />
-              <Form.Group widths='equal'>
-                <Form.Select
-                  fluid
-                  label='Currency'
-                  name='assetCurrency'
-                  value={assetCurrency}
-                  disabled={possibleOptions.length === 0 || selectedExchange === null}
-                  options={possibleOptions}
-                  placeholder='Currency'
-                  onChange={this.onCurrencySelect} />
-                <Form.Input
-                  type='number'
-                  disabled={assetCurrency === null}
-                  fluid
-                  error={assetValueError}
-                  label={`Value${assetValueMaximum ? ` (Maximum: ${assetValueMaximum})` : ''}`}
-                  value={assetValue}
-                  name='assetValue'
-                  onChange={this.onInputChange} />
-                <Form.Button
-                  disabled={assetValue === ''}
-                  onClick={this.onAddAsset}color='green'
-                  className='modalButton'>
-                  <Icon name='checkmark' size='large' />
-                </Form.Button>
-              </Form.Group>
-            </Form>
-            <div style={{ minHeight: '30px' }}>
-              {assetOptions && assetOptions.filter(o => !o.available).map(o => (
-                <Label color='blue' key={o.value}>
-                  {o.text}
-                  <Label.Detail>{o.taken}</Label.Detail>
-                  <Icon name='close' onClick={() => this.onRemoveAsset(o.value)} />
-                </Label>
-              ))}
-            </div>
+              <Form.Select
+                fluid
+                width={5}
+                label='Exchange'
+                placeholder='Exchange'
+                name='exchange'
+                value={selectedExchange}
+                options={possibleExchanges}
+                onChange={this.onExchangeSelect} />
+            </Form.Group>
+            <Form.TextArea
+              label='Description'
+              name='description'
+              value={description}
+              placeholder='Tell me more...'
+              onChange={this.onInputChange} />
+            <Form.Group widths='equal'>
+              <Form.Select
+                fluid
+                label='Currency'
+                name='assetCurrency'
+                value={selectedCurrency}
+                disabled={possibleCurrencies.length === 0 || selectedExchange === null}
+                options={possibleCurrencies}
+                placeholder='Currency'
+                onChange={this.onCurrencySelect} />
+              <Form.Input
+                type='number'
+                disabled={selectedCurrency === null}
+                fluid
+                error={assetValueError}
+                label={`Value${currency ? ` (Maximum: ${currency.free}` : ''})`}
+                value={assetValue}
+                name='assetValue'
+                onChange={this.onInputChange} />
+              <Form.Button
+                disabled={assetValue === ''}
+                onClick={this.onAssetAdd}color='green'
+                className='modalButton'>
+                <Icon name='checkmark' size='large' />
+              </Form.Button>
+            </Form.Group>
+          </Form>
+          <div style={{ minHeight: '30px' }}>
+            {strategyAssets.map(curr => {
+              return (
+                <Label className='currencyLabel' key={curr.currency}>
+                  {`${curr.currency} ${curr.amount}`}
+                  <Icon name='close' onClick={() => this.onAssetRemove(curr.currency)} />
+                </Label>)
+            })}
           </div>
           <Message
             onDismiss={() => this.setState({ returnedId: null })}
@@ -185,7 +207,7 @@ class NewStrategyModal extends React.Component {
           />
         </Modal.Content>
         <Modal.Actions>
-          <Button disabled={!submitEnabled} color='green' onClick={() => this.onSubmit()}>
+          <Button disabled={!submitUnclocked || !name || !description} color='green' onClick={() => this.onSubmit()}>
             <Icon name='checkmark' /> Register
           </Button>
         </Modal.Actions>
