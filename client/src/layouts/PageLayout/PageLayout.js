@@ -42,9 +42,9 @@ class PageLayout extends React.Component {
         <Menu size='large' className={`mainMenu ${this.state.menuClass ? this.state.menuClass : ''}`}>
           {indexLink}
           {this.props.isAuthenticated && [
-            <Menu.Item as={Link} onClick={() => this.onMenuColorChange('greenMenu')} to='real' key='realLink' activeClassName='page-layout__nav-item--active' name='real' />,
-            <Menu.Item as={Link} onClick={() => this.onMenuColorChange('tealMenu')} to='paper' key='paperLink' activeClassName='page-layout__nav-item--active' name='paper' />,
-            <Menu.Item as={Link} onClick={() => this.onMenuColorChange('blueMenu')} to='backtest' key='backtestLink' activeClassName='page-layout__nav-item--active' name='backtest' />,
+            <Menu.Item as={Link} onClick={() => this.onMenuColorChange('greenMenu')} to='/real' key='realLink' activeClassName='page-layout__nav-item--active' name='real' />,
+            <Menu.Item as={Link} onClick={() => this.onMenuColorChange('tealMenu')} to='/paper' key='paperLink' activeClassName='page-layout__nav-item--active' name='paper' />,
+            <Menu.Item as={Link} onClick={() => this.onMenuColorChange('blueMenu')} to='/backtest' key='backtestLink' activeClassName='page-layout__nav-item--active' name='backtest' />,
             <Menu.Menu key='righSection' position='right'>
               <Menu.Item>
                 <Button onClick={() => this.props.actions.logout()}>Log out</Button>
