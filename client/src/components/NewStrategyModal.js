@@ -88,10 +88,10 @@ class NewStrategyModal extends React.Component {
 
     const id = await this.props.registerStrategy(name, selectedExchange, description, strategyAssets)
     this.setState({ returnedId: id })
-    if (id > 0) this.cleanForm()
+    if (id > 0) this.cleanForm(false)
   }
 
-  cleanForm = () => {
+  cleanForm = (deleteReturnedId) => {
     this.setState({
       name: '',
       description: '',
@@ -101,6 +101,7 @@ class NewStrategyModal extends React.Component {
       assetValue: '',
       strategyAssets: []
     })
+    if(deleteReturnedId) this.setState({ returnedId: null })
   }
 
   render () {
@@ -131,9 +132,11 @@ class NewStrategyModal extends React.Component {
     const currency = selectedExchange && selectedCurrency
       ? exchange.find(o => o.value === selectedCurrency) : null
     return (
-      <Modal trigger={
-        <Button primary>New Strategy</Button>
-        } closeIcon onClose={this.cleanForm} onOpen={this.onModalOpen}>
+      <Modal
+        trigger={<Button primary>New Strategy</Button>}
+        closeIcon
+        onClose={() => this.cleanForm(true)}
+        onOpen={this.onModalOpen}>
         <Header icon='plug' content='New Strategy' />
         <Modal.Content className='newStrategyModalContent'>
           <Form loading={this.props.registrationPending}>
