@@ -15,7 +15,7 @@ SELL = 2
 
 
 def boxFromData(data, col, historyLen):
-    return Box(low=data[col].min(), high=data[col].max(), shape=historyLen)
+    return Box(low=data[col].min(), high=data[col].max(), shape=(historyLen,), dtype=np.float32)
 
 
 class ExchangeEnv(Env):
@@ -25,7 +25,7 @@ class ExchangeEnv(Env):
         self.epochLen = epochLen
         self.dataSize = prices.shape[0]
         self.dataManager = CurrencyDataManager(prices)
-        self.exchange = BackTestExchange(self.dataManager, wallet, fee)
+        self.exchange = BackTestExchange(self.dataManager, deepcopy(wallet), fee)
         self.initialExchange = deepcopy(self.exchange)
         self.historyLen = historyLen
         self.contractPair = contractPair
@@ -37,10 +37,12 @@ class ExchangeEnv(Env):
         self.observation_space = self.observationClass.observationSpace(prices, historyLen)
         self.metadata = {'render.modes': ['human']}
         self.lastObservation = None
+        self.lastPrice = -1
 
     def _getObservation(self):
         history, price = self.dataManager.tick(self.historyLen)
-        self.lastObservation = self.observationClass(history, self.lastAction, price, self.exchange)
+        self.lastObservation = self.observationClass(history, self.lastAction, price, self.exchange, self.contractPair)
+        self.lastPrice= price
         return self.lastObservation.toDict()
 
     def reset(self):
@@ -77,33 +79,47 @@ class ExchangeEnv(Env):
 
 class Observation(object):
 
-    def __init__(self, history, lastAction, lastPrice, exchange):
+    def __init__(self, history, lastAction, lastPrice, exchange, contractPair):
         self.history = history
         self.lastAction = lastAction
         self.lastPrice = lastPrice
         self.exchange = exchange
+        self.contractPair = contractPair
+
+    @staticmethod
+    def n(dictSpace):
+        n = 0
+        for s in dictSpace.spaces.values():
+            if type(s) == Box:
+                n += np.prod(s.shape)
+            elif type(s) == Discrete:
+                n += s.n
+        return n
 
     @staticmethod
     def observationSpace(prices, historyLen):
-        return Dict({
+        infBox = Box(low=-np.inf, high=np.inf, shape=(1,), dtype=np.float32)
+        space = Dict({
             'open': boxFromData(prices, 'open', historyLen),
             'close': boxFromData(prices, 'close', historyLen),
             'high': boxFromData(prices, 'high', historyLen),
             'low': boxFromData(prices, 'low', historyLen),
             'volume': boxFromData(prices, 'volume', historyLen),
-            'price': Box(low=-np.inf, high=np.inf, shape=1),
-            'amountOfPriceContract': Box(low=-np.inf, high=np.inf, shape=1),
-            'amountOfTradeContract': Box(low=-np.inf, high=np.inf, shape=1),
+            'price': infBox,
+            'amountOfPriceContract': infBox,
+            'amountOfTradeContract': infBox,
             'lastAction': Discrete(3)
         })
+        space.n = Observation.n(space)
+        return space
 
     def toDict(self):
         return {
-            'open': self.history['open'],
-            'close': self.history['close'],
-            'high': self.history['high'],
-            'low': self.history['low'],
-            'volume': self.history['volume'],
+            'open': self.history['open'].tolist(),
+            'close': self.history['close'].tolist(),
+            'high': self.history['high'].tolist(),
+            'low': self.history['low'].tolist(),
+            'volume': self.history['volume'].tolist(),
             'price': self.lastPrice,
             'amountOfPriceContract': self.exchange.balance(self.contractPair.priceContract),
             'amountOfTradeContract': self.exchange.balance(self.contractPair.tradeContract),
