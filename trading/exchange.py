@@ -12,7 +12,7 @@ class Exchange:
         raise NotImplementedError()
 
 
-class BackTestExchange:
+class BackTestExchange(Exchange):
     def __init__(self, timeServer, wallet={}, fee=0.):
         self.wallet = wallet
         self.transactions = []
