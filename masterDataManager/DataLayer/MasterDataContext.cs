@@ -54,7 +54,6 @@ namespace DataLayer
 
             //modelBuilder.Entity<UserAsset>()
               //  .HasAlternateKey(t => new { t.CurrencyId, t.TradingMode });  //ADD LATER!!!
-
         }
         public MasterDataContext(DbContextOptions<MasterDataContext> options) : base(options)
         {

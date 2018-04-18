@@ -86,7 +86,7 @@ namespace MasterDataManager.Services
                     strategyRepository.Save();
                 }
 
-                await Task.Delay(TimeSpan.FromMinutes(1), cancellationToken);
+                await Task.Delay(TimeSpan.FromMinutes(5), cancellationToken);
             }
         }
     }
