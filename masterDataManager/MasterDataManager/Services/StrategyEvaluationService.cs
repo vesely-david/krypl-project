@@ -1,4 +1,6 @@
-﻿using DataLayer.Enums;
+﻿using DataLayer;
+using DataLayer.Enums;
+using DataLayer.Infrastructure;
 using DataLayer.Infrastructure.Interfaces;
 using DataLayer.Models;
 using MasterDataManager.Models;
@@ -17,11 +19,13 @@ namespace MasterDataManager.Services
     {
         private HttpClient _client;
         public IServiceProvider Services { get; }
+        private readonly IServiceScopeFactory ScopeFactory;
 
-        public StrategyEvaluationService(IServiceProvider services)
+        public StrategyEvaluationService(IServiceProvider services, IServiceScopeFactory scopeFactory)
         {
             _client = new HttpClient();
             Services = services;
+            ScopeFactory = scopeFactory;
 
         }
 
@@ -29,8 +33,6 @@ namespace MasterDataManager.Services
         {
             while (!cancellationToken.IsCancellationRequested)
             {
-                var timeStamp = DateTime.Now;
-
                 var response = await _client.GetStringAsync("https://www.binance.com/api/v3/ticker/price");
                 //TODO: Exception
                 var ticks = JsonConvert.DeserializeObject<List<Tick>>(response);
@@ -42,28 +44,38 @@ namespace MasterDataManager.Services
 
                 var btcPrice = usdtDict["BTC"];
 
+                //https://www.stevejgordon.co.uk/asp-net-core-2-ihostedservice
                 //https://docs.microsoft.com/en-us/aspnet/core/fundamentals/hosted-services
-                using (var scope = Services.CreateScope())
+                using (var scope = ScopeFactory.CreateScope())
                 {
                     var strategyRepository = scope.ServiceProvider
                         .GetRequiredService<IStrategyRepository>();
+                    //var evaluationRepository = scope.ServiceProvider
+                        //.GetRequiredService<IStrate>
 
                     var strategies = strategyRepository.GetAllForEvaluation()
                         .Where(o => o.StrategyState != StrategyState.Stopped);
+                    var timeStamp = DateTime.Now;
 
-                    foreach(var strategy in strategies)
+                    foreach (var strategy in strategies)
                     {
                         double btcSum;
+
                         try
                         {
-                            btcSum = strategy.StrategyAssets.Sum(o => o.Amount * btcDict[o.UserAsset.Currency.Code]);
+                            btcSum = strategy.StrategyAssets.Sum(o => {
+                                var rate = o.UserAsset.Currency.Code == "BTC" ? 1 : btcDict[o.UserAsset.Currency.Code];
+                                return o.Amount * rate;
+                            });
                         } catch(Exception ex)
                         {
                             btcSum = -1;
                         }
                         var usdSum = btcSum == -1 ? -1 : btcSum * btcPrice;
 
-                        strategy.Evaluation.ToList().Add(new EvaluationTick
+                        
+
+                        strategy.Evaluations.Add(new EvaluationTick
                         {
                             TimeStamp = timeStamp,
                             BtcValue = btcSum,
@@ -74,7 +86,7 @@ namespace MasterDataManager.Services
                     strategyRepository.Save();
                 }
 
-                await Task.Delay(TimeSpan.FromMinutes(5), cancellationToken);
+                await Task.Delay(TimeSpan.FromMinutes(1), cancellationToken);
             }
         }
     }

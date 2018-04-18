@@ -311,7 +311,7 @@ namespace MasterDataManager.Controllers
                 mode = strategy.TradingMode,
                 description = strategy.Description,
                 trades = strategy.Trades,
-                evaluation = strategy.Evaluation,
+                evaluation = strategy.Evaluations,
             });
         }
 

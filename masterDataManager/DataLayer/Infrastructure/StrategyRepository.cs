@@ -19,7 +19,7 @@ namespace DataLayer.Infrastructure
         {
             return _dbContext.Strategies
                 .Include(o => o.Trades)
-                .Include(o => o.Evaluation)
+                .Include(o => o.Evaluations)
                 .Include(o => o.StrategyAssets).ThenInclude(p => p.UserAsset)
                 .Where(o => o.UserId == userId);
         }
@@ -28,7 +28,7 @@ namespace DataLayer.Infrastructure
         {
             return _dbContext.Strategies
                 .Include(o => o.Trades)
-                .Include(o => o.Evaluation)
+                .Include(o => o.Evaluations)
                 .Include(o => o.StrategyAssets).ThenInclude(p => p.UserAsset).ThenInclude(p => p.Currency);
         }
     }

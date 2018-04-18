@@ -105,4 +105,4 @@ ENV/
 
 # falsy metadata
 calculator/static
-masterDataManager/MasterDataManager/Database.db
+*/Database.db

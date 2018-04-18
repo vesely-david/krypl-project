@@ -21,7 +21,7 @@ namespace DataLayer.Models
         public Exchange Exchange { get; set; }
         public int UserId { get; set; }
         public virtual User User { get; set; }
-        public virtual ICollection<EvaluationTick> Evaluation { get; set; }
+        public virtual ICollection<EvaluationTick> Evaluations { get; set; }
         public virtual ICollection<StrategyAsset> StrategyAssets { get; set; }
         public virtual ICollection<Trade> Trades { get; set; }
 
