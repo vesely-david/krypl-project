@@ -24,6 +24,13 @@ class TestBackTestExchange(TestMoney):
         expectedTransactions = [BuyTransaction(self.czkBtcContract(), 0, 1, 2, 1)]
         self.assertTransactions(exchange.transactions, expectedTransactions)
 
+    def test_invalidBuy(self):
+        exchange = BackTestExchange(self.TestTimeServer(), wallet={'czk': 10, 'btc': 11}, fee=0.5)
+        # should fail, because of fee
+        self.assertRaises(ValueError, exchange.buy, self.czkBtcContract(), 1, 10)
+        self.assertEqual(exchange.balance('czk'), 10)
+        self.assertEqual(exchange.balance('btc'), 11)
+
     def test_sell(self):
         exchange = BackTestExchange(self.TestTimeServer(), wallet={'czk': 10, 'btc': 11}, fee=0.5)
         exchange.sell(self.czkBtcContract(), 1, 2)
@@ -32,6 +39,12 @@ class TestBackTestExchange(TestMoney):
 
         expectedTransactions = [SellTransaction(self.czkBtcContract(), 0, 1, 2, 1)]
         self.assertTransactions(exchange.transactions, expectedTransactions)
+
+    def test_invalidSell(self):
+        exchange = BackTestExchange(self.TestTimeServer(), wallet={'czk': 10, 'btc': 11}, fee=0.5)
+        self.assertRaises(ValueError, exchange.sell, self.czkBtcContract(), 11.1, 1)
+        self.assertEqual(exchange.balance('czk'), 10)
+        self.assertEqual(exchange.balance('btc'), 11)
 
     def test_balance(self):
         exchange = BackTestExchange(self.TestTimeServer, wallet={'czk': 10., 'btc': 11.})

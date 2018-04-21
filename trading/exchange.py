@@ -1,4 +1,5 @@
 from trading.money.transaction import SellTransaction, BuyTransaction
+from trading.money.contract import Contract
 
 
 class Exchange:
@@ -21,22 +22,35 @@ class BackTestExchange(Exchange):
 
     def buy(self, contractPair, amount, price):
         transaction = BuyTransaction(contractPair, self.timeServer.time, amount, price, self.absoluteFee(amount, price))
+        subtractedContract = transaction.subtractedContract() + transaction.fee
+        self._assertEnoughInWallet(subtractedContract)
+
         self.transactions.append(transaction)
         self.add(transaction.gainedContract())
-        self.add(transaction.subtractedContract() * (-1) - transaction.fee)
+        self.subtract(subtractedContract)
 
     def sell(self, contractPair, amount, price):
         transaction = SellTransaction(contractPair, self.timeServer.time, amount, price, self.absoluteFee(amount, price))
+        subtractedContract = transaction.subtractedContract()
+        self._assertEnoughInWallet(subtractedContract)
+
         self.transactions.append(transaction)
         self.add(transaction.gainedContract() - transaction.fee)
-        self.add(transaction.subtractedContract() * (-1))
+        self.subtract(subtractedContract)
 
-    def balance(self, contract):
-        return self.wallet.get(contract, 0.)
+    def balance(self, contractName):
+        return self.wallet.get(contractName, 0.)
 
     # --- private ---
     def absoluteFee(self, amount, price):
         return amount * price * self.fee
 
-    def add(self, contract):
+    def add(self, contract: Contract):
         self.wallet[contract.name] = self.wallet.get(contract.name, 0.) + contract.value
+
+    def subtract(self, contract: Contract):
+        self.add(contract * (-1))
+
+    def _assertEnoughInWallet(self, contract: Contract):
+        if self.balance(contract.name) < contract.value:
+            raise ValueError()
