@@ -39,7 +39,7 @@ class PerceptronPolicyEstimator(PolicyEstimator):
             self.pickedActionProb = tf.gather(self.actionProbs, self.action)
             self.loss = -tf.log(self.pickedActionProb) * self.target
             self.optimizer = tf.train.AdamOptimizer(learning_rate=learningRate)
-            self.trainOp = self.optimizer.minimize(self.loss, global_step=tf.contrib.framework.get_global_step())
+            self.trainOp = self.optimizer.minimize(self.loss, global_step=tf.train.get_global_step())
 
     def predict(self, state):
         sess = tf.get_default_session()
@@ -68,7 +68,7 @@ class PerceptronValueEstimator(ValueEstimator):
             self.valueEstimate = tf.squeeze(self.outputLayer)
             self.loss = tf.squared_difference(self.valueEstimate, self.target)
             self.optimizer = tf.train.AdamOptimizer(learning_rate=learningRate)
-            self.trainOp = self.optimizer.minimize(self.loss, global_step=tf.contrib.framework.get_global_step())
+            self.trainOp = self.optimizer.minimize(self.loss, global_step=tf.train.get_global_step())
 
     def predict(self, state):
         sess = tf.get_default_session()

@@ -20,33 +20,33 @@ def boxFromData(data, col, historyLen):
 
 class ExchangeEnv(Env):
 
-    def __init__(self, prices, historyLen, contractPair, wallet, fee, epochLen, buyAmount):
+    def __init__(self, data, priceCol, contractPair, wallet, fee, epochLen, buyAmount):
         self.startTime = 0
         self.epochLen = epochLen
-        self.dataSize = prices.shape[0]
-        self.dataManager = CurrencyDataManager(prices)
+        self.dataSize = data.shape[0]
+        self.dataManager = CurrencyDataManager(data, priceCol)
         self.exchange = BackTestExchange(self.dataManager, deepcopy(wallet), fee)
         self.initialExchange = deepcopy(self.exchange)
-        self.historyLen = historyLen
         self.contractPair = contractPair
         self.buyAmount = buyAmount
         self.lastAction = HOLD
+        self.priceCol = priceCol
 
         self.action_space = Discrete(3)
         self.observationClass = Observation
-        self.observation_space = self.observationClass.observationSpace(prices, historyLen)
+        self.observation_space = self.observationClass.observationSpace(data.shape[1]-1)
         self.metadata = {'render.modes': ['human']}
         self.lastObservation = None
         self.lastPrice = -1
 
     def _getObservation(self):
-        history, price = self.dataManager.tick(self.historyLen)
-        self.lastObservation = self.observationClass(history, self.lastAction, price, self.exchange, self.contractPair)
-        self.lastPrice= price
-        return self.lastObservation.toDict()
+        history, price = self.dataManager.tick(1)
+        self.lastObservation = self.observationClass(history, [self.priceCol])
+        self.lastPrice = price
+        return self.lastObservation.get()
 
     def reset(self):
-        self.startTime = randint(self.historyLen, self.dataSize-self.historyLen-1)
+        self.startTime = randint(1, self.dataSize-self.epochLen-1)
         self.dataManager.time = self.startTime
         return self._getObservation()
 
@@ -69,59 +69,31 @@ class ExchangeEnv(Env):
         if action == HOLD:
             return self._getObservation(), 0.0, self._isDone(), {}
         elif action == BUY:
-            self.exchange.buy(self.contractPair, self.buyAmount, self.lastPrice)
-            return self._getObservation(), 0.0, self._isDone(), {}
+            try:
+                self.exchange.buy(self.contractPair, self.buyAmount, self.lastPrice)
+            finally:
+                return self._getObservation(), 0.0, self._isDone(), {}
         elif action == SELL:
-            amount = self.exchange.balance(self.contractPair.tradeContract)
-            self.exchange.sell(self.contractPair, amount, self.lastPrice)
-            return self._getObservation(), self._reward(), self._isDone(), {}
+            try:
+                amount = self.exchange.balance(self.contractPair.tradeContract)
+                self.exchange.sell(self.contractPair, amount, self.lastPrice)
+                return self._getObservation(), self._reward(), self._isDone(), {}
+            except ValueError:
+                return self._getObservation(), 0.0, self._isDone(), {}
 
 
 class Observation(object):
 
-    def __init__(self, history, lastAction, lastPrice, exchange, contractPair):
-        self.history = history
-        self.lastAction = lastAction
-        self.lastPrice = lastPrice
-        self.exchange = exchange
-        self.contractPair = contractPair
+    def __init__(self, rowDf, excludeCols=[]):
+        cols = [c for c in rowDf.columns if c not in excludeCols]
+        self.featureRow = rowDf[cols].values[0]
+
+    def get(self):
+        return self.featureRow
 
     @staticmethod
-    def n(dictSpace):
-        n = 0
-        for s in dictSpace.spaces.values():
-            if type(s) == Box:
-                n += np.prod(s.shape)
-            elif type(s) == Discrete:
-                n += s.n
-        return n
-
-    @staticmethod
-    def observationSpace(prices, historyLen):
-        infBox = Box(low=-np.inf, high=np.inf, shape=(1,), dtype=np.float32)
-        space = Dict({
-            'open': boxFromData(prices, 'open', historyLen),
-            'close': boxFromData(prices, 'close', historyLen),
-            'high': boxFromData(prices, 'high', historyLen),
-            'low': boxFromData(prices, 'low', historyLen),
-            'volume': boxFromData(prices, 'volume', historyLen),
-            'price': infBox,
-            'amountOfPriceContract': infBox,
-            'amountOfTradeContract': infBox,
-            'lastAction': Discrete(3)
-        })
-        space.n = Observation.n(space)
+    def observationSpace(numOfFeatures):
+        space = Box(low=-np.inf, high=np.inf, shape=(numOfFeatures,), dtype=np.float32)
+        space.n = numOfFeatures
         return space
 
-    def toDict(self):
-        return {
-            'open': self.history['open'].tolist(),
-            'close': self.history['close'].tolist(),
-            'high': self.history['high'].tolist(),
-            'low': self.history['low'].tolist(),
-            'volume': self.history['volume'].tolist(),
-            'price': self.lastPrice,
-            'amountOfPriceContract': self.exchange.balance(self.contractPair.priceContract),
-            'amountOfTradeContract': self.exchange.balance(self.contractPair.tradeContract),
-            'lastAction': self.lastAction
-        }
