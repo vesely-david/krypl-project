@@ -7,19 +7,18 @@ class DataManager:
 class CurrencyDataManager(DataManager):
 
     # expected prices to be pandas dataframe with columns: timestamp, open, close, high, low, volume
-    def __init__(self, prices, priceCol='close'):
-        # cols = ['timestamp', 'open', 'close', 'high', 'low', 'volume']
-        self.prices = prices
-        self.priceCol = priceCol
+    def __init__(self, prices, data):
+        self.prices = prices.values
+        self.data = data.values
         self.time = 1
 
     def tick(self, historyLen):
         if not self.hasTick():
             return None, None
-        price = self.prices.ix[self.time, self.priceCol]
+        price = self.prices[self.time]
         first = self.time - historyLen - 1 if self.time - historyLen - 1 > 0 else 0
         last = self.time - 1
-        history = self.prices.iloc[first:last, :]
+        history = self.data[first:last, :]
 
         self.time += 1
         return history, price

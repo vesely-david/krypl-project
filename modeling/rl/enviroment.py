@@ -24,7 +24,9 @@ class ExchangeEnv(Env):
         self.startTime = 0
         self.epochLen = epochLen
         self.dataSize = data.shape[0]
-        self.dataManager = CurrencyDataManager(data, priceCol)
+
+        featureCols = [c for c in data.columns if c != priceCol]
+        self.dataManager = CurrencyDataManager(data[priceCol], data[featureCols])
         self.exchange = BackTestExchange(self.dataManager, deepcopy(wallet), fee)
         self.initialExchange = deepcopy(self.exchange)
         self.contractPair = contractPair
@@ -41,9 +43,9 @@ class ExchangeEnv(Env):
 
     def _getObservation(self):
         history, price = self.dataManager.tick(1)
-        self.lastObservation = self.observationClass(history, [self.priceCol])
+        self.lastObservation = history
         self.lastPrice = price
-        return self.lastObservation.get()
+        return self.lastObservation
 
     def reset(self):
         self.startTime = randint(1, self.dataSize-self.epochLen-1)
