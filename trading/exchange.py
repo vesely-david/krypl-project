@@ -22,20 +22,20 @@ class BackTestExchange(Exchange):
 
     def buy(self, contractPair, amount, price):
         transaction = BuyTransaction(contractPair, self.timeServer.time, amount, price, self.absoluteFee(amount, price))
-        subtractedContract = transaction.subtractedContract() + transaction.fee
+        subtractedContract = transaction.subtracted_contract() + transaction.fee
         self._assertEnoughInWallet(subtractedContract)
 
         self.transactions.append(transaction)
-        self.add(transaction.gainedContract())
+        self.add(transaction.gained_contract())
         self.subtract(subtractedContract)
 
     def sell(self, contractPair, amount, price):
         transaction = SellTransaction(contractPair, self.timeServer.time, amount, price, self.absoluteFee(amount, price))
-        subtractedContract = transaction.subtractedContract()
+        subtractedContract = transaction.subtracted_contract()
         self._assertEnoughInWallet(subtractedContract)
 
         self.transactions.append(transaction)
-        self.add(transaction.gainedContract() - transaction.fee)
+        self.add(transaction.gained_contract() - transaction.fee)
         self.subtract(subtractedContract)
 
     def balance(self, contractName):

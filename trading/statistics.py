@@ -125,8 +125,8 @@ class Statistics:
         return not self.isLastWin()
 
     def contractAmount(self, transaction):
-        gained = transaction.gainedContract()
-        subtracted = transaction.subtractedContract()
+        gained = transaction.gained_contract()
+        subtracted = transaction.subtracted_contract()
         if gained.name == self.contractName:
             return gained.value
         elif subtracted.name == self.contractName:

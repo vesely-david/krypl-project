@@ -3,16 +3,19 @@ from operator import add, sub, mul, truediv
 
 
 class Contract:
-    def __init__(self, name, value):
-        self.name = name
-        self.value = value
+
+    @staticmethod
+    def new(name, value):
+        return name, value
 
     def newValue(self, value):
         return Contract(self.name, value)
 
-    def sameContractName(self, otherContract):
-        return self.name == otherContract.name
+    @staticmethod
+    def sameContractName(first, second):
+        return first[0] == second[0]
 
+    @staticmethod
     def operation(self, other, func):
         if isNumber(other):
             return self.newValue(func(self.value, other))
@@ -56,15 +59,6 @@ class Contract:
 
 
 class ContractPair:
-    def __init__(self, priceContract, tradeContract):
-        self.priceContract = priceContract
-        self.tradeContract = tradeContract
-
-    def __hash__(self) -> int:
-        return objectHash(self)
-
-    def __eq__(self, o: object) -> bool:
-        if equals(self, o):
-            return True
-        else:
-            return super().__eq__(o)
+    @staticmethod
+    def new(priceContract, tradeContract):
+        return {'priceContract': priceContract, 'tradeContract': tradeContract}
