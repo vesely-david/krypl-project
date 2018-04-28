@@ -1,4 +1,4 @@
-from trading.money.transaction import SellTransaction, BuyTransaction
+from trading.money.transaction import Transaction
 from trading.money.contract import Contract
 
 
@@ -14,43 +14,46 @@ class Exchange:
 
 
 class BackTestExchange(Exchange):
-    def __init__(self, timeServer, wallet={}, fee=0.):
+    def __init__(self, time_server, wallet={}, fee=0.):
         self.wallet = wallet
         self.transactions = []
         self.fee = fee
-        self.timeServer = timeServer
+        self.time_server = time_server
 
-    def buy(self, contractPair, amount, price):
-        transaction = BuyTransaction(contractPair, self.timeServer.time, amount, price, self.absoluteFee(amount, price))
-        subtractedContract = transaction.subtracted_contract() + transaction.fee
-        self._assertEnoughInWallet(subtractedContract)
-
-        self.transactions.append(transaction)
-        self.add(transaction.gained_contract())
-        self.subtract(subtractedContract)
-
-    def sell(self, contractPair, amount, price):
-        transaction = SellTransaction(contractPair, self.timeServer.time, amount, price, self.absoluteFee(amount, price))
-        subtractedContract = transaction.subtracted_contract()
-        self._assertEnoughInWallet(subtractedContract)
+    def buy(self, pair, amount, price):
+        transaction = Transaction.buy(pair, self.time_server.time, amount, price, self._absolute_fee(amount, price))
+        subtracted = Contract.add(Transaction.subtracted_contract(transaction), transaction['fee'])
+        self._assert_enough_in_wallet(subtracted)
 
         self.transactions.append(transaction)
-        self.add(transaction.gained_contract() - transaction.fee)
-        self.subtract(subtractedContract)
+        self._add(Transaction.gained_contract(transaction))
+        self._subtract(subtracted)
 
-    def balance(self, contractName):
-        return self.wallet.get(contractName, 0.)
+    def sell(self, pair, amount, price):
+        transaction = Transaction.sell(pair, self.time_server.time, amount, price, self._absolute_fee(amount, price))
+        subtracted = Transaction.subtracted_contract(transaction)
+        self._assert_enough_in_wallet(subtracted)
+
+        self.transactions.append(transaction)
+        gained = Contract.sub(Transaction.gained_contract(transaction), transaction['fee'])
+        self._add(gained)
+        self._subtract(subtracted)
+
+    def balance(self, contract_name):
+        return self.wallet.get(contract_name, 0.)
 
     # --- private ---
-    def absoluteFee(self, amount, price):
+    def _absolute_fee(self, amount, price):
         return amount * price * self.fee
 
-    def add(self, contract: Contract):
-        self.wallet[contract.name] = self.wallet.get(contract.name, 0.) + contract.value
+    def _add(self, contract):
+        name, value = contract
+        self.wallet[name] = self.wallet.get(name, 0.) + value
 
-    def subtract(self, contract: Contract):
-        self.add(contract * (-1))
+    def _subtract(self, contract):
+        self._add(Contract.mul(contract, -1))
 
-    def _assertEnoughInWallet(self, contract: Contract):
-        if self.balance(contract.name) < contract.value:
+    def _assert_enough_in_wallet(self, contract):
+        name, value = contract
+        if self.balance(name) < value:
             raise ValueError()

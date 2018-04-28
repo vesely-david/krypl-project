@@ -12,5 +12,5 @@ class TestMoney(TestCase):
         return Contract.new('btc', value)
 
     @staticmethod
-    def czkBtcContract():
+    def czk_btc():
         return ContractPair.new('czk', 'btc')
