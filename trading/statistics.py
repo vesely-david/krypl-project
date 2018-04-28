@@ -1,135 +1,137 @@
 import pandas as pd
+from trading.money.transaction import Transaction
 
 
 class Statistics:
-    def __init__(self, contractName, startAmount):
-        self.contractName = contractName
+    def __init__(self, contract_name, start_amount):
+        self.contract_name = contract_name
         self.transactions = []
-        self.startAmount = startAmount
+        self.start_amount = start_amount
 
-        self.currentAmount = startAmount
-        self.lastAmount = startAmount
-        self.maxAmount = startAmount
-        self.numOfTrades = 0
-        self.numOfWins = 0
-        self.totalWon = 0
-        self.totalLoss = 0
-        self.currentLoss = 0
-        self.maxDrawdownVar = .0
+        self.current_amount = start_amount
+        self.last_amount = start_amount
+        self.max_amount = start_amount
+        self.num_of_trades = 0
+        self.num_of_wins = 0
+        self.total_won = 0
+        self.total_loss = 0
+        self.current_loss = 0
+        self.max_drawdown_var = .0
 
     def report(self):
         cols = ['startAmount', 'numberOfTrades', 'totalProfit', 'avgProfit', 'winPercentage', 'avgWinTrade',
                 'avgLossTrade', 'profitFactor', 'maxDrawdown']
-        dfStats = pd.DataFrame({
-            'startAmount': [self.startAmount],
-            'numberOfTrades': [self.numberOfTrades()],
-            'totalProfit': [self.totalProfit()],
-            'avgProfit': [self.avgProfit()],
-            'winPercentage': [self.winPercentage()],
-            'avgWinTrade': [self.avgWinTrade()],
-            'avgLossTrade': [self.avgLossTrade()],
-            'profitFactor': [self.profitFactor()],
-            'maxDrawdown': [self.maxDrawdown()]
+        stats = pd.DataFrame({
+            'startAmount': [self.start_amount],
+            'numberOfTrades': [self.number_of_trades()],
+            'totalProfit': [self.total_profit()],
+            'avgProfit': [self.avg_profit()],
+            'winPercentage': [self.win_percentage()],
+            'avgWinTrade': [self.avg_win_trade()],
+            'avgLossTrade': [self.avg_loss_trade()],
+            'profitFactor': [self.profit_factor()],
+            'maxDrawdown': [self.max_drawdown()]
         })[cols].transpose()
-        dfStats.columns = [self.contractName]
-        return dfStats
+        stats.columns = [self.contract_name]
+        return stats
 
     def evaluate(self, transactions):
         for transaction in transactions:
-            self.addTransaction(transaction)
+            self.add_transaction(transaction)
         return self
 
-    def addTransaction(self, transaction):
-        if self.isNextTransactionOpen():
-            self.openTrade(transaction)
+    def add_transaction(self, transaction):
+        if self._is_next_transaction_open():
+            self.open_trade(transaction)
         else:
-            self.closeTrade(transaction)
+            self.close_trade(transaction)
 
-    def openTrade(self, transaction):
+    def open_trade(self, transaction):
         self.transactions.append(transaction)
-        self.lastAmount = self.currentAmount
-        self.currentAmount += self.contractAmount(transaction) - self.fee(transaction)
+        self.last_amount = self.current_amount
+        self.current_amount += self._contract_amount(transaction) - self._fee(transaction)
 
-    def closeTrade(self, transaction):
+    def close_trade(self, transaction):
         self.transactions.append(transaction)
-        self.currentAmount += self.contractAmount(transaction) - self.fee(transaction)
-        self.numOfTrades += 1
-        self.updateMaxAmount()
-        self.updateWins()
-        self.updateLosses()
+        self.current_amount += self._contract_amount(transaction) - self._fee(transaction)
+        self.num_of_trades += 1
+        self._update_max_amount()
+        self._update_wins()
+        self._update_losses()
 
-    def numberOfTrades(self):
-        return self.numOfTrades
+    def number_of_trades(self):
+        return self.num_of_trades
 
-    def totalProfit(self):
-        return self.currentAmount - self.startAmount
+    def total_profit(self):
+        return self.current_amount - self.start_amount
 
-    def avgProfit(self):
-        return float(self.totalProfit()) / self.numberOfTrades() if self.numberOfTrades() > 0 else 0
+    def avg_profit(self):
+        return float(self.total_profit()) / self.number_of_trades() if self.number_of_trades() > 0 else 0
 
-    def winPercentage(self):
-        return 100. * self.numOfWins / self.numberOfTrades() if self.numberOfTrades() > 0 else 0
+    def win_percentage(self):
+        return 100. * self.num_of_wins / self.number_of_trades() if self.number_of_trades() > 0 else 0
 
-    def avgWinTrade(self):
-        return float(self.totalWon) / self.numOfWins if self.numOfWins > 0 else 0
+    def avg_win_trade(self):
+        return float(self.total_won) / self.num_of_wins if self.num_of_wins > 0 else 0
 
-    def avgLossTrade(self):
-        numOfLosses = self.numberOfTrades() - self.numOfWins
-        return float(-self.totalLoss) / numOfLosses if numOfLosses > 0 else 0
+    def avg_loss_trade(self):
+        num_of_losses = self.number_of_trades() - self.num_of_wins
+        return float(-self.total_loss) / num_of_losses if num_of_losses > 0 else 0
 
-    def profitFactor(self):
-        return float(self.totalWon) / self.totalLoss if self.totalLoss > 0 else float('inf')
+    def profit_factor(self):
+        return float(self.total_won) / self.total_loss if self.total_loss > 0 else float('inf')
 
-    def maxDrawdown(self):
-        return self.maxDrawdownVar
+    def max_drawdown(self):
+        return self.max_drawdown_var
 
     # ------------ Private --------------------------
-    def fee(self, transaction):
-        if transaction.fee.name == self.contractName:
-            return transaction.fee.value
+    def _fee(self, transaction):
+        pair = transaction['pair']
+        if pair['priceContract'] == self.contract_name:
+            return transaction['fee']
         else:
-            return (transaction.fee / transaction.price).value
+            return transaction['fee'] / transaction['price']
 
-    def updateMaxAmount(self):
-        if self.currentAmount > self.maxAmount:
-            self.maxAmount = self.currentAmount
+    def _update_max_amount(self):
+        if self.current_amount > self.max_amount:
+            self.max_amount = self.current_amount
 
-    def updateWins(self):
-        if self.isLastWin():
-            self.numOfWins += 1
-            self.totalWon += self.currentAmount - self.lastAmount
+    def _update_wins(self):
+        if self._is_last_win():
+            self.num_of_wins += 1
+            self.total_won += self.current_amount - self.last_amount
 
-    def updateDrawdown(self, ):
-        drawdown = 100. * (self.maxAmount - self.currentAmount) / self.maxAmount
-        if drawdown > self.maxDrawdownVar:
-            self.maxDrawdownVar = drawdown
+    def _update_drawdown(self, ):
+        drawdown = 100. * (self.max_amount - self.current_amount) / self.max_amount
+        if drawdown > self.max_drawdown_var:
+            self.max_drawdown_var = drawdown
 
-    def updateLosses(self):
-        if self.isLastLoss():
-            self.totalLoss += self.lastAmount - self.currentAmount
-            self.updateDrawdown()
+    def _update_losses(self):
+        if self._is_last_loss():
+            self.total_loss += self.last_amount - self.current_amount
+            self._update_drawdown()
 
-    def numOfTransactions(self):
+    def _num_of_transactions(self):
         return len(self.transactions)
 
-    def isNextTransactionOpen(self):
-        return self.numOfTransactions() % 2 == 0
+    def _is_next_transaction_open(self):
+        return self._num_of_transactions() % 2 == 0
 
-    def isNextTransactionClose(self):
-        return not self.isNextTransactionOpen()
+    def _is_next_transaction_close(self):
+        return not self._is_next_transaction_open()
 
-    def isLastWin(self):
-        return self.currentAmount > self.lastAmount
+    def _is_last_win(self):
+        return self.current_amount > self.last_amount
 
-    def isLastLoss(self):
-        return not self.isLastWin()
+    def _is_last_loss(self):
+        return not self._is_last_win()
 
-    def contractAmount(self, transaction):
-        gained = transaction.gained_contract()
-        subtracted = transaction.subtracted_contract()
-        if gained.name == self.contractName:
-            return gained.value
-        elif subtracted.name == self.contractName:
-            return -subtracted.value
+    def _contract_amount(self, transaction):
+        gained_name, gained_value = Transaction.gained_contract(transaction)
+        subtracted_name, subtracted_value = Transaction.subtracted_contract(transaction)
+        if gained_name == self.contract_name:
+            return gained_value
+        elif subtracted_name == self.contract_name:
+            return -subtracted_value
 
         raise ValueError('Transaction does not consist wanted contract.')

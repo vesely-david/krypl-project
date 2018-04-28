@@ -1,47 +1,47 @@
 from unittest import TestCase
-from trading.money.transaction import BuyTransaction, SellTransaction
+from trading.money.transaction import Transaction
 from trading.money.contract import ContractPair
 from trading.statistics import Statistics
 
 
 class TestStatistics(TestCase):
     def setUp(self):
-        self.cPair = ContractPair('czk', 'btc')
-        self.statsCzk = Statistics('czk', startAmount=2000)
+        self.pair = ContractPair.new('czk', 'btc')
+        self.stats_czk = Statistics('czk', start_amount=2000)
 
-        self.scenarioWinLong = [
-            BuyTransaction(self.cPair, timestamp=0, amount=10, price=100, fee=10),
-            SellTransaction(self.cPair, timestamp=1, amount=10, price=200, fee=10),
+        self.scenario_win_long = [
+            Transaction.buy(self.pair, timestamp=0, amount=10, price=100, fee=10),
+            Transaction.sell(self.pair, timestamp=1, amount=10, price=200, fee=10),
         ]
 
-        self.scenarioWinShort = [
-            SellTransaction(self.cPair, timestamp=0, amount=10, price=200, fee=10),
-            BuyTransaction(self.cPair, timestamp=1, amount=10, price=100, fee=10),
+        self.scenario_win_short = [
+            Transaction.sell(self.pair, timestamp=0, amount=10, price=200, fee=10),
+            Transaction.buy(self.pair, timestamp=1, amount=10, price=100, fee=10),
         ]
 
-        self.scenarioLossLong = [
-            BuyTransaction(self.cPair, timestamp=0, amount=10, price=200, fee=10),
-            SellTransaction(self.cPair, timestamp=1, amount=10, price=100, fee=10)
+        self.scenario_loss_long = [
+            Transaction.buy(self.pair, timestamp=0, amount=10, price=200, fee=10),
+            Transaction.sell(self.pair, timestamp=1, amount=10, price=100, fee=10)
         ]
 
-        self.scenarioLossShort = [
-            SellTransaction(self.cPair, timestamp=0, amount=10, price=100, fee=10),
-            BuyTransaction(self.cPair, timestamp=1, amount=10, price=200, fee=10),
+        self.scenario_loss_short = [
+            Transaction.sell(self.pair, timestamp=0, amount=10, price=100, fee=10),
+            Transaction.buy(self.pair, timestamp=1, amount=10, price=200, fee=10),
         ]
 
-    def assertStats(self, stats, valuesDict):
-        self.assertEqual(stats.numberOfTrades(), valuesDict['numberOfTrades'])
-        self.assertEqual(stats.totalProfit(), valuesDict['totalProfit'])
-        self.assertEqual(stats.avgProfit(), valuesDict['avgProfit'])
-        self.assertEqual(stats.winPercentage(), valuesDict['winPercentage'])
-        self.assertEqual(stats.avgWinTrade(), valuesDict['avgWinTrade'])
-        self.assertEqual(stats.avgLossTrade(), valuesDict['avgLossTrade'])
-        self.assertAlmostEqual(stats.profitFactor(), valuesDict['profitFactor'], places=2)
-        self.assertAlmostEqual(stats.maxDrawdown(), valuesDict['maxDrawdown'], places=3)
+    def assert_stats(self, stats, valuesDict):
+        self.assertEqual(stats.number_of_trades(), valuesDict['numberOfTrades'])
+        self.assertEqual(stats.total_profit(), valuesDict['totalProfit'])
+        self.assertEqual(stats.avg_profit(), valuesDict['avgProfit'])
+        self.assertEqual(stats.win_percentage(), valuesDict['winPercentage'])
+        self.assertEqual(stats.avg_win_trade(), valuesDict['avgWinTrade'])
+        self.assertEqual(stats.avg_loss_trade(), valuesDict['avgLossTrade'])
+        self.assertAlmostEqual(stats.profit_factor(), valuesDict['profitFactor'], places=2)
+        self.assertAlmostEqual(stats.max_drawdown(), valuesDict['maxDrawdown'], places=3)
 
-    def test_evaluatePrimaryContractLongWin(self):
-        scenario = self.scenarioWinLong + self.scenarioWinLong
-        stats = self.statsCzk.evaluate(scenario)
+    def test_evaluate_primary_contract_long_win(self):
+        scenario = self.scenario_win_long + self.scenario_win_long
+        stats = self.stats_czk.evaluate(scenario)
         results = {
             'numberOfTrades': 2,
             'totalProfit': 1960,
@@ -52,11 +52,11 @@ class TestStatistics(TestCase):
             'profitFactor': float('inf'),
             'maxDrawdown': 0,
         }
-        self.assertStats(stats, results)
+        self.assert_stats(stats, results)
 
-    def test_evaluatePrimaryContractLongLoss(self):
-        scenario = self.scenarioLossLong + self.scenarioLossLong
-        stats = self.statsCzk.evaluate(scenario)
+    def test_evaluate_primary_contract_long_loss(self):
+        scenario = self.scenario_loss_long + self.scenario_loss_long
+        stats = self.stats_czk.evaluate(scenario)
         results = {
             'numberOfTrades': 2,
             'totalProfit': -2040,
@@ -67,11 +67,11 @@ class TestStatistics(TestCase):
             'profitFactor': 0,
             'maxDrawdown': 102,
         }
-        self.assertStats(stats, results)
+        self.assert_stats(stats, results)
 
-    def test_evaluatePrimaryContractShortWin(self):
-        scenario = self.scenarioWinShort + self.scenarioWinShort
-        stats = self.statsCzk.evaluate(scenario)
+    def test_evaluate_primary_contract_short_win(self):
+        scenario = self.scenario_win_short + self.scenario_win_short
+        stats = self.stats_czk.evaluate(scenario)
         results = {
             'numberOfTrades': 2,
             'totalProfit': 1960,
@@ -82,11 +82,11 @@ class TestStatistics(TestCase):
             'profitFactor': float('inf'),
             'maxDrawdown': 0,
         }
-        self.assertStats(stats, results)
+        self.assert_stats(stats, results)
 
-    def test_evaluatePrimaryContractShortLoss(self):
-        scenario = self.scenarioLossShort + self.scenarioLossShort
-        stats = self.statsCzk.evaluate(scenario)
+    def test_evaluate_primary_contract_short_loss(self):
+        scenario = self.scenario_loss_short + self.scenario_loss_short
+        stats = self.stats_czk.evaluate(scenario)
         results = {
             'numberOfTrades': 2,
             'totalProfit': -2040,
@@ -97,13 +97,13 @@ class TestStatistics(TestCase):
             'profitFactor': 0,
             'maxDrawdown': 102,
         }
-        self.assertStats(stats, results)
+        self.assert_stats(stats, results)
 
-    def test_maxDrawdown(self):
-        scenario = self.scenarioWinLong + self.scenarioLossLong + self.scenarioWinLong + \
-                   self.scenarioWinLong + self.scenarioLossLong
+    def test_max_drawdown(self):
+        scenario = self.scenario_win_long + self.scenario_loss_long + self.scenario_win_long + \
+                   self.scenario_win_long + self.scenario_loss_long
 
-        stats = self.statsCzk.evaluate(scenario)
+        stats = self.stats_czk.evaluate(scenario)
         results = {
             'numberOfTrades': 5,
             'totalProfit': 900,
@@ -114,4 +114,4 @@ class TestStatistics(TestCase):
             'profitFactor': 1.44,
             'maxDrawdown': 34.228,
         }
-        self.assertStats(stats, results)
+        self.assert_stats(stats, results)
