@@ -10,18 +10,17 @@ class CurrencyDataManager(DataManager):
     def __init__(self, prices, data):
         self.prices = prices.values
         self.data = data.values
-        self.time = 1
+        self.time = 0
 
-    def tick(self, historyLen):
-        if not self.hasTick():
+    def tick(self, history_len):
+        if not self.has_tick():
             return None, None
         price = self.prices[self.time]
-        first = self.time - historyLen - 1 if self.time - historyLen - 1 > 0 else 0
-        last = self.time - 1
-        history = self.data[first:last, :]
+        first = self.time - history_len if self.time - history_len > 0 else 0
+        history = self.data[first:self.time, :]
 
         self.time += 1
         return history, price
 
-    def hasTick(self):
+    def has_tick(self):
         return self.time < self.prices.shape[0]
