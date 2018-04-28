@@ -62,8 +62,9 @@ class ExchangeEnv(Env):
         return self.dataManager.time - self.startTime == self.epochLen
 
     def _reward(self):
-        initialBalance = self.initialExchange.balance(self.contractPair.priceContract)
-        currentBalance = self.exchange.balance(self.contractPair.priceContract)
+        priceContract = self.contractPair['priceContract']
+        initialBalance = self.initialExchange.balance(priceContract)
+        currentBalance = self.exchange.balance(priceContract)
         return (currentBalance / initialBalance) - 1
 
     def step(self, action):
@@ -77,7 +78,7 @@ class ExchangeEnv(Env):
                 return self._getObservation(), 0.0, self._isDone(), {}
         elif action == SELL:
             try:
-                amount = self.exchange.balance(self.contractPair.tradeContract)
+                amount = self.exchange.balance(self.contractPair['tradeContract'])
                 self.exchange.sell(self.contractPair, amount, self.lastPrice)
                 return self._getObservation(), self._reward(), self._isDone(), {}
             except ValueError:

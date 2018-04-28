@@ -9,6 +9,7 @@ class CurrencyDataManager(DataManager):
     # expected prices to be pandas dataframe with columns: timestamp, open, close, high, low, volume
     def __init__(self, prices, data):
         self.prices = prices.values
+        self.maxTime = self.prices.shape[0]
         self.data = data.values
         self.time = 0
 
@@ -23,4 +24,4 @@ class CurrencyDataManager(DataManager):
         return history, price
 
     def has_tick(self):
-        return self.time < self.prices.shape[0]
+        return self.time < self.maxTime
