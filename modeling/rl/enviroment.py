@@ -3,7 +3,6 @@ from random import randint
 
 from gym import Env
 from gym.spaces.discrete import Discrete
-from gym.spaces.dict_space import Dict
 from gym.spaces.box import Box
 from trading.dataManager import CurrencyDataManager
 from trading.exchange import BackTestExchange
@@ -28,7 +27,7 @@ class ExchangeEnv(Env):
         featureCols = [c for c in data.columns if c != priceCol]
         self.dataManager = CurrencyDataManager(data[priceCol], data[featureCols])
         self.exchange = BackTestExchange(self.dataManager, deepcopy(wallet), fee)
-        self.initialExchange = deepcopy(self.exchange)
+        self.initialWallet = deepcopy(wallet)
         self.contractPair = contractPair
         self.buyAmount = buyAmount
         self.lastAction = HOLD
@@ -50,6 +49,7 @@ class ExchangeEnv(Env):
     def reset(self):
         self.startTime = randint(1, self.dataSize-self.epochLen-1)
         self.dataManager.time = self.startTime
+        self.exchange.wallet = deepcopy(self.initialWallet)
         return self._getObservation()
 
     def render(self, mode='human'):
@@ -61,28 +61,28 @@ class ExchangeEnv(Env):
     def _isDone(self):
         return self.dataManager.time - self.startTime == self.epochLen
 
-    def _reward(self):
+    def _portfolio_value(self, wallet):
         priceContract = self.contractPair['priceContract']
-        initialBalance = self.initialExchange.balance(priceContract)
-        currentBalance = self.exchange.balance(priceContract)
-        return (currentBalance / initialBalance) - 1
+        tradeContract = self.contractPair['tradeContract']
+        priceContractValue = wallet.get(priceContract, 0.)
+        tradeContractValue = wallet.get(tradeContract, 0.) * self.lastPrice
+        return priceContractValue + tradeContractValue
+
+    def _reward(self):
+        return (self._portfolio_value(self.exchange.wallet) / self._portfolio_value(self.initialWallet)) - 1
 
     def step(self, action):
         self.lastAction = action
-        if action == HOLD:
-            return self._getObservation(), 0.0, self._isDone(), {}
-        elif action == BUY:
-            try:
+        try:
+            if action == BUY:
                 self.exchange.buy(self.contractPair, self.buyAmount, self.lastPrice)
-            finally:
-                return self._getObservation(), 0.0, self._isDone(), {}
-        elif action == SELL:
-            try:
+            elif action == SELL:
                 amount = self.exchange.balance(self.contractPair['tradeContract'])
                 self.exchange.sell(self.contractPair, amount, self.lastPrice)
-                return self._getObservation(), self._reward(), self._isDone(), {}
-            except ValueError:
-                return self._getObservation(), 0.0, self._isDone(), {}
+        except ValueError:
+            pass
+
+        return self._getObservation(), self._reward(), self._isDone(), {}
 
 
 class Observation(object):
