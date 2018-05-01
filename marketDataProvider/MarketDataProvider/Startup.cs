@@ -12,6 +12,10 @@ using DataLayer;
 using Microsoft.EntityFrameworkCore;
 using DataLayer.Repositories.Interfaces;
 using DataLayer.Repositories;
+using Microsoft.Extensions.Hosting;
+using MarketDataProvider.Services;
+using DataLayer.Services;
+using DataLayer.Services.Interfaces;
 
 namespace MarketDataProvider
 {
@@ -28,16 +32,21 @@ namespace MarketDataProvider
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<MarketDataContext>(options =>
-                options.UseSqlite(Configuration.GetConnectionString("Sqlite")));
+                options.UseSqlite(
+                    Configuration.GetConnectionString("Sqlite"), b => b.MigrationsAssembly("MarketDataProvider"))
+                );
 
             services.AddScoped<IMarketRepository, MarketRepository>();
             services.AddScoped<IExchangeRepository, ExchangeRepository>();
             services.AddScoped<ICurrencyRepository, CurrencyRepository>();
             services.AddScoped<IExchangeCurrencyRepository, ExchangeCurrencyRepository>();
             services.AddScoped<IExchangeMarketRepository, ExchangeMarketRepository>();
-            //services.AddSingleton<IHostedService, StrategyEvaluationService>();
+            services.AddSingleton<IMarketDataMemCacheService, MarketDataMemCacheService>();
+            services.AddSingleton<PriceService>();
+            services.AddSingleton<IHostedService, DataRefreshService>();
 
             services.AddCors();
+            services.AddMemoryCache();
 
             services.AddMvc();
         }
@@ -49,6 +58,8 @@ namespace MarketDataProvider
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            //Later - Allow CORS only on client controller
             app.UseCors(builder =>
                 builder
                 .AllowAnyHeader()

@@ -19,5 +19,16 @@ namespace DataLayer.Repositories
             return _dbContext.Exchanges
                 .Include(o => o.ExchangeCurrencies).ThenInclude(o => o.Currency);
         }
+
+        public Exchange GetForMemCache(string strategyId)
+        {
+            return _dbContext.Exchanges
+                .Include(o => o.ExchangeCurrencies)
+                    .ThenInclude(p => p.Currency)
+                .Include(o => o.ExchangeMarkets)
+                    .ThenInclude(p => p.Market)
+                .FirstOrDefault(o => o.Id == strategyId);
+        }
     }
 }
+

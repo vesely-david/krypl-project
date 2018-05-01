@@ -9,6 +9,7 @@ namespace DataLayer.Models
     {
         public string Name { get; set; }
         public string Web { get; set; }
+        public bool ProvidesFullHistoryData { get; set; }
 
         public virtual ICollection<ExchangeMarket> ExchangeMarkets { get; set; }
         public virtual ICollection<ExchangeCurrency> ExchangeCurrencies { get; set; }

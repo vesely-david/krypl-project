@@ -7,6 +7,6 @@ namespace DataLayer.Repositories.Interfaces
 {
     public interface IMarketRepository : IRepository<Market>
     {
-        Market GetMarketByCurrencies(string firstCurrencyId, string secondCurrencyId);
+        Market GetMarketByCurrencies(string marketCurrencyId, string currencyId);
     }
 }

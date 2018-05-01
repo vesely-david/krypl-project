@@ -4,12 +4,41 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using DataLayer.Services.Interfaces;
+using MarketDataProvider.Services;
 
 namespace MarketDataProvider.Controllers
 {
     [Produces("application/json")]
-    [Route("api/Business")]
+    [Route("business")]
     public class BusinessController : Controller
     {
+        private IMarketDataMemCacheService _marketDataService;
+        private PriceService _priceService;
+
+        public BusinessController(
+            IMarketDataMemCacheService memCacheService,
+            PriceService priceService)
+        {
+            _marketDataService = memCacheService;
+            _priceService = priceService;
+        }
+
+        [HttpGet]
+        [Route("price/{exchange}/{symbol}")]
+        public IActionResult GetPrice(string exchange, string symbol)
+        {
+            var price = _priceService.GetExchange(exchange)?.GetPrice(symbol);
+            if (price != null) return Ok(price);
+            else return BadRequest("Not found");
+        }
+        [HttpGet]
+        [Route("price/{exchange}/{market}_{currency}")]
+        public IActionResult GetPrice(string exchange, string market, string currency)
+        {
+            var price = _priceService.GetExchange(exchange)?.GetPrice(market, currency);
+            if (price != null) return Ok(price);
+            else return BadRequest("Not found");
+        }
     }
 }

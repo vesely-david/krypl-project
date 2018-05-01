@@ -7,8 +7,8 @@ namespace DataLayer.Models
 {
     public class Market : IdEntity
     {
-        public string BaseCurrencyId { get; set; }
-        public virtual Currency BaseCurrency { get; set; }
+        public string CurrencyId { get; set; }
+        public virtual Currency Currency { get; set; }
         public string MarketCurrencyId { get; set; }
         public virtual Currency MarketCurrency { get; set; }
     }

@@ -8,5 +8,6 @@ namespace DataLayer.Repositories.Interfaces
     public interface IExchangeRepository : IRepository<Exchange>
     {
         IEnumerable<Exchange> GetAllWithCurrencies();
+        Exchange GetForMemCache(string strategyId);
     }
 }

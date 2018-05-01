@@ -14,11 +14,10 @@ namespace DataLayer.Repositories
         {
         }
 
-        public Market GetMarketByCurrencies(string firstCurrencyId, string secondCurrencyId)
+        public Market GetMarketByCurrencies(string marketCurrencyId, string currencyId)
         {
             return _dbContext.Markets
-                .FirstOrDefault(o => (o.BaseCurrencyId == firstCurrencyId  && o.MarketCurrencyId == secondCurrencyId)
-                 || (o.BaseCurrencyId == secondCurrencyId && o.MarketCurrencyId == firstCurrencyId));
+                .FirstOrDefault(o => (o.MarketCurrencyId == marketCurrencyId && o.CurrencyId == currencyId));
         }
     }
 }

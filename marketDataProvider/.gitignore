@@ -272,4 +272,4 @@ __pycache__/
 # tools/
 
 #Database
-*Database.db
+Database/*
