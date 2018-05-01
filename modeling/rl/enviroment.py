@@ -13,44 +13,44 @@ BUY = 1
 SELL = 2
 
 
-def boxFromData(data, col, historyLen):
-    return Box(low=data[col].min(), high=data[col].max(), shape=(historyLen,), dtype=np.float32)
+def box_from_data(data, col, history_len):
+    return Box(low=data[col].min(), high=data[col].max(), shape=(history_len,), dtype=np.float32)
 
 
 class ExchangeEnv(Env):
 
-    def __init__(self, data, priceCol, contractPair, wallet, fee, epochLen, buyAmount):
-        self.startTime = 0
-        self.epochLen = epochLen
-        self.dataSize = data.shape[0]
+    def __init__(self, data, price_col, pair, wallet, fee, epoch_len, trade_amount):
+        self.start_time = 0
+        self.epoch_len = epoch_len
+        self.data_size = data.shape[0]
 
-        featureCols = [c for c in data.columns if c != priceCol]
-        self.dataManager = CurrencyDataManager(data[priceCol], data[featureCols])
-        self.exchange = BackTestExchange(self.dataManager, deepcopy(wallet), fee)
-        self.initialWallet = deepcopy(wallet)
-        self.contractPair = contractPair
-        self.buyAmount = buyAmount
-        self.lastAction = HOLD
-        self.priceCol = priceCol
+        features = [c for c in data.columns if c != price_col]
+        self.data_manager = CurrencyDataManager(data[price_col], data[features])
+        self.exchange = BackTestExchange(self.data_manager, deepcopy(wallet), fee)
+        self.initial_wallet = deepcopy(wallet)
+        self.pair = pair
+        self.trade_amount = trade_amount
+        self.last_action = HOLD
+        self.price_col = price_col
 
         self.action_space = Discrete(3)
-        self.observationClass = Observation
-        self.observation_space = self.observationClass.observationSpace(data.shape[1]-1)
+        self.observation_class = Observation
+        self.observation_space = self.observation_class.observation_space(len(features))
         self.metadata = {'render.modes': ['human']}
-        self.lastObservation = None
-        self.lastPrice = -1
+        self.last_observation = None
+        self.last_price = -1
 
-    def _getObservation(self):
-        history, price = self.dataManager.tick(1)
-        self.lastObservation = history
-        self.lastPrice = price
-        return self.lastObservation
+    def _get_observation(self):
+        history, price = self.data_manager.tick(1)
+        self.last_observation = history
+        self.last_price = price
+        return self.last_observation
 
     def reset(self):
-        self.startTime = randint(1, self.dataSize-self.epochLen-1)
-        self.dataManager.time = self.startTime
-        self.exchange.wallet = deepcopy(self.initialWallet)
-        return self._getObservation()
+        self.start_time = randint(1, self.data_size - self.epoch_len - 1)
+        self.data_manager.time = self.start_time
+        self.exchange.wallet = deepcopy(self.initial_wallet)
+        return self._get_observation()
 
     def render(self, mode='human'):
         if mode == 'human':
@@ -58,44 +58,46 @@ class ExchangeEnv(Env):
         else:
             super(ExchangeEnv, self).render(mode=mode)
 
-    def _isDone(self):
-        return self.dataManager.time - self.startTime == self.epochLen
+    def _is_done(self):
+        return self.data_manager.time - self.start_time == self.epoch_len
 
     def _portfolio_value(self, wallet):
-        priceContract = self.contractPair['priceContract']
-        tradeContract = self.contractPair['tradeContract']
-        priceContractValue = wallet.get(priceContract, 0.)
-        tradeContractValue = wallet.get(tradeContract, 0.) * self.lastPrice
-        return priceContractValue + tradeContractValue
+        price_contract = self.pair['priceContract']
+        trade_contract = self.pair['tradeContract']
+        price_value = wallet.get(price_contract, 0.)
+        trade_value = wallet.get(trade_contract, 0.) * self.last_price
+        return price_value + trade_value
 
     def _reward(self):
-        return (self._portfolio_value(self.exchange.wallet) / self._portfolio_value(self.initialWallet)) - 1
+        return (self._portfolio_value(self.exchange.wallet) / self._portfolio_value(self.initial_wallet)) - 1
+
+    def _buy_amount(self):
+        return self.trade_amount / self.last_price
 
     def step(self, action):
-        self.lastAction = action
+        self.last_action = action
+        err = False
         try:
             if action == BUY:
-                self.exchange.buy(self.contractPair, self.buyAmount, self.lastPrice)
+                self.exchange.buy(self.pair, self._buy_amount(), self.last_price)
             elif action == SELL:
-                amount = self.exchange.balance(self.contractPair['tradeContract'])
-                self.exchange.sell(self.contractPair, amount, self.lastPrice)
+                amount = self.exchange.balance(self.pair['tradeContract'])
+                self.exchange.sell(self.pair, amount, self.last_price)
         except ValueError:
-            pass
+            err = True
 
-        return self._getObservation(), self._reward(), self._isDone(), {}
+        debug = {
+            'current_value': self._portfolio_value(self.exchange.wallet),
+            'initial_value': self._portfolio_value(self.initial_wallet),
+            'err': err
+        }
+        return self._get_observation(), self._reward(), self._is_done(), debug
 
 
 class Observation(object):
 
-    def __init__(self, rowDf, excludeCols=[]):
-        cols = [c for c in rowDf.columns if c not in excludeCols]
-        self.featureRow = rowDf[cols].values[0]
-
-    def get(self):
-        return self.featureRow
-
     @staticmethod
-    def observationSpace(numOfFeatures):
+    def observation_space(numOfFeatures):
         space = Box(low=-np.inf, high=np.inf, shape=(numOfFeatures,), dtype=np.float32)
         space.n = numOfFeatures
         return space

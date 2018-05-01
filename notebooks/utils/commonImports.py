@@ -1,6 +1,7 @@
 # Basics
 import numpy as np
 import pandas as pd
+from copy import deepcopy
 
 # Ploting
 pd.options.display.float_format = '{:,.4f}'.format
