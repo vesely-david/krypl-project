@@ -8,9 +8,7 @@ namespace DataLayer.Services.Interfaces
 {
     public interface IMarketDataMemCacheService
     {
-        IEnumerable<Exchange> ExchangeList();
-        IEnumerable<CurrencyMemCache> ExchangeCurrencies(string strategyId);
-        IEnumerable<MarketMemCache> ExchangeMarkets(string strategyId);
+        IEnumerable<ExchangeMemCache> ExchangeList();
         ExchangeMemCache GetExchange(string exchangeId);
     }
 }

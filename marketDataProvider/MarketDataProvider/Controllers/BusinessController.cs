@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using DataLayer.Services.Interfaces;
 using MarketDataProvider.Services;
+using System.Net.Http;
+using MarketDataProvider.Services.Models;
+using Newtonsoft.Json;
 
 namespace MarketDataProvider.Controllers
 {
@@ -24,14 +27,6 @@ namespace MarketDataProvider.Controllers
             _priceService = priceService;
         }
 
-        [HttpGet]
-        [Route("price/{exchange}/{symbol}")]
-        public IActionResult GetPrice(string exchange, string symbol)
-        {
-            var price = _priceService.GetExchange(exchange)?.GetPrice(symbol);
-            if (price != null) return Ok(price);
-            else return BadRequest("Not found");
-        }
         [HttpGet]
         [Route("price/{exchange}/{market}_{currency}")]
         public IActionResult GetPrice(string exchange, string market, string currency)

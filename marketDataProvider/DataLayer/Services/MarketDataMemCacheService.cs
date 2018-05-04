@@ -25,27 +25,22 @@ namespace DataLayer.Services
             _memoryCache = memoryCache;
         }
 
-        public IEnumerable<Exchange> ExchangeList()
+        public IEnumerable<ExchangeMemCache> ExchangeList()
         {
-            return _memoryCache.GetOrCreate("exchangeList", entry =>
+            var ex = ExchangeIds();
+            return ex.Select(o => GetExchange(o));
+        }
+        private IEnumerable<string> ExchangeIds()
+        {
+            return _memoryCache.GetOrCreate("#exchanges#", entry =>
             {
                 using (var scope = _scopeFactory.CreateScope())
                 {
                     var exchangeRepository = scope.ServiceProvider.GetRequiredService<IExchangeRepository>();
                     entry.SlidingExpiration = TimeSpan.FromDays(1);
-                    return exchangeRepository.List();
+                    return new List<string>(exchangeRepository.List().Select(o => o.Id));
                 }
             });
-        }
-
-        public IEnumerable<CurrencyMemCache> ExchangeCurrencies(string exchangeId)
-        {
-            return GetExchange(exchangeId)?.Currencies;
-        }
-
-        public IEnumerable<MarketMemCache> ExchangeMarkets(string exchangeId)
-        {
-            return GetExchange(exchangeId)?.Markets;
         }
 
         public ExchangeMemCache GetExchange(string exchangeId)
@@ -80,6 +75,5 @@ namespace DataLayer.Services
                 }
             });
         }
-
     }
 }

@@ -6,18 +6,118 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using DataLayer.Repositories.Interfaces;
 using DataLayer.Models;
+using Newtonsoft.Json;
+using MarketDataProvider.Services.Models;
+using System.Net.Http;
 
 namespace MarketDataProvider.Controllers
 {
     [Produces("application/json")]
-    [Route("api/tmp")]
-    public class TmpController : Controller
+    [Route("admin")]
+    public class AdminController : Controller
     {
         private IExchangeRepository _repo;
-        public TmpController(IExchangeRepository repo)
+        private HttpClient _httpClient;
+
+        public AdminController(IExchangeRepository repo)
         {
             _repo = repo;
+            _httpClient = new HttpClient();
         }
+
+        [HttpPost]
+        [Route("seedBinance")]
+        public async Task<IActionResult> SeedBinance()
+        {
+            var binancePrices = _httpClient.GetStringAsync("https://www.binance.com/api/v3/ticker/price");
+            var coinMarketCapData = _httpClient.GetStringAsync("https://api.coinmarketcap.com/v2/listings/");
+
+            await Task.WhenAll(binancePrices, coinMarketCapData);
+
+            var cmcTemplate = new { data = new[] { new { name= "", symbol=""} }};
+            var cmcData = JsonConvert.DeserializeAnonymousType(coinMarketCapData.Result, cmcTemplate).data;
+            var markets = new string[] { "BTC", "ETH", "BNB", "USDT" };
+            var ticks = JsonConvert.DeserializeObject<List<BinanceTick>>(binancePrices.Result);
+
+            var binance = new Exchange
+            {
+                Id = "binance",
+                Web = "www.binance.com",
+                Name = "Binance",
+                ProvidesFullHistoryData = true,
+                ExchangeCurrencies = new List<ExchangeCurrency>(),
+                ExchangeMarkets = new List<ExchangeMarket>()
+            };
+
+            var notResolved = new List<string>();
+            var moreOccurrences = new List<string>();
+            var resolved = new List<KeyValuePair<string, string>>();
+
+            foreach (var market in markets)
+            {
+                var length = market.Length;
+                var currencies = ticks.Where(o => o.symbol.EndsWith(market))
+                    .Select(o => o.symbol.Substring(0, o.symbol.Length - length));
+                foreach(var c in currencies)
+                {
+                    var matches = cmcData.Where(o => o.symbol == c);
+                    resolved.Add(new KeyValuePair<string, string>(c, matches.Count() == 1 ? matches.First().name : ""));
+                    if (matches.Count() == 0) notResolved.Add(c);
+                    if (matches.Count() > 1) moreOccurrences.Add(c);
+                }
+            }
+
+            binance.ExchangeCurrencies = resolved.Distinct().Select(o => new ExchangeCurrency
+            {
+                Currency = new Currency
+                {
+                    Id = o.Key.ToUpper(),
+                    Name = o.Value,
+                },
+                Id = "binance_" + o.Key.ToUpper(),
+                CurrencyExchangeId = o.Key,
+            }).ToList();
+
+            binance.ExchangeCurrencies.Add(new ExchangeCurrency //Base Currency
+            {
+                Currency = new Currency
+                {
+                    Id = "USDT",
+                    Name = "Tether"
+                },
+                Id = "binance_USDT",
+                CurrencyExchangeId = "USDT",
+            });
+
+            foreach (var market in markets)
+            {
+                var length = market.Length;
+                var currencies = ticks.Where(o => o.symbol.EndsWith(market))
+                    .Select(o => o.symbol.Substring(0, o.symbol.Length - length));
+                foreach (var c in currencies)
+                {
+                    var matches = cmcData.Where(o => o.symbol == c);
+                    binance.ExchangeMarkets.Add(new ExchangeMarket
+                    {
+                        Id = "binance_" + market.ToUpper() + "_" + c.ToUpper(),
+                        MarketExchangeId = c + market,
+                        Market = new Market
+                        {
+                            Id = market.ToUpper() + "_" + c.ToUpper(),
+                            CurrencyId = c.ToUpper(),
+                            MarketCurrencyId = market.ToUpper()
+                        }
+                    });
+                }
+            }
+            _repo.Add(binance);
+            return Ok(new
+            {
+                notResolved = notResolved.Distinct(),   
+                moreOccurrences = moreOccurrences.Distinct(),
+            });
+        }
+
 
         [HttpPost]
         [Route("seed")]
