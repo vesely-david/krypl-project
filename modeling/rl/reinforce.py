@@ -60,7 +60,6 @@ def reinforce(env, estimator_policy, estimator_value, num_episodes, get_state=la
         An EpisodeStats object with two numpy arrays for episode_lengths and episode_rewards.
     """
 
-    # Keeps track of useful statistics
     stats = EpisodeStats(episode_rewards=np.zeros(num_episodes))
     episodes = []
     for i_episode in range(num_episodes):
