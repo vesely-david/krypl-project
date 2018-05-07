@@ -162,28 +162,6 @@ namespace MasterDataManager.Controllers
             return Ok();
         }
 
-        [HttpGet("exchangesOverview")]
-        public IActionResult ExchangesOverview()
-        {
-            var exchanges = _exchangeRepository.GetAllWithCurrencies();
-            var obj = exchanges.Select(o => new
-            {
-                text = o.Name,
-                value = o.Name,
-                currencies = o.ExchangeCurrencies.Select(p => new
-                {
-                    text = p.Currency.Code,
-                    value = p.Currency.Code
-                })
-            });
-
-            return Ok(new {
-                real = obj,
-                paper = obj,
-                backtest = obj
-            });
-        }
-
         private IActionResult GetStrategiesAsync(TradingMode strategyMode)
         {
 
@@ -291,27 +269,24 @@ namespace MasterDataManager.Controllers
             return Ok();
         }
 
-        [HttpGet("getStrategy")]
-        public IActionResult GetStrategy(int strategyId)
+        [HttpGet("strategyTrades/{strategyId}")]
+        public IActionResult GetStrategyOverview(int strategyId)
         {
-            var userId = HttpContext.User.GetUserId();
-            if (userId == null) return BadRequest("User not found");
-
-            var strategy = _strategyRepository.GetByUserId(userId.Value).FirstOrDefault(o => o.Id == strategyId);
+            var strategy = _strategyRepository.GetTrades(strategyId);
             if (strategy == null) return BadRequest("Strategy not found");
+            return Ok(strategy.Trades);
+        }
 
-            if(strategy.NewTrades != 0)
+        //Cache request for few minutes in browser
+        [HttpGet("strategyOverview/{strategyId}")]
+        public IActionResult StrategyData(int strategyId)
+        {
+            var strategy = _strategyRepository.GetOverview(strategyId);
+            if (strategy == null) return BadRequest();
+            return Ok(new
             {
-                strategy.NewTrades = 0;
-                _strategyRepository.Edit(strategy);
-            }
-
-            return Ok(new {
-                name = strategy.Name,
-                mode = strategy.TradingMode,
-                description = strategy.Description,
-                trades = strategy.Trades,
-                evaluation = strategy.Evaluations,
+                evaluations = strategy.Evaluations,
+                overview = strategy // TODO: Finish
             });
         }
 
@@ -380,8 +355,8 @@ namespace MasterDataManager.Controllers
                 value = group.Key.Name,
                 assets = group.Select(o => new
                 {
-                    text = o.Currency.Code,
-                    value = o.Currency.Code,
+                    id = o.Currency.Code,
+                    name = o.Currency.Code,
                     sum = o.Amount,
                     free = o.GetFreeAmount()
                 })

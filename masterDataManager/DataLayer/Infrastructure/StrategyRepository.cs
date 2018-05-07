@@ -31,5 +31,19 @@ namespace DataLayer.Infrastructure
                 .Include(o => o.Evaluations)
                 .Include(o => o.StrategyAssets).ThenInclude(p => p.UserAsset).ThenInclude(p => p.Currency);
         }
+
+        public Strategy GetTrades(int strategyId)
+        {
+            return _dbContext.Strategies.Include(o => o.Trades)
+                .FirstOrDefault(o => o.Id == strategyId);
+        }
+
+        public Strategy GetOverview(int strategyId)
+        {
+            return _dbContext.Strategies
+                .Include(o => o.Evaluations)
+                .Include(o => o.Exchange)
+                .FirstOrDefault(o => o.Id == strategyId);
+        }
     }
 }

@@ -9,5 +9,7 @@ namespace DataLayer.Infrastructure.Interfaces
     {
         IEnumerable<Strategy> GetByUserId(int userId);
         IEnumerable<Strategy> GetAllForEvaluation();
+        Strategy GetOverview(int strategyId);
+        Strategy GetTrades(int strategyId);
     }
 }

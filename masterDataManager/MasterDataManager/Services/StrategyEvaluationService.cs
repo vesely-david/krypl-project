@@ -26,7 +26,6 @@ namespace MasterDataManager.Services
             _client = new HttpClient();
             Services = services;
             ScopeFactory = scopeFactory;
-
         }
 
         protected override async Task ExecuteAsync(CancellationToken cancellationToken)
@@ -50,8 +49,6 @@ namespace MasterDataManager.Services
                 {
                     var strategyRepository = scope.ServiceProvider
                         .GetRequiredService<IStrategyRepository>();
-                    //var evaluationRepository = scope.ServiceProvider
-                        //.GetRequiredService<IStrate>
 
                     var strategies = strategyRepository.GetAllForEvaluation()
                         .Where(o => o.StrategyState != StrategyState.Stopped);
@@ -60,7 +57,6 @@ namespace MasterDataManager.Services
                     foreach (var strategy in strategies)
                     {
                         double btcSum;
-
                         try
                         {
                             btcSum = strategy.StrategyAssets.Sum(o => {
@@ -72,8 +68,6 @@ namespace MasterDataManager.Services
                             btcSum = -1;
                         }
                         var usdSum = btcSum == -1 ? -1 : btcSum * btcPrice;
-
-                        
 
                         strategy.Evaluations.Add(new EvaluationTick
                         {
