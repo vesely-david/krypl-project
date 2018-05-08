@@ -39,6 +39,7 @@ class ExchangeEnv(Env):
         self.metadata = {'render.modes': ['human']}
         self.last_observation = None
         self.last_price = -1
+        self.open = False
 
     def _get_observation(self):
         history, price = self.data_manager.tick(1)
@@ -80,16 +81,18 @@ class ExchangeEnv(Env):
         try:
             if action == BUY:
                 self.exchange.buy(self.pair, self._buy_amount(), self.last_price)
-            elif action == SELL:
+            elif action == SELL and self.open:
                 amount = self.exchange.balance(self.pair['tradeContract'])
                 self.exchange.sell(self.pair, amount, self.last_price)
+                self.open = False
         except ValueError:
             err = True
 
         debug = {
             'current_value': self._portfolio_value(self.exchange.wallet),
             'initial_value': self._portfolio_value(self.initial_wallet),
-            'err': err
+            'err': err,
+            'open': self.open
         }
         return self._get_observation(), self._reward(), self._is_done(), debug
 
