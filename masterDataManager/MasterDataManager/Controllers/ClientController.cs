@@ -351,9 +351,9 @@ namespace MasterDataManager.Controllers
             var grouped = userAssets.Where(o => o.TradingMode == tradingMode).GroupBy(o => o.Exchange);
             var assets = grouped.Select(group => new
             {
-                text = group.Key.Name,
-                value = group.Key.Name,
-                assets = group.Select(o => new
+                name = group.Key.Name,
+                id = group.Key.Name,
+                currencies = group.Select(o => new
                 {
                     id = o.Currency.Code,
                     name = o.Currency.Code,
