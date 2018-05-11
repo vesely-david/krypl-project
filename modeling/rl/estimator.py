@@ -33,6 +33,7 @@ class TensorflowEstimator:
                 activation_fn=tf.nn.relu,
                 weights_initializer=tf.zeros_initializer
             )
+            hidden = tf.nn.dropout(hidden, 0.5)
         return hidden
 
 

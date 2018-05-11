@@ -1,8 +1,9 @@
 import itertools
 import numpy as np
 from collections import namedtuple
-
+import sys
 from modeling.rl.utils import random_choice
+
 
 EpisodeStats = namedtuple("Stats", ["episode_rewards"])
 Transition = namedtuple("Transition", ["state", "action", "reward", "next_state", "done", "debug"])
@@ -21,8 +22,9 @@ def proceed_episode(i_episode, env, estimator_policy, stats, num_episodes, get_s
         episode.append(
             Transition(state=state, action=action, reward=reward, next_state=next_state, done=done, debug=debug))
         stats.episode_rewards[i_episode] += reward
-        print("\rStep {} @ Episode {}/{} ({})".format(t, i_episode + 1, num_episodes,
-                                                      stats.episode_rewards[i_episode - 1]), end="")
+        sys.stdout.write("\rStep {} @ Episode {}/{} ({})".format(t, i_episode + 1, num_episodes,
+                                                      stats.episode_rewards[i_episode - 1]))
+        sys.stdout.flush()
         if done:
             break
         state = next_state
