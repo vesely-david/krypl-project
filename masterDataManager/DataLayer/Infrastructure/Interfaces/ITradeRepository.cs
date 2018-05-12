@@ -8,6 +8,6 @@ namespace DataLayer.Infrastructure.Interfaces
     public interface ITradeRepository : IRepository<Trade>
     {
         Trade GetByUuid(string uuid);
-        Trade GetLast(int? strategyId);
+        IEnumerable<Trade> GetByStrategyId(string strategyId);
     }
 }

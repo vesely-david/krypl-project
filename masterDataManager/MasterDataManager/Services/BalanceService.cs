@@ -21,25 +21,24 @@ namespace MasterDataManager.Services
             _userAssetRepository = userAssetRepository;
         }
 
-        public void UpdateUserAssets(IEnumerable<Asset> assets, int userId, int exchangeId, TradingMode tradingMode)
+        public void UpdateUserAssets(IEnumerable<Asset> assets, string userId, string exchange, TradingMode tradingMode)
         {
-            var userAssets = _userAssetRepository.GetByUserAndExchange(userId, exchangeId).Where(o => o.TradingMode == tradingMode);
-
-            var toDelete = userAssets.Where(o => !assets.Any(p => p.CurrencyId == o.CurrencyId));
+            var userAssets = _userAssetRepository.GetByUserAndExchange(userId, exchange).Where(o => o.TradingMode == tradingMode);
+            var toDelete = userAssets.Where(o => !assets.Any(p => p.Currency == o.Currency));
 
             foreach (var userAsset in toDelete) DeleteUserAsset(userAsset);
 
             foreach(var asset in assets)
             {
-                var userAsset = userAssets.FirstOrDefault(o => o.CurrencyId == asset.CurrencyId);
+                var userAsset = userAssets.FirstOrDefault(o => o.Currency == asset.Currency);
                 if (userAsset == null)
                 {
                     if (asset.Amount <= 0) continue;
                     _userAssetRepository.AddNotSave(new UserAsset
                     {
                         Amount = asset.Amount,
-                        CurrencyId = asset.CurrencyId,
-                        ExchangeId = exchangeId,
+                        Currency = asset.Currency,
+                        Exchange = exchange,
                         UserId = userId,
                         StrategyAssets = new List<StrategyAsset>(),
                         TradingMode = tradingMode,

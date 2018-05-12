@@ -7,11 +7,11 @@ namespace DataLayer.Models
 {
     public class StrategyAsset : IdEntity
     {
-        public double Amount { get; set; }
+        public decimal Amount { get; set; }
 
-        public int UserAssetId { get; set; }
+        public string UserAssetId { get; set; }
         public virtual UserAsset UserAsset { get; set; }
-        public int StrategyId { get; set; }
+        public string StrategyId { get; set; }
         public Strategy Strategy { get; set; }
     }
 }

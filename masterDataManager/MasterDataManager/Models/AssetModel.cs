@@ -8,6 +8,6 @@ namespace MasterDataManager.Models
     public class AssetModel
     {
         public string currency { get; set; }
-        public double amount { get; set; }
+        public decimal amount { get; set; }
     }
 }

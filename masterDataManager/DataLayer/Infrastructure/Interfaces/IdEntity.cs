@@ -6,6 +6,6 @@ namespace DataLayer.Infrastructure
 {
     public abstract class IdEntity
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
     }
 }

@@ -37,28 +37,24 @@ namespace MasterDataManager
 
         public void ConfigureServices(IServiceCollection services)
         {
+
             services.AddDbContext<MasterDataContext>(options =>
-                options.UseSqlite(Configuration.GetConnectionString("Sqlite")));
+                options.UseSqlite(
+                    Configuration.GetConnectionString("Sqlite"), b => b.MigrationsAssembly("MasterDataManager"))
+                );
 
             services.AddScoped<IStrategyRepository, StrategyRepository>();
             services.AddScoped<ITradeRepository, TradeRepository>();
             services.AddScoped<IUserAssetRepository, UserAssetRepository>();
-            services.AddScoped<IMarketRepository, MarketRepository>();
-            services.AddScoped<IExchangeRepository, ExchangeRepository>();
-            services.AddScoped<ICurrencyRepository, CurrencyRepository>();
-            services.AddScoped<IExchangeDataProvider, ExchangeDataProvider>();
             services.AddScoped<IExchangeObjectFactory, ExchangeObjectFactory>();
             services.AddScoped<IExchangeSecretRepository, ExchangeSecretRepository>();
-            services.AddScoped<IExchangeCurrencyRepository, ExchangeCurrencyRepository>();
-            services.AddScoped<IExchangeMarketRepository, ExchangeMarketRepository>();
             services.AddScoped<IBalanceService, BalanceService>();
             services.AddSingleton<IHostedService, StrategyEvaluationService>();
             services.AddScoped<BinanceService>();
-            services.AddScoped<BittrexService>();
 
             services.AddSingleton(Configuration);
 
-            services.AddIdentity<User, Role>()
+            services.AddIdentity<User, IdentityRole>()
                 .AddEntityFrameworkStores<MasterDataContext>()
                 .AddDefaultTokenProviders();
 
@@ -91,7 +87,6 @@ namespace MasterDataManager
             });
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
@@ -104,7 +99,7 @@ namespace MasterDataManager
                 .AllowAnyMethod()
                 .AllowAnyOrigin()
                 .SetPreflightMaxAge(TimeSpan.FromHours(1)));
-            app.UseAuthentication(); //needs to be up in the pipeline, before MVC
+            app.UseAuthentication();
             app.UseSwagger();
 
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), specifying the Swagger JSON endpoint.

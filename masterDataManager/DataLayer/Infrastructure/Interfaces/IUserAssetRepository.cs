@@ -10,8 +10,8 @@ namespace DataLayer.Infrastructure.Interfaces
     {
         //IEnumerable<UserAsset> GetByStrategyId(int strategyId);
 
-        IEnumerable<UserAsset> GetByUserId(int userId);
-        IEnumerable<UserAsset> GetUserAssetsIncludingStrategies();
-        IEnumerable<UserAsset> GetByUserAndExchange(int userId, int exchangeId);
+        IEnumerable<UserAsset> GetByUserId(string userId);
+        //IEnumerable<UserAsset> GetUserAssetsIncludingStrategies();
+        IEnumerable<UserAsset> GetByUserAndExchange(string userId, string exchangeId);
     }
 }

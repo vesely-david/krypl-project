@@ -17,9 +17,8 @@ namespace DataLayer.Models
         public TradingMode TradingMode { get; set; }
         public int NewTrades { get; set; }
 
-        public int ExchangeId { get; set; }
-        public Exchange Exchange { get; set; }
-        public int UserId { get; set; }
+        public string ExchangeId { get; set; }
+        public string UserId { get; set; }
         public virtual User User { get; set; }
         public virtual ICollection<EvaluationTick> Evaluations { get; set; }
         public virtual ICollection<StrategyAsset> StrategyAssets { get; set; }

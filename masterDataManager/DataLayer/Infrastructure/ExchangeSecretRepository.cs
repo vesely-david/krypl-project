@@ -14,10 +14,10 @@ namespace DataLayer.Infrastructure
         {
         }
 
-        public ExchangeSecret GetByUserAndExchange(int userId, int exchangeId)
+        public ExchangeSecret GetByUserAndExchange(string userId, string exchange)
         {
             return _dbContext.ExchangeSecrets
-                .FirstOrDefault(o => o.ExchangeId == exchangeId && o.UserId == userId);
+                .FirstOrDefault(o => o.ExchangeId == exchange && o.UserId == userId);
         }
     }
 }

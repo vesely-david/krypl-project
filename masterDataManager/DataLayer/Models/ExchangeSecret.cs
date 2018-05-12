@@ -10,9 +10,8 @@ namespace DataLayer.Models
         public string ApiKey { get; set; }
         public string ApiSecret { get; set; }
 
-        public int ExchangeId { get; set; }
-        public virtual Exchange Exchange { get; set; }
-        public int UserId { get; set; }
+        public string ExchangeId { get; set; }
+        public string UserId { get; set; }
         public User User { get; set; }
 
     }

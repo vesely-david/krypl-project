@@ -11,65 +11,49 @@ using DataLayer.Enums;
 
 namespace MasterDataManager.Services
 {
-    public class BinanceService : IHistoryExchangeService, IExchangeService
+    public class BinanceService : IExchangeService
     {
         private BinanceWrapper _binanceWrapper;
         private UserManager<User> _userManager;
-        private IExchangeDataProvider _exchangeDataProvider;
+        private IMarketDataService _marketDataService;
         private IExchangeSecretRepository _exchangeSecretRepository;
-        private IExchangeRepository _exchangeRepository;
         private readonly string _exchangeName  = "binance";
         private int? _exchangeId = null;
 
         public BinanceService(
             UserManager<User> userManager,
-            IExchangeDataProvider exchangeDataProvider,
-            IExchangeSecretRepository exchangeSecretRepository,
-            IExchangeRepository exchangeRepository)
+            IMarketDataService marketDataService,
+            IExchangeSecretRepository exchangeSecretRepository)
         {
             _binanceWrapper = new BinanceWrapper();
             _userManager = userManager;
-            _exchangeDataProvider = exchangeDataProvider;
+            _marketDataService = marketDataService;
             _exchangeSecretRepository = exchangeSecretRepository;
-            _exchangeRepository = exchangeRepository;
         }
 
-        public async Task<List<Asset> > GetRealBalances(int userId)
+        public async Task<List<Asset> > GetRealBalances(string userId)
         {
             var assets = new List<Asset>(); // IResult implementation???
-            var userSecret = _exchangeSecretRepository.GetByUserAndExchange(userId,GetExchangeId());
+            var userSecret = _exchangeSecretRepository.GetByUserAndExchange(userId, _exchangeName);
             if (userSecret == null) return assets;
         
             var binanceBalances = await _binanceWrapper.GetBalances(userSecret.ApiKey, userSecret.ApiSecret);
-            var notNullBalances = binanceBalances.Where(o => Double.Parse(o.free) != 0 || Double.Parse(o.locked) != 0);
+            var notNullBalances = binanceBalances.Where(o => Decimal.Parse(o.free) != 0 || Decimal.Parse(o.locked) != 0);
+
+            var translations = _marketDataService.GetCurrencyTranslations(_exchangeName);
+
             foreach (var balance in notNullBalances)
             {
-                var currency = _exchangeDataProvider.GetCurrency(_exchangeName, balance.asset);
-                if(currency != null)
+                if(translations.ContainsKey(balance.asset))
                 {
                     assets.Add(new Asset
                     {
-                        Currency = currency,
-                        CurrencyId = currency.Id,
-                        Amount = Double.Parse(balance.free) + Double.Parse(balance.locked)
+                        Currency = translations[balance.asset],
+                        Amount = Decimal.Parse(balance.free) + Decimal.Parse(balance.locked)
                     });
                 }
             }
             return assets;
-        }
-
-        public int GetExchangeId()
-        {
-            if (!_exchangeId.HasValue)
-            {
-                _exchangeId = _exchangeRepository.GetByName(_exchangeName).Id;
-            }
-            return _exchangeId.Value; //Get Id from staticDataProvider?? 
-        }
-
-        public int GetHistoryPrice(Currency currency, DateTime time)
-        {
-            throw new NotImplementedException();
         }
     }
 }

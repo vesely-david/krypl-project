@@ -13,22 +13,23 @@ namespace DataLayer.Infrastructure
         {
         }
 
-        public IEnumerable<UserAsset> GetByUserId(int userId)
+        public IEnumerable<UserAsset> GetByUserAndExchange(string userId, string exchangeId)
         {
             return _dbContext.UserAssets
-                .Include(o => o.StrategyAssets).Include(o => o.Exchange).Include(o => o.Currency)
+                .Where(o => o.Exchange == exchangeId && o.UserId == userId);
+        }
+
+        public IEnumerable<UserAsset> GetByUserId(string userId)
+        {
+            return _dbContext.UserAssets
+                .Include(o => o.StrategyAssets).Include(o => o.Exchange)
                 .Where(o => o.UserId == userId);
         }
-
-        public IEnumerable<UserAsset> GetByUserAndExchange(int userId, int exchangeId)
-        {
-            return _dbContext.UserAssets.Include(o => o.Currency)
-                .Where(o => o.ExchangeId == exchangeId && o.UserId == userId);
-        }
-
-        public IEnumerable<UserAsset> GetUserAssetsIncludingStrategies()
-        {
-            return _dbContext.UserAssets.Include(o => o.StrategyAssets).Include(o => o.Currency);
-        }
+        /*
+public IEnumerable<UserAsset> GetUserAssetsIncludingStrategies()
+{
+    return _dbContext.UserAssets.Include(o => o.StrategyAssets).Include(o => o.Currency);
+}
+*/
     }
 }

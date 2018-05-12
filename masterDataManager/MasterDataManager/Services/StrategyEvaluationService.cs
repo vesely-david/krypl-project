@@ -37,9 +37,9 @@ namespace MasterDataManager.Services
                 var ticks = JsonConvert.DeserializeObject<List<Tick>>(response);
 
                 var btcDict = ticks.Where(o => o.symbol.EndsWith("BTC"))
-                    .ToDictionary(o => o.symbol.Remove(o.symbol.Length - 3), o => Double.Parse(o.price));
+                    .ToDictionary(o => o.symbol.Remove(o.symbol.Length - 3), o => Decimal.Parse(o.price));
                 var usdtDict = ticks.Where(o => o.symbol.EndsWith("USDT"))
-                    .ToDictionary(o => o.symbol.Remove(o.symbol.Length - 4), o => Double.Parse(o.price));
+                    .ToDictionary(o => o.symbol.Remove(o.symbol.Length - 4), o => Decimal.Parse(o.price));
 
                 var btcPrice = usdtDict["BTC"];
 
@@ -56,11 +56,11 @@ namespace MasterDataManager.Services
 
                     foreach (var strategy in strategies)
                     {
-                        double btcSum;
+                        decimal btcSum;
                         try
                         {
                             btcSum = strategy.StrategyAssets.Sum(o => {
-                                var rate = o.UserAsset.Currency.Code == "BTC" ? 1 : btcDict[o.UserAsset.Currency.Code];
+                                var rate = o.UserAsset.Currency == "BTC" ? 1 : btcDict[o.UserAsset.Currency];
                                 return o.Amount * rate;
                             });
                         } catch(Exception ex)

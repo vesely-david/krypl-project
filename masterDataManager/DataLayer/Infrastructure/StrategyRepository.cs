@@ -15,7 +15,15 @@ namespace DataLayer.Infrastructure
         {
         }
 
-        public IEnumerable<Strategy> GetByUserId(int userId)
+        public IEnumerable<Strategy> GetAllForEvaluation()
+        {
+            return _dbContext.Strategies
+                .Include(o => o.Trades)
+                .Include(o => o.Evaluations)
+                .Include(o => o.StrategyAssets).ThenInclude(p => p.UserAsset);
+        }
+
+        public IEnumerable<Strategy> GetByUserId(string userId)
         {
             return _dbContext.Strategies
                 .Include(o => o.Trades)
@@ -24,25 +32,10 @@ namespace DataLayer.Infrastructure
                 .Where(o => o.UserId == userId);
         }
 
-        public IEnumerable<Strategy> GetAllForEvaluation()
-        {
-            return _dbContext.Strategies
-                .Include(o => o.Trades)
-                .Include(o => o.Evaluations)
-                .Include(o => o.StrategyAssets).ThenInclude(p => p.UserAsset).ThenInclude(p => p.Currency);
-        }
-
-        public Strategy GetTrades(int strategyId)
-        {
-            return _dbContext.Strategies.Include(o => o.Trades)
-                .FirstOrDefault(o => o.Id == strategyId);
-        }
-
-        public Strategy GetOverview(int strategyId)
+        public Strategy GetOverview(string strategyId)
         {
             return _dbContext.Strategies
                 .Include(o => o.Evaluations)
-                .Include(o => o.Exchange)
                 .FirstOrDefault(o => o.Id == strategyId);
         }
     }

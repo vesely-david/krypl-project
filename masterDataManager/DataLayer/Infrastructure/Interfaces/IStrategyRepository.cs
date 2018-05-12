@@ -7,9 +7,8 @@ namespace DataLayer.Infrastructure.Interfaces
 {
     public interface IStrategyRepository : IRepository<Strategy>
     {
-        IEnumerable<Strategy> GetByUserId(int userId);
+        IEnumerable<Strategy> GetByUserId(string userId);
         IEnumerable<Strategy> GetAllForEvaluation();
-        Strategy GetOverview(int strategyId);
-        Strategy GetTrades(int strategyId);
+        Strategy GetOverview(string strategyId);
     }
 }

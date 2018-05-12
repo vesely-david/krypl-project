@@ -17,7 +17,7 @@ namespace DataLayer.Infrastructure
             _dbContext = dbContext;
         }
 
-        public virtual T GetById(int id)
+        public virtual T GetById(string id)
         {
             return _dbContext.Set<T>().Find(id);
         }

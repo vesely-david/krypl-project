@@ -27,10 +27,5 @@ namespace MasterDataManager.Services
             var response = await _client.BinanceSignedRequest<BinanceAccountInfo>(url, HttpMethod.Get, null, apiKey, apiSecret);
             return response.balances.ToList();
         }
-
-        public int GetHistoryPrice(Currency currency, DateTime time)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

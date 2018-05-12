@@ -10,6 +10,6 @@ namespace MasterDataManager.Services.Interfaces
 {
     public interface IBalanceService
     {
-        void UpdateUserAssets(IEnumerable<Asset> assets, int userId, int exchangeId, TradingMode tradingMode);
+        void UpdateUserAssets(IEnumerable<Asset> assets, string userId, string exchange, TradingMode tradingMode);
     }
 }

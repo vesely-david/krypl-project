@@ -7,7 +7,7 @@ namespace DataLayer.Infrastructure.Interfaces
 {
     public interface IRepository<T> where T : IdEntity
     {
-        T GetById(int id);
+        T GetById(string id);
         IEnumerable<T> List();
         IEnumerable<T> List(Expression<Func<T, bool>> predicate);
         void Add(T entity);

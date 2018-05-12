@@ -13,24 +13,14 @@ namespace DataLayer.Infrastructure
         public TradeRepository(MasterDataContext dbContext) : base(dbContext)
         {
         }
-
         public Trade GetByUuid(string uuid)
         {
             return _dbContext.Trades.FirstOrDefault(o => o.ExchangeUuid == uuid);
         }
 
-        public IEnumerable<Trade> GetByStrategyId(int strategyId)
+        public IEnumerable<Trade> GetByStrategyId(string strategyId)
         {
-            return _dbContext.Strategies.Include(o => o.Trades)
-                .FirstOrDefault(o => o.Id == strategyId)?.Trades;
-        }
-
-        public Trade GetLast(int? strategyId)
-        {
-            return strategyId.HasValue ?
-                _dbContext.Trades.Where(o => o.StrategyId == strategyId)
-                    .OrderByDescending(o => o.Opened).FirstOrDefault() :
-                _dbContext.Trades.OrderByDescending(o => o.Opened).FirstOrDefault();
+            return _dbContext.Trades.Where(o => o.StrategyId == strategyId);
         }
     }
 }
