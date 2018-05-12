@@ -17,8 +17,8 @@ services:
       LETSENCRYPT_HOST: api.kryplproject.cz,www.api.kryplproject.cz
       LETSENCRYPT_EMAIL: h.kirchner@seznam.cz
 
-  marketDataProvider:
-    image: marketDataProvider
+  marketdataprovider:
+    image: marketdataprovider
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
     expose:

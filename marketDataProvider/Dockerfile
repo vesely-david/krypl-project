@@ -4,7 +4,7 @@ EXPOSE 80
 
 FROM microsoft/aspnetcore-build:2.0 AS build
 WORKDIR /src
-COPY MarketDataProvider.sln ./
+COPY marketDataProvider.sln ./
 COPY DataLayer/*.csproj ./DataLayer/
 COPY MarketDataProvider/*.csproj ./MarketDataProvider/
 
