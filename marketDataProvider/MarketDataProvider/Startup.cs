@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using DataLayer;
 using Microsoft.EntityFrameworkCore;
 using DataLayer.Repositories.Interfaces;
@@ -21,6 +16,7 @@ namespace MarketDataProvider
 {
     public class Startup
     {
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -33,8 +29,8 @@ namespace MarketDataProvider
         {
             services.AddDbContext<MarketDataContext>(options =>
                 options.UseSqlite(
-                    Configuration.GetConnectionString("Sqlite"), b => b.MigrationsAssembly("MarketDataProvider"))
-                );
+                    Configuration.GetConnectionString("Sqlite"), b => b.MigrationsAssembly("MarketDataProvider")
+                ));
 
             services.AddScoped<IMarketRepository, MarketRepository>();
             services.AddScoped<IExchangeRepository, ExchangeRepository>();

@@ -65,24 +65,25 @@ namespace MarketDataProvider.Migrations
                 {
                     Id = table.Column<string>(nullable: false),
                     CurrencyExchangeId = table.Column<string>(nullable: true),
-                    CurrencyId = table.Column<string>(nullable: true),
-                    ExchangeId = table.Column<string>(nullable: true)
+                    CurrencyId = table.Column<string>(nullable: false),
+                    ExchangeId = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ExchangeCurrencies", x => x.Id);
+                    table.UniqueConstraint("AK_ExchangeCurrencies_ExchangeId_CurrencyId", x => new { x.ExchangeId, x.CurrencyId });
                     table.ForeignKey(
                         name: "FK_ExchangeCurrencies_Currencies_CurrencyId",
                         column: x => x.CurrencyId,
                         principalTable: "Currencies",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_ExchangeCurrencies_Exchanges_ExchangeId",
                         column: x => x.ExchangeId,
                         principalTable: "Exchanges",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -90,41 +91,32 @@ namespace MarketDataProvider.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(nullable: false),
-                    ExchangeId = table.Column<string>(nullable: true),
+                    ExchangeId = table.Column<string>(nullable: false),
                     MarketExchangeId = table.Column<string>(nullable: true),
-                    MarketId = table.Column<string>(nullable: true)
+                    MarketId = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ExchangeMarkets", x => x.Id);
+                    table.UniqueConstraint("AK_ExchangeMarkets_ExchangeId_MarketId", x => new { x.ExchangeId, x.MarketId });
                     table.ForeignKey(
                         name: "FK_ExchangeMarkets_Exchanges_ExchangeId",
                         column: x => x.ExchangeId,
                         principalTable: "Exchanges",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_ExchangeMarkets_Markets_MarketId",
                         column: x => x.MarketId,
                         principalTable: "Markets",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_ExchangeCurrencies_CurrencyId",
                 table: "ExchangeCurrencies",
                 column: "CurrencyId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ExchangeCurrencies_ExchangeId",
-                table: "ExchangeCurrencies",
-                column: "ExchangeId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ExchangeMarkets_ExchangeId",
-                table: "ExchangeMarkets",
-                column: "ExchangeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ExchangeMarkets_MarketId",

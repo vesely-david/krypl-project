@@ -16,6 +16,12 @@ namespace DataLayer
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<ExchangeMarket>()
+                .HasAlternateKey(t => new { t.ExchangeId, t.MarketId });
+
+            modelBuilder.Entity<ExchangeCurrency>()
+                .HasAlternateKey(t => new { t.ExchangeId, t.CurrencyId });
         }
         public MarketDataContext(DbContextOptions<MarketDataContext> options) : base(options)
         {

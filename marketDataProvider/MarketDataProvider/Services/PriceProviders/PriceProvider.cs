@@ -1,4 +1,5 @@
-﻿using MarketDataProvider.Services.Models;
+﻿using MarketDataProvider.Enums;
+using MarketDataProvider.Services.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,5 +22,6 @@ namespace MarketDataProvider.Services.PriceProviders
         public abstract IEnumerable<Tick> GetMarketPrices(string market);
         public abstract decimal? GetPrice(string symbol);
         public abstract decimal? GetPrice(string market, string currency);
+        public abstract string GetUrl(OrderType orderType, string market, string currency, decimal amount);
     }
 }

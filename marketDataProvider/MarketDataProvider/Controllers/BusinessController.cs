@@ -9,6 +9,7 @@ using MarketDataProvider.Services;
 using System.Net.Http;
 using MarketDataProvider.Services.Models;
 using Newtonsoft.Json;
+using MarketDataProvider.Enums;
 
 namespace MarketDataProvider.Controllers
 {
@@ -33,6 +34,16 @@ namespace MarketDataProvider.Controllers
         {
             var price = _priceService.GetExchange(exchange)?.GetPrice(market, currency);
             if (price != null) return Ok(price);
+            else return BadRequest("Not found");
+        }
+
+        [HttpGet]
+        [Route("url/{exchange}/{market}_{currency}")] //Add API key and secret???
+        public IActionResult GetOrderUrl(string exchange, string market, string currency, OrderType? orderType, decimal? amount)
+        {
+            if (!orderType.HasValue || !amount.HasValue || amount.Value <= 0) return BadRequest("Incorrect parameters");
+            var url = _priceService.GetExchange(exchange)?.GetUrl(orderType.Value, market, currency, amount.Value);
+            if (url != null) return Ok(url);
             else return BadRequest("Not found");
         }
     }

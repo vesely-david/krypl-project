@@ -18,8 +18,7 @@ namespace DataLayer.Services
 
         public MarketDataMemCacheService(
             IServiceScopeFactory scopeFactory,
-            IMemoryCache memoryCache
-            )
+            IMemoryCache memoryCache)
         {
             _scopeFactory = scopeFactory;
             _memoryCache = memoryCache;

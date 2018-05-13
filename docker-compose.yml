@@ -23,6 +23,8 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
     expose:
       - "80"
+    volumes:
+      - "./database/MarketsDatabase.db:/app/Database/MarketsDatabase.db"
     build:
       context: ./marketDataProvider
       dockerfile: Dockerfile

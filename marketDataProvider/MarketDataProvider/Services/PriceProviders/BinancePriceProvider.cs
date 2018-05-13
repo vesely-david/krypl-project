@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MarketDataProvider.Enums;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace MarketDataProvider.Services.PriceProviders
 {
@@ -53,6 +55,20 @@ namespace MarketDataProvider.Services.PriceProviders
         {
             var binancePrices = await _client.GetStringAsync("https://www.binance.com/api/v3/ticker/price");
             _ticks = JsonConvert.DeserializeObject<List<BinanceTick>>(binancePrices);
+        }
+
+        public override string GetUrl(OrderType orderType, string market, string currency, decimal amount)
+        {
+            var url = QueryHelpers.AddQueryString(String.Empty, new Dictionary<string, string>
+            {
+                { "side", orderType.ToString() },
+                { "amount", amount.ToString() },
+                //......
+            });
+            return url;
+
+
+
         }
     }
 }

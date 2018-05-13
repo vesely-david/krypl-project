@@ -3,11 +3,16 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27004.2005
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarketDataProvider", "MarketDataProvider\MarketDataProvider.csproj", "{15952940-0008-42CE-96DC-F6AEFB7949E0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MarketDataProvider", "MarketDataProvider\MarketDataProvider.csproj", "{15952940-0008-42CE-96DC-F6AEFB7949E0}"
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{FF60991F-30CA-488F-A08E-F603BBFCF57E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataLayer", "DataLayer\DataLayer.csproj", "{05C8C6AA-E847-4F42-893B-34849779AA0C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataLayer", "DataLayer\DataLayer.csproj", "{05C8C6AA-E847-4F42-893B-34849779AA0C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{80056754-7443-4BAA-A8B3-149B5C370715}"
+	ProjectSection(SolutionItems) = preProject
+		DevelopmentDb\MarketsDatabase.db = DevelopmentDb\MarketsDatabase.db
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

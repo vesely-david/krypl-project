@@ -53,15 +53,17 @@ namespace MarketDataProvider.Migrations
 
                     b.Property<string>("CurrencyExchangeId");
 
-                    b.Property<string>("CurrencyId");
+                    b.Property<string>("CurrencyId")
+                        .IsRequired();
 
-                    b.Property<string>("ExchangeId");
+                    b.Property<string>("ExchangeId")
+                        .IsRequired();
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurrencyId");
+                    b.HasAlternateKey("ExchangeId", "CurrencyId");
 
-                    b.HasIndex("ExchangeId");
+                    b.HasIndex("CurrencyId");
 
                     b.ToTable("ExchangeCurrencies");
                 });
@@ -71,15 +73,17 @@ namespace MarketDataProvider.Migrations
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("ExchangeId");
+                    b.Property<string>("ExchangeId")
+                        .IsRequired();
 
                     b.Property<string>("MarketExchangeId");
 
-                    b.Property<string>("MarketId");
+                    b.Property<string>("MarketId")
+                        .IsRequired();
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ExchangeId");
+                    b.HasAlternateKey("ExchangeId", "MarketId");
 
                     b.HasIndex("MarketId");
 
@@ -108,22 +112,26 @@ namespace MarketDataProvider.Migrations
                 {
                     b.HasOne("DataLayer.Models.Currency", "Currency")
                         .WithMany()
-                        .HasForeignKey("CurrencyId");
+                        .HasForeignKey("CurrencyId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("DataLayer.Models.Exchange", "Exchange")
                         .WithMany("ExchangeCurrencies")
-                        .HasForeignKey("ExchangeId");
+                        .HasForeignKey("ExchangeId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("DataLayer.Models.ExchangeMarket", b =>
                 {
                     b.HasOne("DataLayer.Models.Exchange", "Exchange")
                         .WithMany("ExchangeMarkets")
-                        .HasForeignKey("ExchangeId");
+                        .HasForeignKey("ExchangeId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("DataLayer.Models.Market", "Market")
                         .WithMany()
-                        .HasForeignKey("MarketId");
+                        .HasForeignKey("MarketId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("DataLayer.Models.Market", b =>
