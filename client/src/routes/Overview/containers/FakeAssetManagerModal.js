@@ -2,6 +2,15 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Button, Header, Modal, Message, Form, Icon, Label } from 'semantic-ui-react'
 
+const getCurrency = (dataObject, exchange, currency) => {
+  const ex = dataObject.find(o => o.id === exchange)
+  return ex ? ex.currencies.find(o => o.id === currency) : null
+}
+
+const getExchange = (dataObject, exchange) => {
+  return dataObject.find(o => o.id === exchange)
+}
+
 class FakeAssetManagerModal extends React.Component {
   constructor (props) {
     super(props)
@@ -14,33 +23,9 @@ class FakeAssetManagerModal extends React.Component {
       assetValueMinimum: 0,
       assetValueError: false,
       showMessage: false,
-      finalObject: {},
-      submitUnclocked: false
+      submitUnclocked: false,
+      toSubmit: [],
     }
-  }
-
-  onModalOpen = () => {
-    let newFinalObject = {}
-
-    this.props.assetOptions.forEach((exchange) => {
-      if (!newFinalObject[exchange.value]) newFinalObject[exchange.value] = {}
-      exchange.currencies.forEach(currency => {
-        newFinalObject[exchange.value][currency.value] = {}
-        newFinalObject[exchange.value][currency.value].value = 0
-        newFinalObject[exchange.value][currency.value].min = 0
-        newFinalObject[exchange.value][currency.value].text = currency.text
-        newFinalObject[exchange.value][currency.value].currValue = currency.value
-      })
-    })
-
-    this.props.assets.forEach((asset) => {
-      asset.assets.forEach((currency) => {
-        newFinalObject[asset.value][currency.value].value = currency.sum
-        newFinalObject[asset.value][currency.value].min = currency.sum - currency.free
-      })
-    })
-
-    this.setState({ finalObject: newFinalObject })
   }
 
   onInputChange = (e, { name, value }) => {
@@ -48,6 +33,10 @@ class FakeAssetManagerModal extends React.Component {
   }
 
   onExchangeSelect = (e, { value }) => {
+    const { toSubmit } = this.state
+    if (!getExchange(toSubmit, value)) {
+      this.setState({ toSubmit: [...toSubmit, { id: value, currencies: [] }] })
+    }
     if (value === this.state.selectedExchange) return
     this.setState({
       selectedExchange: value,
@@ -57,10 +46,14 @@ class FakeAssetManagerModal extends React.Component {
 
   onCurrencySelect = (e, { value }) => {
     if (value === this.state.selectedCurrency) return
-    const { finalObject, selectedExchange } = this.state
+    const { selectedExchange, toSubmit } = this.state
+    const { marketData } = this.props
+
+    const currencyOrigin = getCurrency(marketData, selectedExchange, value)
+    const currencyNow = getCurrency(toSubmit, selectedExchange, value)
     this.setState({
-      assetValue: finalObject[selectedExchange][value].value,
-      assetValueMinimum: finalObject[selectedExchange][value].min,
+      assetValue: currencyNow ? currencyNow.amount : currencyOrigin ? currencyOrigin.sum : 0,
+      assetValueMinimum: currencyOrigin ? currencyOrigin.sum - currencyOrigin.free : 0,
       assetValueError: false,
       selectedCurrency: value
     })
@@ -68,29 +61,38 @@ class FakeAssetManagerModal extends React.Component {
 
   onAssetAdd = () => {
     const {
+      toSubmit,
       selectedExchange,
       selectedCurrency,
       assetValue,
-      finalObject
     } = this.state
+    const {
+      assets,
+    } = this.props
 
-    // validate
-    var newFinalObject = Object.assign({}, finalObject)
-    const curr = finalObject[selectedExchange][selectedCurrency]
-
-    if (!assetValue.match(/^(0\.\d+)$|^([1-9]\d*(\.\d+)?)$/) || parseFloat(assetValue) < curr.min) { // Not OK
+    const currencyAsset = getCurrency(assets, selectedExchange, selectedCurrency)
+    const minAmount = currencyAsset ? currencyAsset.sum - currencyAsset.free : 0
+    if (!assetValue.match(/^(0\.\d+)$|^([1-9]\d*(\.\d+)?)$/) ||
+      (minAmount && minAmount > parseFloat(assetValue))) {
       this.setState({
         assetValueError: true,
       })
       return
     }
-
-    newFinalObject[selectedExchange][selectedCurrency].value = parseFloat(assetValue)
+    let newToSubmit = [...toSubmit]
+    let currency = getCurrency(newToSubmit, selectedExchange, selectedCurrency)
+    if (currency) {
+      currency.amount = parseFloat(assetValue)
+    } else {
+      getExchange(newToSubmit, selectedExchange).currencies.push(
+        { id: selectedCurrency, amount: parseFloat(assetValue), minAmount: minAmount }
+      )
+    }
     this.setState({
       assetValue: '',
       selectedCurrency: null,
       assetValueError: false,
-      finalObject: newFinalObject,
+      toSubmit: newToSubmit,
       assetValueMinimum: 0,
       submitUnclocked: true
     })
@@ -99,30 +101,30 @@ class FakeAssetManagerModal extends React.Component {
   onAssetRemove = (currency) => {
     const {
       selectedExchange,
-      finalObject,
+      toSubmit,
     } = this.state
 
-    var newFinalObject = Object.assign({}, finalObject)
-
-    if (finalObject[selectedExchange][currency].min > 0) {
-      newFinalObject[selectedExchange][currency].value = newFinalObject[selectedExchange][currency].min
-    } else {
-      newFinalObject[selectedExchange][currency].value = 0
-    }
+    const newToSubmit = toSubmit.map(o => o.id === selectedExchange
+      ? { ...o,
+        currencies: o.currencies
+        .map(p => p.id === currency
+        ? { ...p, amount: p.minAmount ? p.minAmount : 0 }
+        : p) }
+      : o)
     this.setState({
-      finalObject: newFinalObject,
+      toSubmit: newToSubmit,
       submitUnclocked: true
     })
   }
 
   onSubmit = async () => {
     const {
-      finalObject,
+      toSubmit,
       selectedExchange
     } = this.state
 
-    var assetsToSubmit = Object.keys(finalObject[selectedExchange]).map(o => finalObject[selectedExchange][o])
-      .filter(o => o.value > 0).map(o => ({ currency: o.currValue, amount: parseFloat(o.value) }))
+    const assetsToSubmit = getExchange(toSubmit, selectedExchange).currencies
+      .map(o => ({ currency: o.id, amount: o.amount }))
     const error = await this.props.submitAssets(selectedExchange, assetsToSubmit)
     if (error !== null) this.setState({ error: error })
     else this.setState({ selectedExchange: null })
@@ -144,6 +146,7 @@ class FakeAssetManagerModal extends React.Component {
 
   render () {
     const {
+      toSubmit,
       selectedExchange,
       selectedCurrency,
       showMessage,
@@ -151,30 +154,29 @@ class FakeAssetManagerModal extends React.Component {
       assetValue,
       assetValueError,
       assetValueMinimum,
-      finalObject,
       submitUnclocked
     } = this.state
     const {
       color,
-      assetOptions,
+      marketData,
+      marketDataFetching,
       submitAssetsFetching,
-      exchangesOverviewFetching,
     } = this.props
 
-    const possibleExchanges = assetOptions
-      ? assetOptions.map(o => ({ key: o.value, text: o.text, value: o.value }))
+    const possibleExchanges = marketData
+      ? marketData.map(o => ({ key: o.id, text: o.name, value: o.id }))
       : []
     const possibleCurrencies = selectedExchange
-      ? assetOptions.find(o => o.value === selectedExchange).currencies
-        .map(o => ({ key: o.value, text: o.text, value: o.value }))
+      ? marketData.find(o => o.id === selectedExchange).currencies
+        .map(o => ({ key: o.id, text: o.id, value: o.id }))
       : []
 
     return (
       <Modal trigger={
         <Button
-          disabled={exchangesOverviewFetching || possibleExchanges.length === 0}
+          disabled={marketDataFetching || possibleExchanges.length === 0}
           color={color}
-          loading={exchangesOverviewFetching}
+          loading={marketDataFetching}
         >
           Manage assets
         </Button>
@@ -227,18 +229,16 @@ class FakeAssetManagerModal extends React.Component {
               </Form.Group>
             </Form>
             <div style={{ minHeight: '30px' }}>
-              {selectedExchange && Object.keys(finalObject[selectedExchange])
-                .filter(o => finalObject[selectedExchange][o].value > 0)
-                .map(o => {
-                  const curr = finalObject[selectedExchange][o]
-                  return (
-                    <Label className='currencyLabel' color={color} key={curr.currValue}>
-                      {`${curr.text} ${curr.value}`}
-                      <Label.Detail>{o.taken}</Label.Detail>
-                      { curr.min !== curr.value &&
-                        <Icon name='close' onClick={() => this.onAssetRemove(curr.currValue)} />}
-                    </Label>)
-                })}
+              {selectedExchange && getExchange(toSubmit, selectedExchange).currencies
+                .filter(o => o.amount > 0)
+                .map(o => (
+                  <Label className='currencyLabel' color={color} key={o.id}>
+                    {`${o.id} ${o.amount}`}
+                    <Label.Detail>{o.taken}</Label.Detail>
+                    { o.minAmount < o.amount &&
+                      <Icon name='close' onClick={() => this.onAssetRemove(o.id)} />}
+                  </Label>
+                ))}
             </div>
           </div>
           <Message
@@ -264,11 +264,11 @@ class FakeAssetManagerModal extends React.Component {
 
 FakeAssetManagerModal.propTypes = {
   color: PropTypes.string,
-  assetOptions: PropTypes.array,
   assets: PropTypes.array,
   submitAssets: PropTypes.func,
   submitAssetsFetching: PropTypes.bool,
-  exchangesOverviewFetching: PropTypes.bool,
+  marketData: PropTypes.array,
+  marketDataFetching: PropTypes.bool,
 }
 
 export default FakeAssetManagerModal

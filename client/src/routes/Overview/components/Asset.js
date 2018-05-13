@@ -3,13 +3,13 @@ import PropTypes from 'prop-types'
 
 const StrategyList = ({
   asset: {
-    text,
+    name,
     sum
   }
 }) => {
   return (
     <div className='smallPaddingLeft'>
-      <div><b>{text}</b></div>
+      <div><b>{name}</b></div>
       <div className='littlePaddingLeft'>{sum}</div>
     </div>
   )

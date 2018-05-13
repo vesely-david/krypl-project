@@ -75,31 +75,7 @@ export function mirrorExchangeAssets (exchange) {
   function mirrorAssetsFailure () { return { type: MIRROR_ASSETS_ERROR } }
 }
 
-export function fetchExchangesOverview () {
-  return async dispatch => {
-    dispatch(exchangeOverviewRequest())
-    function onSuccess (exchangesOverview) {
-      dispatch(exchangeOverviewSuccess(exchangesOverview))
-    }
-    function onError (error) {
-      dispatch(exchangeOverviewFailure(error))
-    }
-
-    try {
-      const exchangesOverview = await balanceService.getExchangesOverview()
-      return onSuccess(exchangesOverview)
-    } catch (error) {
-      return onError(error)
-    }
-  }
-
-  function exchangeOverviewRequest () { return { type: EXCHANGES_OVERVIEW_REQUEST } }
-  function exchangeOverviewSuccess (exchangesOverview) { return { type: EXCHANGES_OVERVIEW_SUCCESS, payload: exchangesOverview } }
-  function exchangeOverviewFailure () { return { type: EXCHANGES_OVERVIEW_ERROR } }
-}
-
 export const actions = {
-  fetchExchangesOverview,
   submitPaperAssets,
   mirrorExchangeAssets,
   fetchAllOverviews

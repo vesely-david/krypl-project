@@ -2,11 +2,11 @@ import { authHeader, authHeaderJsonType } from '../helpers'
 
 export const balanceService = {
   mirrorRealAssets,
-  mirrorPaperAssets,
-  getExchangesOverview
+  mirrorPaperAssets
 }
 
 const addr = 'https://api.kryplproject.cz/client/'
+//const addr = 'http://localhost:54849/client/'
 
 async function mirrorRealAssets (exchange) {
   const requestOptions = {
@@ -34,17 +34,4 @@ async function mirrorPaperAssets (exchange, assets) {
   }
   var error = await response.json()
   throw new Error(error)
-}
-
-async function getExchangesOverview () {
-  const requestOptions = {
-    method: 'GET',
-    headers: authHeader()
-  }
-  var response = await fetch(addr + 'exchangesOverview', requestOptions)
-
-  if (response.ok) {
-    return response.json()
-  }
-  throw new Error(response.status)
 }

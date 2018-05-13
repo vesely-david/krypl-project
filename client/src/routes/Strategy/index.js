@@ -10,10 +10,10 @@ export default (store) => ({
       /*  Webpack - use require callback to define
           dependencies for bundling   */
       const Strategy = require('./containers/StrategyContainer').default
-      //const reducer = require('./modules/backtest').default
+      const reducer = require('./modules/strategy').default
 
       /*  Add the reducer to the store on key 'backtest'  */
-      //injectReducer(store, { key: 'backtest', reducer })
+      injectReducer(store, { key: 'strategy', reducer })
 
       /*  Return getComponent   */
       cb(null, Strategy)

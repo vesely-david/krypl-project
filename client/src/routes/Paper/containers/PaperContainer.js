@@ -3,10 +3,12 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import PropTypes from 'prop-types'
 import { paperActions } from '../modules/paper'
+import { commonMarketDataActions } from '../../../commonModules/commonMarketData'
 import StrategyPage from '../../../components/StrategyPage'
 
 class PaperContainer extends React.Component {
   componentDidMount () {
+    this.props.actions.fetchCommon()
     this.props.actions.fetchPaperStrategies()
     this.props.actions.fetchPaperOverview()
   }
@@ -38,7 +40,7 @@ PaperContainer.propTypes = {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    actions: bindActionCreators(paperActions, dispatch)
+    actions: bindActionCreators({ ...paperActions, fetchCommon: commonMarketDataActions.fetchCommonMarketData }, dispatch)
   }
 }
 

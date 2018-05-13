@@ -5,14 +5,14 @@ import '../styles/ExchangeBlock.scss'
 
 const ExchangeBlock = ({
   exchange,
-  assets
+  currencies
 }) => {
   return (
     //TODO : Check if Free > 0; if not => red color with infobox onHover 
     <div className='exchangeBlock'>
       <h4>{exchange}</h4>
       <div className='assetWrapper'>
-        {assets.map(o => <Asset key={o.value} asset={o} />)}
+        {currencies.map(o => <Asset key={o.id} asset={o} />)}
       </div>
     </div>
   )
@@ -20,7 +20,7 @@ const ExchangeBlock = ({
 
 ExchangeBlock.propTypes = {
   exchange: PropTypes.string,
-  assets: PropTypes.array
+  currencies: PropTypes.array
 }
 
 export default ExchangeBlock

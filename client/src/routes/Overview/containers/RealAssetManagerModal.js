@@ -33,17 +33,17 @@ class RealAssetManagerModal extends React.Component {
       error,
     } = this.state
     const {
-      assetOptions,
+      marketData,
       mirrorExchangeAssetsFetching,
-      exchangesOverviewFetching
+      marketDataFetching
     } = this.props
-    const possibleExchanges = assetOptions ? assetOptions.map(o => ({ key: o.value, text: o.text, value: o.value })) : []
+    const possibleExchanges = marketData ? marketData.map(o => ({ key: o.id, text: o.name, value: o.id })) : []
     return (
       <Modal trigger={
         <Button
-          disabled={exchangesOverviewFetching || possibleExchanges.length === 0}
+          disabled={marketDataFetching || possibleExchanges.length === 0}
           color='green'
-          loading={exchangesOverviewFetching}
+          loading={marketDataFetching}
         >
           Manage assets
         </Button>
@@ -84,10 +84,10 @@ class RealAssetManagerModal extends React.Component {
 }
 
 RealAssetManagerModal.propTypes = {
-  assetOptions: PropTypes.array,
+  marketData: PropTypes.array,
   mirrorExchangeAssets: PropTypes.func,
   mirrorExchangeAssetsFetching: PropTypes.bool,
-  exchangesOverviewFetching: PropTypes.bool,
+  marketDataFetching: PropTypes.bool,
 }
 
 export default RealAssetManagerModal

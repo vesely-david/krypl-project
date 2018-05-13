@@ -19,6 +19,7 @@ export const strategyService = {
 }
 
 const addr = 'https://api.kryplproject.cz/client/'
+//const addr = 'http://localhost:54849/client/'
 
 async function getRealStrategies () {
   const requestOptions = {

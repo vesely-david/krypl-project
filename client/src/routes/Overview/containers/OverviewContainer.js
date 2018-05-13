@@ -6,24 +6,21 @@ import { actions } from '../modules/overview'
 import { Segment, Button } from 'semantic-ui-react'
 import RealAssetManagerModal from './RealAssetManagerModal'
 import FakeAssetManagerModal from './FakeAssetManagerModal'
-import ExchangeBlock from '../comonents/ExchangeBlock'
+import ExchangeBlock from '../components/ExchangeBlock'
+import { commonMarketDataActions } from '../../../commonModules/commonMarketData'
 import '../styles/OverviewContainer.scss'
 
 class OverviewContainer extends React.Component {
   componentDidMount () {
-    this.props.actions.fetchExchangesOverview()
+    this.props.actions.fetchCommon()
     this.props.actions.fetchAllOverviews()
   }
 
   render () {
     const {
       actions,
-      exchangesOverview: {
-        real,
-        paper,
-        backtest
-      },
-      exchangesOverviewFetching,
+      commonMarketDataFetching,
+      commonMarketData,
       mirrorExchangeAssetsFetching,
       submitPaperAssetsFetching,
       realAssets,
@@ -31,7 +28,6 @@ class OverviewContainer extends React.Component {
       isRealDataFetching,
       isPaperDataFetching,
     } = this.props
-    // debugger;
     return (
       <div className='mainOverview'>
         <h2>Overview</h2>
@@ -39,15 +35,15 @@ class OverviewContainer extends React.Component {
           <div className='mainOverviewSegmanetHeading'>
             <h3>Real Assets</h3>
             <RealAssetManagerModal
-              assetOptions={real}
+              marketData={commonMarketData}
+              marketDataFetching={commonMarketDataFetching}
               mirrorExchangeAssets={actions.mirrorExchangeAssets}
               mirrorExchangeAssetsFetching={mirrorExchangeAssetsFetching}
-              exchangesOverviewFetching={exchangesOverviewFetching}
             />
           </div>
-          {realAssets.length > 0 && <div className='divider' />}
+          {realAssets && realAssets.length > 0 && <div className='divider' />}
           {realAssets.map(o =>
-            <ExchangeBlock exchange={o.text} assets={o.assets} key={o.value} />
+            <ExchangeBlock exchange={o.name} currencies={o.currencies} key={o.id} />
           )}
         </Segment>
         <Segment color='teal' className='mainOverviewSegment' loading={isPaperDataFetching}>
@@ -56,15 +52,15 @@ class OverviewContainer extends React.Component {
             <FakeAssetManagerModal
               color='teal'
               assets={paperAssets}
-              assetOptions={paper}
+              marketData={commonMarketData}
+              marketDataFetching={commonMarketDataFetching}
               submitAssets={actions.submitPaperAssets}
               submitAssetsFetching={submitPaperAssetsFetching}
-              exchangesOverviewFetching={exchangesOverviewFetching}
             />
           </div>
-          {paperAssets.length > 0 && <div className='divider' />}
+          {paperAssets && paperAssets.length > 0 && <div className='divider' />}
           {paperAssets.map(o =>
-            <ExchangeBlock exchange={o.text} assets={o.assets} key={o.value} />
+            <ExchangeBlock exchange={o.name} currencies={o.currencies} key={o.id} />
           )}
         </Segment>
         <Segment color='blue' className='mainOverviewSegment'>
@@ -84,15 +80,15 @@ OverviewContainer.propTypes = {
   paperAssets: PropTypes.array,
   isRealDataFetching: PropTypes.bool,
   isPaperDataFetching: PropTypes.bool,
-  exchangesOverview: PropTypes.object,
-  exchangesOverviewFetching: PropTypes.bool,
+  commonMarketData: PropTypes.array,
+  commonMarketDataFetching: PropTypes.bool,
   mirrorExchangeAssetsFetching: PropTypes.bool,
   submitPaperAssetsFetching: PropTypes.bool,
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    actions: bindActionCreators(actions, dispatch)
+    actions: bindActionCreators({ ...actions, fetchCommon: commonMarketDataActions.fetchCommonMarketData }, dispatch)
   }
 }
 
@@ -102,10 +98,11 @@ const mapStateToProps = (state) => {
     paperAssets:                   state.paper.overview.assets,
     isRealDataFetching:            state.real.overviewFetching,
     isPaperDataFetching:           state.paper.overviewFetching,
-    exchangesOverview:             state.overview.exchangesOverview,
-    exchangesOverviewFetching:     state.overview.exchangesOverviewFetching,
     mirrorExchangeAssetsFetching:  state.overview.mirrorExchangeAssetsFetching,
-    submitPaperAssetsFetching:     state.overview.submitPaperAssetsFetching
+    submitPaperAssetsFetching:     state.overview.submitPaperAssetsFetching,
+    commonMarketData:              state.marketData.marketData,
+    commonMarketDataFetching:      state.marketData.marketDataFetching
+
   }
 }
 

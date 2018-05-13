@@ -35,6 +35,14 @@ class NewStrategyModal extends React.Component {
 
   onCurrencySelect = (e, { value }) => {
     if (value === this.state.selectedCurrency) return
+    const {
+      strategyAssets,
+      selectedExchange
+    } = this.state
+    const curr = selectedExchange
+      ? strategyAssets.find(o => o.exchange === selectedExchange && o.currency === value)
+      : null
+    if (curr) this.setState({ assetValue: curr.amount })
     this.setState({
       assetValueError: false,
       selectedCurrency: value
@@ -50,16 +58,21 @@ class NewStrategyModal extends React.Component {
     } = this.state
     const allAssets = this.props.allAssets
 
-    const curr = allAssets.find(o => o.value === selectedExchange).assets.find(o => o.value === selectedCurrency)
+    const asset = allAssets.find(o => o.id === selectedExchange).currencies.find(o => o.id === selectedCurrency)
     const amount = parseFloat(assetValue)
-    if (!assetValue.match(/^(0\.\d+)$|^([1-9]\d*(\.\d+)?)$/) || amount > curr.free || amount <= 0) { // Not OK
+    if (!assetValue.match(/^(0\.\d+)$|^([1-9]\d*(\.\d+)?)$/) || amount > asset.free || amount <= 0) { // Not OK
       this.setState({
         assetValueError: true,
       })
       return
     }
+    const curr = strategyAssets.find(o => o.exchange === selectedExchange && o.currency === selectedCurrency)
+    const newAssets = curr ? strategyAssets.map(o => o.exchange === selectedExchange && o.currency === selectedCurrency
+        ? { ...o, amount }
+        : o)
+      : [ ...strategyAssets, { exchange: selectedExchange, currency: selectedCurrency, amount } ]
     this.setState({
-      strategyAssets: [ ...strategyAssets, { currency: selectedCurrency, amount } ],
+      strategyAssets: newAssets,
       assetValue: '',
       selectedCurrency: null,
       assetValueError: false,
@@ -70,10 +83,11 @@ class NewStrategyModal extends React.Component {
   onAssetRemove = (currency) => {
     const {
       strategyAssets,
+      selectedExchange
     } = this.state
 
     this.setState({
-      strategyAssets: strategyAssets.filter(o => o.currency !== currency),
+      strategyAssets: strategyAssets.filter(o => o.exchange !== selectedExchange || o.currency !== currency),
       submitUnclocked: true
     })
   }
@@ -86,9 +100,10 @@ class NewStrategyModal extends React.Component {
       strategyAssets
     } = this.state
 
-    const id = await this.props.registerStrategy(name, selectedExchange, description, strategyAssets)
+    const id = await this.props
+      .registerStrategy(name, selectedExchange, description, strategyAssets.filter(o => o.exchange === selectedExchange))
     this.setState({ returnedId: id })
-    if (id > 0) this.cleanForm(false)
+    if (id) this.cleanForm(false)
   }
 
   cleanForm = (deleteReturnedId) => {
@@ -101,7 +116,7 @@ class NewStrategyModal extends React.Component {
       assetValue: '',
       strategyAssets: []
     })
-    if(deleteReturnedId) this.setState({ returnedId: null })
+    if (deleteReturnedId) this.setState({ returnedId: null })
   }
 
   render () {
@@ -121,16 +136,16 @@ class NewStrategyModal extends React.Component {
     } = this.props
 
     const possibleExchanges = allAssets
-      ? allAssets.map(o => ({ key: o.value, text: o.text, value: o.value }))
+      ? allAssets.map(o => ({ key: o.id, text: o.name, value: o.id }))
       : []
     const exchange = selectedExchange
-      ? allAssets.find(o => o.value === selectedExchange).assets : null
+      ? allAssets.find(o => o.id === selectedExchange).currencies : null
     const possibleCurrencies = selectedExchange
       ? exchange.filter(o => o.free > 0)
-        .map(o => ({ key: o.value, text: o.text, value: o.value }))
+        .map(o => ({ key: o.id, text: o.name, value: o.id }))
       : []
     const currency = selectedExchange && selectedCurrency
-      ? exchange.find(o => o.value === selectedCurrency) : null
+      ? exchange.find(o => o.id === selectedCurrency) : null
     return (
       <Modal
         trigger={<Button primary>New Strategy</Button>}
@@ -193,20 +208,21 @@ class NewStrategyModal extends React.Component {
             </Form.Group>
           </Form>
           <div style={{ minHeight: '30px' }}>
-            {strategyAssets.map(curr => {
-              return (
-                <Label className='currencyLabel' key={curr.currency}>
-                  {`${curr.currency} ${curr.amount}`}
-                  <Icon name='close' onClick={() => this.onAssetRemove(curr.currency)} />
-                </Label>)
-            })}
+            {selectedExchange && strategyAssets.filter(o => o.exchange === selectedExchange)
+              .map(curr => {
+                return (
+                  <Label className='currencyLabel' key={curr.currency}>
+                    {`${curr.currency} ${curr.amount}`}
+                    <Icon name='close' onClick={() => this.onAssetRemove(curr.currency)} />
+                  </Label>)
+              })}
           </div>
           <Message
             onDismiss={() => this.setState({ returnedId: null })}
-            success={returnedId && returnedId > 0}
-            error={returnedId && returnedId <= 0}
+            success={returnedId !== null}
+            error={returnedId === null}
             hidden={returnedId === null}
-            header={returnedId && returnedId > 0 ? `Strategy Registered. Id: ${returnedId}` : 'Error getting id'}
+            header={returnedId ? `Strategy Registered. Id: ${returnedId}` : 'Error getting id'}
           />
         </Modal.Content>
         <Modal.Actions>
