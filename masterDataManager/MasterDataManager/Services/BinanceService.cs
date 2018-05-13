@@ -18,7 +18,6 @@ namespace MasterDataManager.Services
         private IMarketDataService _marketDataService;
         private IExchangeSecretRepository _exchangeSecretRepository;
         private readonly string _exchangeName  = "binance";
-        private int? _exchangeId = null;
 
         public BinanceService(
             UserManager<User> userManager,
@@ -40,10 +39,10 @@ namespace MasterDataManager.Services
             var binanceBalances = await _binanceWrapper.GetBalances(userSecret.ApiKey, userSecret.ApiSecret);
             var notNullBalances = binanceBalances.Where(o => Decimal.Parse(o.free) != 0 || Decimal.Parse(o.locked) != 0);
 
-            var translations = _marketDataService.GetCurrencyTranslations(_exchangeName);
-
+            var translations = await _marketDataService.GetCurrencyTranslationsAsync(_exchangeName);
             foreach (var balance in notNullBalances)
             {
+              
                 if(translations.ContainsKey(balance.asset))
                 {
                     assets.Add(new Asset

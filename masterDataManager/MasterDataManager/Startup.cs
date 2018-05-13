@@ -37,10 +37,9 @@ namespace MasterDataManager
 
         public void ConfigureServices(IServiceCollection services)
         {
-
             services.AddDbContext<MasterDataContext>(options =>
                 options.UseSqlite(
-                    Configuration.GetConnectionString("Sqlite"), b => b.MigrationsAssembly("MasterDataManager"))
+                    Configuration.GetConnectionString("Sqlite"))
                 );
 
             services.AddScoped<IStrategyRepository, StrategyRepository>();
@@ -49,6 +48,7 @@ namespace MasterDataManager
             services.AddScoped<IExchangeObjectFactory, ExchangeObjectFactory>();
             services.AddScoped<IExchangeSecretRepository, ExchangeSecretRepository>();
             services.AddScoped<IBalanceService, BalanceService>();
+            services.AddScoped<IMarketDataService, MarketDataService>();
             services.AddSingleton<IHostedService, StrategyEvaluationService>();
             services.AddScoped<BinanceService>();
 

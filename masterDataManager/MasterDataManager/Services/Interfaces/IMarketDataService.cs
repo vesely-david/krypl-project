@@ -7,6 +7,6 @@ namespace MasterDataManager.Services.Interfaces
 {
     public interface IMarketDataService
     {
-        Dictionary<string, string> GetCurrencyTranslations(string exchange);
+        Task<Dictionary<string, string>> GetCurrencyTranslationsAsync(string exchange);
     }
 }

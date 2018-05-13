@@ -12,8 +12,7 @@ namespace DataLayer.Migrations
                 name: "AspNetRoles",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                    Id = table.Column<string>(nullable: false),
                     ConcurrencyStamp = table.Column<string>(nullable: true),
                     Name = table.Column<string>(maxLength: 256, nullable: true),
                     NormalizedName = table.Column<string>(maxLength: 256, nullable: true)
@@ -27,8 +26,7 @@ namespace DataLayer.Migrations
                 name: "AspNetUsers",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                    Id = table.Column<string>(nullable: false),
                     AccessFailedCount = table.Column<int>(nullable: false),
                     ConcurrencyStamp = table.Column<string>(nullable: true),
                     Email = table.Column<string>(maxLength: 256, nullable: true),
@@ -50,34 +48,6 @@ namespace DataLayer.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Currencies",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Code = table.Column<string>(nullable: true),
-                    Name = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Currencies", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Exchanges",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(nullable: true),
-                    Web = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Exchanges", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
@@ -85,7 +55,7 @@ namespace DataLayer.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     ClaimType = table.Column<string>(nullable: true),
                     ClaimValue = table.Column<string>(nullable: true),
-                    RoleId = table.Column<int>(nullable: false)
+                    RoleId = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -106,7 +76,7 @@ namespace DataLayer.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     ClaimType = table.Column<string>(nullable: true),
                     ClaimValue = table.Column<string>(nullable: true),
-                    UserId = table.Column<int>(nullable: false)
+                    UserId = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -126,7 +96,7 @@ namespace DataLayer.Migrations
                     LoginProvider = table.Column<string>(nullable: false),
                     ProviderKey = table.Column<string>(nullable: false),
                     ProviderDisplayName = table.Column<string>(nullable: true),
-                    UserId = table.Column<int>(nullable: false)
+                    UserId = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -143,8 +113,8 @@ namespace DataLayer.Migrations
                 name: "AspNetUserRoles",
                 columns: table => new
                 {
-                    UserId = table.Column<int>(nullable: false),
-                    RoleId = table.Column<int>(nullable: false)
+                    UserId = table.Column<string>(nullable: false),
+                    RoleId = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -167,7 +137,7 @@ namespace DataLayer.Migrations
                 name: "AspNetUserTokens",
                 columns: table => new
                 {
-                    UserId = table.Column<int>(nullable: false),
+                    UserId = table.Column<string>(nullable: false),
                     LoginProvider = table.Column<string>(nullable: false),
                     Name = table.Column<string>(nullable: false),
                     Value = table.Column<string>(nullable: true)
@@ -184,80 +154,19 @@ namespace DataLayer.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Markets",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    BaseCurrencyId = table.Column<int>(nullable: false),
-                    Code = table.Column<string>(nullable: true),
-                    MarketCurrencyId = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Markets", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Markets_Currencies_BaseCurrencyId",
-                        column: x => x.BaseCurrencyId,
-                        principalTable: "Currencies",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Markets_Currencies_MarketCurrencyId",
-                        column: x => x.MarketCurrencyId,
-                        principalTable: "Currencies",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ExchangeCurrencies",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    CurrencyId = table.Column<int>(nullable: false),
-                    ExchangeCurrencyCode = table.Column<string>(nullable: true),
-                    ExchangeId = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ExchangeCurrencies", x => x.Id);
-                    table.UniqueConstraint("AK_ExchangeCurrencies_ExchangeId_CurrencyId", x => new { x.ExchangeId, x.CurrencyId });
-                    table.ForeignKey(
-                        name: "FK_ExchangeCurrencies_Currencies_CurrencyId",
-                        column: x => x.CurrencyId,
-                        principalTable: "Currencies",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ExchangeCurrencies_Exchanges_ExchangeId",
-                        column: x => x.ExchangeId,
-                        principalTable: "Exchanges",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "ExchangeSecrets",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                    Id = table.Column<string>(nullable: false),
                     ApiKey = table.Column<string>(nullable: true),
                     ApiSecret = table.Column<string>(nullable: true),
-                    ExchangeId = table.Column<int>(nullable: false),
-                    UserId = table.Column<int>(nullable: false)
+                    ExchangeId = table.Column<string>(nullable: false),
+                    UserId = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ExchangeSecrets", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ExchangeSecrets_Exchanges_ExchangeId",
-                        column: x => x.ExchangeId,
-                        principalTable: "Exchanges",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                    table.UniqueConstraint("AK_ExchangeSecrets_ExchangeId_UserId", x => new { x.ExchangeId, x.UserId });
                     table.ForeignKey(
                         name: "FK_ExchangeSecrets_AspNetUsers_UserId",
                         column: x => x.UserId,
@@ -270,108 +179,60 @@ namespace DataLayer.Migrations
                 name: "Strategies",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                    Id = table.Column<string>(nullable: false),
                     Description = table.Column<string>(nullable: true),
-                    ExchangeId = table.Column<int>(nullable: false),
+                    ExchangeId = table.Column<string>(nullable: true),
                     Name = table.Column<string>(nullable: true),
                     NewTrades = table.Column<int>(nullable: false),
                     Start = table.Column<DateTime>(nullable: false),
                     Stop = table.Column<DateTime>(nullable: false),
                     StrategyState = table.Column<int>(nullable: false),
                     TradingMode = table.Column<int>(nullable: false),
-                    UserId = table.Column<int>(nullable: false)
+                    UserId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Strategies", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Strategies_Exchanges_ExchangeId",
-                        column: x => x.ExchangeId,
-                        principalTable: "Exchanges",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
                         name: "FK_Strategies_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
                 name: "UserAssets",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Amount = table.Column<double>(nullable: false),
-                    CurrencyId = table.Column<int>(nullable: false),
-                    ExchangeId = table.Column<int>(nullable: false),
+                    Id = table.Column<string>(nullable: false),
+                    Amount = table.Column<decimal>(nullable: false),
+                    Currency = table.Column<string>(nullable: false),
+                    Exchange = table.Column<string>(nullable: false),
                     TradingMode = table.Column<int>(nullable: false),
-                    UserId = table.Column<int>(nullable: false)
+                    UserId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_UserAssets", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_UserAssets_Currencies_CurrencyId",
-                        column: x => x.CurrencyId,
-                        principalTable: "Currencies",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_UserAssets_Exchanges_ExchangeId",
-                        column: x => x.ExchangeId,
-                        principalTable: "Exchanges",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                    table.UniqueConstraint("AK_UserAssets_Currency_TradingMode_Exchange", x => new { x.Currency, x.TradingMode, x.Exchange });
                     table.ForeignKey(
                         name: "FK_UserAssets_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ExchangeMarkets",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    ExchangeId = table.Column<int>(nullable: false),
-                    ExchangeMarketCode = table.Column<string>(nullable: true),
-                    MarketId = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ExchangeMarkets", x => x.Id);
-                    table.UniqueConstraint("AK_ExchangeMarkets_ExchangeId_MarketId", x => new { x.ExchangeId, x.MarketId });
-                    table.ForeignKey(
-                        name: "FK_ExchangeMarkets_Exchanges_ExchangeId",
-                        column: x => x.ExchangeId,
-                        principalTable: "Exchanges",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ExchangeMarkets_Markets_MarketId",
-                        column: x => x.MarketId,
-                        principalTable: "Markets",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
                 name: "EvaluationTick",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    BtcValue = table.Column<double>(nullable: false),
-                    StrategyId = table.Column<int>(nullable: true),
+                    Id = table.Column<string>(nullable: false),
+                    BtcValue = table.Column<decimal>(nullable: false),
+                    StrategyId = table.Column<string>(nullable: true),
                     TimeStamp = table.Column<DateTime>(nullable: false),
-                    UsdValue = table.Column<double>(nullable: false)
+                    UsdValue = table.Column<decimal>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -388,52 +249,38 @@ namespace DataLayer.Migrations
                 name: "Trades",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                    Id = table.Column<string>(nullable: false),
                     Closed = table.Column<DateTime>(nullable: true),
-                    ExchangeId = table.Column<int>(nullable: false),
+                    ExchangeId = table.Column<string>(nullable: true),
                     ExchangeUuid = table.Column<string>(nullable: true),
-                    MarketId = table.Column<int>(nullable: false),
+                    MarketId = table.Column<string>(nullable: true),
                     Opened = table.Column<DateTime>(nullable: false),
                     OrderType = table.Column<int>(nullable: false),
                     Price = table.Column<double>(nullable: false),
                     Quantity = table.Column<double>(nullable: false),
                     QuantityRemaining = table.Column<double>(nullable: false),
-                    StrategyId = table.Column<int>(nullable: false),
+                    StrategyId = table.Column<string>(nullable: true),
                     TradeState = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Trades", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Trades_Exchanges_ExchangeId",
-                        column: x => x.ExchangeId,
-                        principalTable: "Exchanges",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Trades_Markets_MarketId",
-                        column: x => x.MarketId,
-                        principalTable: "Markets",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
                         name: "FK_Trades_Strategies_StrategyId",
                         column: x => x.StrategyId,
                         principalTable: "Strategies",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
                 name: "StrategyAssets",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Amount = table.Column<double>(nullable: false),
-                    StrategyId = table.Column<int>(nullable: false),
-                    UserAssetId = table.Column<int>(nullable: false)
+                    Id = table.Column<string>(nullable: false),
+                    Amount = table.Column<decimal>(nullable: false),
+                    StrategyId = table.Column<string>(nullable: true),
+                    UserAssetId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -443,13 +290,13 @@ namespace DataLayer.Migrations
                         column: x => x.StrategyId,
                         principalTable: "Strategies",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_StrategyAssets_UserAssets_UserAssetId",
                         column: x => x.UserAssetId,
                         principalTable: "UserAssets",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -495,39 +342,9 @@ namespace DataLayer.Migrations
                 column: "StrategyId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ExchangeCurrencies_CurrencyId",
-                table: "ExchangeCurrencies",
-                column: "CurrencyId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ExchangeMarkets_MarketId",
-                table: "ExchangeMarkets",
-                column: "MarketId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ExchangeSecrets_ExchangeId",
-                table: "ExchangeSecrets",
-                column: "ExchangeId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_ExchangeSecrets_UserId",
                 table: "ExchangeSecrets",
                 column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Markets_BaseCurrencyId",
-                table: "Markets",
-                column: "BaseCurrencyId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Markets_MarketCurrencyId",
-                table: "Markets",
-                column: "MarketCurrencyId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Strategies_ExchangeId",
-                table: "Strategies",
-                column: "ExchangeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Strategies_UserId",
@@ -545,29 +362,9 @@ namespace DataLayer.Migrations
                 column: "UserAssetId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Trades_ExchangeId",
-                table: "Trades",
-                column: "ExchangeId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Trades_MarketId",
-                table: "Trades",
-                column: "MarketId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Trades_StrategyId",
                 table: "Trades",
                 column: "StrategyId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserAssets_CurrencyId",
-                table: "UserAssets",
-                column: "CurrencyId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserAssets_ExchangeId",
-                table: "UserAssets",
-                column: "ExchangeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserAssets_UserId",
@@ -596,12 +393,6 @@ namespace DataLayer.Migrations
                 name: "EvaluationTick");
 
             migrationBuilder.DropTable(
-                name: "ExchangeCurrencies");
-
-            migrationBuilder.DropTable(
-                name: "ExchangeMarkets");
-
-            migrationBuilder.DropTable(
                 name: "ExchangeSecrets");
 
             migrationBuilder.DropTable(
@@ -617,16 +408,7 @@ namespace DataLayer.Migrations
                 name: "UserAssets");
 
             migrationBuilder.DropTable(
-                name: "Markets");
-
-            migrationBuilder.DropTable(
                 name: "Strategies");
-
-            migrationBuilder.DropTable(
-                name: "Currencies");
-
-            migrationBuilder.DropTable(
-                name: "Exchanges");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

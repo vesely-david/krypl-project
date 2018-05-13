@@ -12,9 +12,10 @@ using System;
 namespace DataLayer.Migrations
 {
     [DbContext(typeof(MasterDataContext))]
-    partial class MasterDataContextModelSnapshot : ModelSnapshot
+    [Migration("20180512072116_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
