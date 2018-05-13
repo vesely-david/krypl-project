@@ -22,7 +22,7 @@ namespace DataLayer.Infrastructure
         public IEnumerable<UserAsset> GetByUserId(string userId)
         {
             return _dbContext.UserAssets
-                .Include(o => o.StrategyAssets).Include(o => o.Exchange)
+                .Include(o => o.StrategyAssets)
                 .Where(o => o.UserId == userId);
         }
         /*
