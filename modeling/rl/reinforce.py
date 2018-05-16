@@ -9,16 +9,29 @@ EpisodeStats = namedtuple("Stats", ["episode_rewards"])
 Transition = namedtuple("Transition", ["state", "action", "reward", "next_state", "done", "debug"])
 
 
+def fix_action_probs(action_probs, isOpen):
+    if isOpen:
+        action_probs[1] = 0
+    else:
+        action_probs[2] = 0
+
+    return action_probs / action_probs.sum()
+
+
 def proceed_episode(i_episode, env, estimator_policy, stats, num_episodes, get_state):
     state = get_state(env.reset())
+    isOpen = False
     episode = []
 
     for t in itertools.count():
-        action_probs = estimator_policy.predict(state)
+        action_probs = fix_action_probs(estimator_policy.predict(state), isOpen)
+
         action = random_choice(action_probs)
         next_state, reward, done, debug = env.step(action)
+        isOpen = debug['open']
         next_state = get_state(next_state)
 
+        debug['action_probs'] = action_probs
         episode.append(
             Transition(state=state, action=action, reward=reward, next_state=next_state, done=done, debug=debug))
         stats.episode_rewards[i_episode] += reward

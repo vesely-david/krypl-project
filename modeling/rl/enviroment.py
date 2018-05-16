@@ -81,6 +81,7 @@ class ExchangeEnv(Env):
         try:
             if action == BUY:
                 self.exchange.buy(self.pair, self._buy_amount(), self.last_price)
+                self.open = True
             elif action == SELL and self.open:
                 amount = self.exchange.balance(self.pair['tradeContract'])
                 self.exchange.sell(self.pair, amount, self.last_price)
