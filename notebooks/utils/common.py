@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.finance import candlestick2_ohlc
 from matplotlib.ticker import MaxNLocator, FuncFormatter
-from trading.money.transaction import BuyTransaction, SellTransaction
+from trading.money.transaction import Transaction
 
 
 def timestampToDate(timestamp):
@@ -20,34 +20,38 @@ def strTimeToTimestamp(strTime):
     return strTimeToDatetime(strTime).timestamp()
 
 
-def plotCandles(ohlc):
+def set_date_axis(timestamp_data, ax, fig):
     def getDate(x, _):
         try:
             return xdate[int(x)]
         except IndexError:
             return ''
 
-    fig, ax = plt.subplots(figsize=(9, 4))
-    candlestick2_ohlc(ax, ohlc['open'], ohlc['high'], ohlc['low'], ohlc['close'], width=0.6)
-
-    xdate = [dt.datetime.fromtimestamp(i) for i in ohlc['timestamp']]
+    xdate = [dt.datetime.fromtimestamp(i) for i in timestamp_data]
     ax.xaxis.set_major_locator(MaxNLocator(6))
     ax.xaxis.set_major_formatter(FuncFormatter(getDate))
 
     fig.autofmt_xdate()
     fig.tight_layout()
+
+
+def plotCandles(ohlc):
+    fig, ax = plt.subplots(figsize=(9, 4))
+    candlestick2_ohlc(ax, ohlc['open'], ohlc['high'], ohlc['low'], ohlc['close'], width=0.6)
+    set_date_axis(ohlc['timestamp'], ax, fig)
     plt.show()
+    return fig, ax
 
 
-def transactionsToPlot(transactions, ttype):
-    filtered = [[t.timestamp, t.price.value] for t in transactions if type(t) == ttype]
+def transactionsToPlot(transactions, _type):
+    filtered = [[t['timestamp'], t['price']] for t in transactions if t['type'] == _type]
     return np.array(filtered)
 
 
 def plotTransactions(ohlc, transactions):
     plotCandles(ohlc)
-    buys = transactionsToPlot(transactions, BuyTransaction)
-    sells = transactionsToPlot(transactions, SellTransaction)
+    buys = transactionsToPlot(transactions, Transaction.BUY)
+    sells = transactionsToPlot(transactions, Transaction.SELL)
 
     buyScatter = plt.scatter(buys[:, 0], buys[:, 1], s=20, c='g', label='buy')
     sellScatter = plt.scatter(sells[:, 0], sells[:, 1], s=20, c='m', label='sell')
