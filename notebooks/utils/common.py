@@ -3,7 +3,7 @@ import datetime as dt
 import pickle
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.finance import candlestick2_ohlc
+from mpl_finance import candlestick2_ohlc
 from matplotlib.ticker import MaxNLocator, FuncFormatter
 from trading.money.transaction import Transaction
 
