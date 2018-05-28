@@ -36,7 +36,7 @@ def set_date_axis(timestamp_data, ax, fig):
 
 
 def plot_candles(ohlc):
-    fig, ax = plt.subplots(figsize=(12, 6))
+    fig, ax = plt.subplots(figsize=(10, 6))
     candlestick2_ohlc(ax, ohlc['open'], ohlc['high'], ohlc['low'], ohlc['close'], width=0.6)
     set_date_axis(ohlc['timestamp'], ax, fig)
     plt.show()
@@ -53,8 +53,8 @@ def plot_transactions(ohlc, transactions):
     buys = transactions_to_plot(transactions, Transaction.BUY)
     sells = transactions_to_plot(transactions, Transaction.SELL)
 
-    buyScatter = plt.scatter(buys[:, 0], buys[:, 1], s=20, c='g', label='buy')
-    sellScatter = plt.scatter(sells[:, 0], sells[:, 1], s=20, c='m', label='sell')
+    buyScatter = plt.scatter(buys[:, 0], buys[:, 1], s=50, c='g', label='buy')
+    sellScatter = plt.scatter(sells[:, 0], sells[:, 1], s=50, c='m', label='sell')
 
     plt.legend(handles=[buyScatter, sellScatter], loc='upper left')
 
