@@ -8,20 +8,20 @@ from matplotlib.ticker import MaxNLocator, FuncFormatter
 from trading.money.transaction import Transaction
 
 
-def timestampToDate(timestamp):
+def timestamp_to_date(timestamp):
     return dt.datetime.fromtimestamp(int(timestamp))
 
 
-def strTimeToDatetime(strTime):
-    return dt.datetime.strptime(strTime, "%Y-%m-%d %H:%M:%S")
+def str_time_to_datetime(str_time):
+    return dt.datetime.strptime(str_time, "%Y-%m-%d %H:%M:%S")
 
 
-def strTimeToTimestamp(strTime):
-    return strTimeToDatetime(strTime).timestamp()
+def str_time_to_timestamp(str_time):
+    return str_time_to_datetime(str_time).timestamp()
 
 
 def set_date_axis(timestamp_data, ax, fig):
-    def getDate(x, _):
+    def get_date(x, _):
         try:
             return xdate[int(x)]
         except IndexError:
@@ -29,13 +29,13 @@ def set_date_axis(timestamp_data, ax, fig):
 
     xdate = [dt.datetime.fromtimestamp(i) for i in timestamp_data]
     ax.xaxis.set_major_locator(MaxNLocator(6))
-    ax.xaxis.set_major_formatter(FuncFormatter(getDate))
+    ax.xaxis.set_major_formatter(FuncFormatter(get_date))
 
     fig.autofmt_xdate()
     fig.tight_layout()
 
 
-def plotCandles(ohlc):
+def plot_candles(ohlc):
     fig, ax = plt.subplots(figsize=(12, 6))
     candlestick2_ohlc(ax, ohlc['open'], ohlc['high'], ohlc['low'], ohlc['close'], width=0.6)
     set_date_axis(ohlc['timestamp'], ax, fig)
@@ -43,15 +43,15 @@ def plotCandles(ohlc):
     return fig, ax
 
 
-def transactionsToPlot(transactions, _type):
+def transactions_to_plot(transactions, _type):
     filtered = [[t['timestamp'], t['price']] for t in transactions if t['type'] == _type]
     return np.array(filtered)
 
 
-def plotTransactions(ohlc, transactions):
-    plotCandles(ohlc)
-    buys = transactionsToPlot(transactions, Transaction.BUY)
-    sells = transactionsToPlot(transactions, Transaction.SELL)
+def plot_transactions(ohlc, transactions):
+    plot_candles(ohlc)
+    buys = transactions_to_plot(transactions, Transaction.BUY)
+    sells = transactions_to_plot(transactions, Transaction.SELL)
 
     buyScatter = plt.scatter(buys[:, 0], buys[:, 1], s=20, c='g', label='buy')
     sellScatter = plt.scatter(sells[:, 0], sells[:, 1], s=20, c='m', label='sell')
@@ -59,20 +59,20 @@ def plotTransactions(ohlc, transactions):
     plt.legend(handles=[buyScatter, sellScatter], loc='upper left')
 
 
-def loadData(fileName):
-    with open(fileName, "rb") as f:
+def load_data(file_name):
+    with open(file_name, "rb") as f:
         data = pickle.load(f)
     return data
 
 
-def saveData(data, fileName):
-    with open(fileName, "wb") as f:
+def save_data(data, file_name):
+    with open(file_name, "wb") as f:
         pickle.dump(data, f)
 
 
-def readTsv(file):
+def read_tsv(file):
     return pd.read_csv(file, sep='\t')
 
 
-def writeTsv(df, file):
+def write_tsv(df, file):
     df.to_csv(file, index=False, sep='\t')
