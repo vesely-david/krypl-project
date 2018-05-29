@@ -322,7 +322,7 @@ namespace MasterDataManager.Controllers
             {
                 name = group.Key,
                 id = group.Key,
-                currencies = group.Select(o => new
+                currencies = group.OrderBy(o => o.Currency).Select(o => new
                 {
                     id = o.Currency,
                     name = o.Currency,

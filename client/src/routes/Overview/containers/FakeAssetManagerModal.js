@@ -28,6 +28,17 @@ class FakeAssetManagerModal extends React.Component {
     }
   }
 
+  onModalOpen = () => {
+    const {
+      assets
+    } = this.props
+    const toSubmit = assets.map(o => ({
+      id: o.id,
+      currencies: o.currencies.map(p => ({ id: p.id, amount: p.sum, minAmount: p.sum - p.free }))
+    }))
+    this.setState({ toSubmit })
+  }
+
   onInputChange = (e, { name, value }) => {
     this.setState({ [name]: value, assetValueError: false })
   }
