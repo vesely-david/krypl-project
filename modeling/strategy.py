@@ -21,7 +21,7 @@ class Strategy:
         return_part = (actual_price * fee_part) / price_bought
         return return_part - 1
 
-    def sellWhole(self, price):
+    def sell_all(self, price):
         self.opened = False
         amount = self.exchange.balance(self.contract_pair['tradeContract'])
         self.exchange.sell(self.contract_pair, amount, price)
@@ -32,20 +32,20 @@ class Strategy:
         self.opened = True
 
         fee = self.exchange.fee
-        breakEvenPrice = price / ((1 - fee) ** 2)
-        return breakEvenPrice
+        break_even_price = price / ((1 - fee) ** 2)
+        return break_even_price
 
-    def isTargetSatisfied(self, priceBought, price):
-        return self.current_return(priceBought, price) >= self.target_profit
+    def is_target_satisfied(self, price_bought, price):
+        return self.current_return(price_bought, price) >= self.target_profit
 
-    def currentTime(self):
+    def current_time(self):
         return self.data_manager.time
 
-    def timeExceeded(self, timeBought):
-        return (self.currentTime() - timeBought) > self.history_len
+    def time_exceeded(self, time_bought):
+        return (self.current_time() - time_bought) > self.history_len
 
-    def stats(self, contractName):
-        return Statistics(contractName, self.wallet_start[contractName]).evaluate(self.exchange.transactions)
+    def stats(self, contract_name):
+        return Statistics(contract_name, self.wallet_start[contract_name]).evaluate(self.exchange.transactions)
 
     def trade(self):
         raise NotImplementedError()
