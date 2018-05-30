@@ -11,5 +11,5 @@ import seaborn as sns
 from matplotlib.font_manager import FontProperties
 
 sns.set_style('darkgrid')
-titleFont = FontProperties(weight='bold', size=20)
-axisFont = FontProperties(weight='bold', size=14)
+title_font = FontProperties(weight='bold', size=20)
+axis_font = FontProperties(weight='bold', size=14)
