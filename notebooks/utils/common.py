@@ -76,3 +76,21 @@ def read_tsv(file):
 
 def write_tsv(df, file):
     df.to_csv(file, index=False, sep='\t')
+
+
+def load_trading_data(file, from_date=None, to_date=None):
+    data = read_tsv(file) \
+        .sort_values('date').reset_index().drop('index', axis=1)
+    data['timestamp'] = data.date.apply(str_time_to_timestamp).astype(int)
+    if from_date is not None:
+        data = data.query("date >= '%s'" % from_date)
+    if to_date is not None:
+        data + data.query("date < '%s'" % to_date)
+    return data
+
+
+def divide_train_and_test(data, train_ratio=0.7):
+    train_size = int(data.shape[0] * train_ratio)
+    data_train = data.iloc[:train_size]
+    data_test = data.iloc[train_size:].reset_index().drop('index', axis=1)
+    return data_train, data_test
