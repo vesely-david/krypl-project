@@ -8,16 +8,31 @@ from matplotlib.ticker import MaxNLocator, FuncFormatter
 from trading.money.transaction import Transaction
 
 
-def timestamp_to_date(timestamp):
-    return dt.datetime.fromtimestamp(int(timestamp))
+def resolve_multiple(args, f):
+    if len(args) == 0:
+        return None
+    elif len(args) == 1:
+        return f(args[0])
+    else:
+        return [f(arg) for arg in args]
 
 
-def str_time_to_datetime(str_time):
-    return dt.datetime.strptime(str_time, "%Y-%m-%d %H:%M:%S")
+def timestamp_to_date(*timestamps):
+    def f(x):
+        return dt.datetime.fromtimestamp(int(x))
+    return resolve_multiple(timestamps, f)
 
 
-def str_time_to_timestamp(str_time):
-    return str_time_to_datetime(str_time).timestamp()
+def str_time_to_datetime(*str_times):
+    def f(x):
+        return dt.datetime.strptime(x, "%Y-%m-%d %H:%M:%S")
+    return resolve_multiple(str_times, f)
+
+
+def str_time_to_timestamp(*str_times):
+    def f(x):
+        return str_time_to_datetime(x).timestamp()
+    return resolve_multiple(str_times, f)
 
 
 def set_date_axis(timestamp_data, ax, fig):
