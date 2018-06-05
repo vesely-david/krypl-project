@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from mpl_finance import candlestick2_ohlc
 from matplotlib.ticker import MaxNLocator, FuncFormatter
 from trading.money.transaction import Transaction
+from sqlite3 import connect
 
 
 def resolve_multiple(args, f):
@@ -93,8 +94,14 @@ def write_tsv(df, file):
     df.to_csv(file, index=False, sep='\t')
 
 
-def load_trading_data(file, from_date=None, to_date=None):
-    data = read_tsv(file) \
+def read_table(table, db=None, conn=None):
+    if conn is None:
+        conn = connect(db)
+    return pd.read_sql(f"select * from {table}", conn)
+
+
+def load_trading_data(db, table, from_date=None, to_date=None):
+    data = read_table(table, db) \
         .sort_values('date').reset_index().drop('index', axis=1)
     data['timestamp'] = data.date.apply(str_time_to_timestamp).astype(int)
     if from_date is not None:
