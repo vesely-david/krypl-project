@@ -100,14 +100,17 @@ def read_table(table, db=None, conn=None):
     return pd.read_sql(f"select * from {table}", conn)
 
 
-def load_trading_data(db, table, from_date=None, to_date=None):
+def load_trading_data(db, table, from_date=None, to_date=None, period=None):
     data = read_table(table, db) \
         .sort_values('date').reset_index().drop('index', axis=1)
     data['timestamp'] = data.date.apply(str_time_to_timestamp).astype(int)
     if from_date is not None:
-        data = data.query("date >= '%s'" % from_date)
+        data = data.query(f"date >= '{from_date}'")
     if to_date is not None:
-        data + data.query("date < '%s'" % to_date)
+        data = data.query(f"date < '{to_date}'")
+    if period is not None:
+        data = data.query(f"period == '{period}'")
+
     return data
 
 
