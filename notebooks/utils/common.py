@@ -119,3 +119,13 @@ def divide_train_and_test(data, train_ratio=0.7):
     data_train = data.iloc[:train_size]
     data_test = data.iloc[train_size:].reset_index().drop('index', axis=1)
     return data_train, data_test
+
+
+def load_split(root):
+    X_train = read_tsv(f"{root}/X_train.tsv")
+    y_train = read_tsv(f"{root}/y_train.tsv").iloc[:, 0]
+    X_val = read_tsv(f"{root}/X_val.tsv")
+    y_val = read_tsv(f"{root}/y_val.tsv").iloc[:, 0]
+    X_test = read_tsv(f"{root}/X_test.tsv")
+    y_test = read_tsv(f"{root}/y_test.tsv").iloc[:, 0]
+    return X_train, y_train, X_val, y_val, X_test, y_test
