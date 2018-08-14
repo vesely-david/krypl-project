@@ -86,8 +86,8 @@ def save_data(data, file_name):
         pickle.dump(data, f)
 
 
-def read_tsv(file):
-    return pd.read_csv(file, sep='\t')
+def read_tsv(file, header=0):
+    return pd.read_csv(file, sep='\t', header=header)
 
 
 def write_tsv(df, file):
@@ -123,9 +123,9 @@ def divide_train_and_test(data, train_ratio=0.7):
 
 def load_split(root):
     X_train = read_tsv(f"{root}/X_train.tsv")
-    y_train = read_tsv(f"{root}/y_train.tsv").iloc[:, 0]
+    y_train = read_tsv(f"{root}/y_train.tsv", header=None).iloc[:, 0]
     X_val = read_tsv(f"{root}/X_val.tsv")
-    y_val = read_tsv(f"{root}/y_val.tsv").iloc[:, 0]
+    y_val = read_tsv(f"{root}/y_val.tsv", header=None).iloc[:, 0]
     X_test = read_tsv(f"{root}/X_test.tsv")
-    y_test = read_tsv(f"{root}/y_test.tsv").iloc[:, 0]
+    y_test = read_tsv(f"{root}/y_test.tsv", header=None).iloc[:, 0]
     return X_train, y_train, X_val, y_val, X_test, y_test
