@@ -64,13 +64,25 @@ def transactions_to_plot(transactions, _type):
     return np.array(filtered)
 
 
+def restrict_ohlc(ohlc, transactions):
+    timestamps = [t['timestamp'] for t in transactions]
+    neighborhood = 50
+    min_timestamp = abs(min(timestamps) - neighborhood)
+    max_timestamp = min(max(timestamps) + neighborhood, len(ohlc))
+    return ohlc.copy()\
+        .iloc[min_timestamp:max_timestamp, :]\
+        .reset_index()
+
+
 def plot_transactions(ohlc, transactions):
-    plot_candles(ohlc)
+    restricted = restrict_ohlc(ohlc, transactions)
+    plot_candles(restricted)
     buys = transactions_to_plot(transactions, Transaction.BUY)
     sells = transactions_to_plot(transactions, Transaction.SELL)
 
-    buyScatter = plt.scatter(buys[:, 0], buys[:, 1], s=50, c='g', label='buy')
-    sellScatter = plt.scatter(sells[:, 0], sells[:, 1], s=50, c='m', label='sell')
+    first_index = restricted['index'].min()
+    buyScatter = plt.scatter(buys[:, 0] - first_index, buys[:, 1], s=50, c='g', label='buy')
+    sellScatter = plt.scatter(sells[:, 0] - first_index, sells[:, 1], s=50, c='m', label='sell')
 
     plt.legend(handles=[buyScatter, sellScatter], loc='upper left')
 
