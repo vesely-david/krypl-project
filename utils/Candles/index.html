@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    html, body {
+      overflow: hidden;      
+      margin: 0;
+    }
+    body{
+      box-sizing: border-box;      
+      height: 100vh;
+      width: 100vw;
+    }
+    svg{
+      margin: auto;
+      width:100%;
+      height:100%;
+      position:fixed;
+      top:0;
+      left:0;
+      bottom:0;
+      right:0;
+    }
+    .zoom {
+      cursor: move;
+      fill: none;
+      pointer-events: all;
+    }
+    line{
+      fill: black;
+      stroke: black;
+      stroke-width: 0.5px;
+    }
+    rect{
+      stroke: black;
+      stroke-width: 1px;      
+    }
+    .green{
+      fill: green;
+    }
+    .red{
+      fill: red;
+    }
+    text {
+      pointer-events: none;
+    }    
+  </style>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://d3js.org/d3.v4.min.js" charset="utf-8"></script>
+  <script src="https://d3js.org/d3-selection-multi.v0.4.min.js"></script>
+</head>     
+<body>
+  <svg id="svg"></svg>
+  <script>
+    var CANDLECOUNT = 750;
+    var LOADED = 0;
+    var LASTSCALE = 1;
+    var TSDIFF = 0;
+    var DATA = null;
+    var FROMDRAW = false;
+    var SLIDERWIDTH = 120;
+
+    var svg = document.getElementById("svg");
+    var clientRect = svg.getBoundingClientRect();
+
+    var margin = {top: 30, right: 20, bottom: 30, left: 40};
+    var width = +clientRect.width - margin.left - margin.right;
+    var height = +clientRect.height - margin.top - margin.bottom;
+
+    var x = d3.scaleTime().range([0, width]),
+        y = d3.scaleLinear().range([height, 0])
+        nav = d3.scaleLinear().range([0, width + margin.left + margin.right - SLIDERWIDTH]);
+
+    var xAxis = d3.axisBottom(x).tickSize(0),
+        yAxis = d3.axisLeft(y).tickSize(0);
+
+    svg = d3.select("svg")
+
+    var zoom = d3.zoom()
+      .scaleExtent([1, 10])
+      .translateExtent([[0, 0], [width, height]])
+      .extent([[0, 0], [width, height]])
+      .on("end", zoomEnd)
+      .on("zoom", zoomed);
+        
+    var focus = svg.append("g")
+      .attr("class", "focus")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    var candles = focus.append("g")
+        .attr('class', 'circlesGroup');
+
+    var xObj = focus.append("g")
+      .attr("class", "axis x-axis")
+      .attr("transform", "translate(0," + (height) + ")")      
+
+    var yObj = focus.append("g")
+      .attr("class", "axis axis--y")
+
+    var zoomObj = svg.append("rect")
+      .attr("class", "zoom")
+      .attr("id", "zoomArea")
+      .attr("width", width)
+      .attr("height", height)
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    var navigation = svg.append('g').attr('class', 'navigation');
+    navigation.append('rect')
+      .attr('x', 0)
+      .attr('y', 0)
+      .attr('width', width + margin.left + margin.right)
+      .attr('height', 30)
+      .styles({stroke: "black", "stroke-width": "1px", fill: '#f9f9f9'});
+    navigation.append('rect')
+      .attr('class', 'slider')
+      .attr('width', SLIDERWIDTH)
+      .attr('height', 30)
+      .attr('x', -SLIDERWIDTH)
+      .attr('y', 0)        
+      .styles({fill: '#a8f3ff'})
+      .call(d3.drag()
+        .on("start", dragstart)
+        .on("drag", dragged)
+        .on("end", dragended));;
+    navigation.append('text')
+      .attr("alignment-baseline", "middle")
+      .attr("text-anchor", "middle")
+      .attr("dy", "1rem")
+      .attr("dx", 55)
+
+    d3.tsv("./candles.tsv", row, function(error, data) {
+      DATA = data;
+      TSDIFF = data[1].timestamp - data[0].timestamp;
+      nav.domain([0, data.length - 1 - CANDLECOUNT]);
+      draw(
+        data[Math.max(data.length-1-CANDLECOUNT, 0)].timestamp,
+        data[data.length - 1].timestamp,
+        Math.max(data.length - 1 - (2*CANDLECOUNT), 0),
+        data.length - 1);
+    });
+
+    function zoomed() {
+      var t = d3.event.transform,
+          xt = t.rescaleX(x),
+          yt = t.rescaleY(y);
+
+
+      var value0 = xt.invert(0);
+      var pos = ((value0 - DATA[0].timestamp) / (DATA[DATA.length - 1 - CANDLECOUNT].timestamp - DATA[0].timestamp));
+      navigation.select('.slider').attr('x', (width + margin.left + margin.right -120)*pos);
+      navigation.select('text')
+        .attr('x', (width + margin.left + margin.right -120)*pos)
+        .text(tsToDate(value0));
+
+
+      var tmp = focus.selectAll(".candle");
+      tmp.attr("transform", function(d){return "translate(" + xt(d.timestamp) + ",0) ";});
+      tmp.select("rect")
+        .attr("width", (width * t.k)/LOADED)
+        .attr("y", function(d) { return d.open > d.close ? yt(d.open) : yt(d.close);})      
+        .attr("height", function(d) { return Math.abs(yt(d.open) - yt(d.close));});        
+      tmp.select("line")
+        .attr("x1", ((width * t.k)/LOADED)/2)
+        .attr("x2", ((width * t.k)/LOADED)/2)
+        .attr("y1", function(d) { return yt(d.low); })
+        .attr("y2", function(d) { return yt(d.high); });
+      xObj.call(xAxis.scale(xt));
+      yObj.call(yAxis.scale(yt));      
+    }
+
+    function zoomEnd(){
+      var t = d3.event.transform;
+      if(FROMDRAW === true){
+        FROMDRAW = false;
+        LASTSCALE = t.k;
+        return;
+      }
+
+      if(LASTSCALE !== t.k){//Load data only when moved on X
+        LASTSCALE = t.k;
+        return;
+      }
+      LASTSCALE = t.k;
+      var indexes = getIndexes(t);
+      draw(indexes.sts, indexes.ets, indexes.li, indexes.ri, indexes.tv);
+    }
+
+    function getData(data, startIndex, endIndex){
+      return data.slice(startIndex, endIndex);
+    }    
+
+    function getIndexes(transformation){
+      var xt = transformation.rescaleX(x);
+      var yt = transformation.rescaleY(y);
+      var ts1 = new Date(xt.invert(0)).getTime();
+      var ts2 = new Date(xt.invert(width)).getTime();
+
+      var middleTS = new Date(xt.invert(width/2)).getTime();
+
+      for(var  i = 0; i < DATA.length - 1; i++){
+        if(Math.abs(DATA[i].timestamp - middleTS) <= TSDIFF){
+          return{
+            sts: ts1,
+            ets: ts2,
+            li: Math.max(0, i - Math.round(CANDLECOUNT/2) - CANDLECOUNT),
+            ri: Math.min(DATA.length - 1, i + Math.round(CANDLECOUNT/2) + CANDLECOUNT),
+            tv: yt.invert(0)
+          };
+        }
+      }
+    }
+
+    function draw(startTimeStamp, endTimeStamp, leftIndex, rightIndex, topValue){
+      LOADED = rightIndex - leftIndex;
+      var firstCandle = DATA[leftIndex];
+      var lastCandle = DATA[rightIndex];
+
+      var slice = getData(DATA, leftIndex, rightIndex);
+      var max = d3.max(slice, function(d){return d.high});
+      var min = d3.min(slice, function(d){return d.low});
+
+      var offsetRatio = ((LOADED / CANDLECOUNT)-1)/2
+
+      var toAdd = min - ((max - min) * offsetRatio) < 0 ? ((max - min) * offsetRatio) - min : 0//to preserve ration in case of min is lower than offset
+
+      x.domain([firstCandle.timestamp, lastCandle.timestamp]);
+      y.domain([Math.max(0, min - ((max - min) * offsetRatio)) , max + ((max-min) * offsetRatio) + toAdd]);
+
+      candles.selectAll(".candle").remove();
+
+      var candleElements =  candles.selectAll(".candle").data(getData(DATA, leftIndex, rightIndex))
+        .enter().append("g")
+        .attr("class", "candle")
+        .attr("transform", function(d){return "translate(" + x(d.timestamp) + ",0)";});
+    
+      candleElements.append("line")
+        .attr("x1", (width/CANDLECOUNT)/2)
+        .attr("x2", (width/CANDLECOUNT)/2)
+        .attr("y1", function(d) { return y(d.low); })
+        .attr("y2", function(d) { return y(d.high); });
+
+      candleElements.append("rect")
+        .attr("class", function(d){return d.open > d.close ? "red" : "green"})
+        .attr("x", 0)
+        .attr("y", function(d) { return d.open > d.close ? y(d.open) : y(d.close);})
+        .attr("height", function(d) { return Math.abs(y(d.open) - y(d.close));})
+        .attr("width", width/CANDLECOUNT)
+        .style("opacity", 0.4)
+
+      FROMDRAW = true;
+      xObj.call(xAxis);
+      yObj.call(yAxis);
+      var d0 = x(startTimeStamp);
+      var d1 = x(endTimeStamp);
+      var scale = width / (d1 - d0)
+
+      zoom.scaleExtent([Math.min(3, scale), 10])
+      zoomObj.call(zoom)
+        .call(zoom.transform, d3.zoomIdentity
+        .scale(scale)
+        .translate(-d0,topValue ? -y(topValue) : -height/4));
+    }
+
+    function row(d){
+      return{
+        timestamp: parseInt(d.timestamp) * 1000,
+        open: parseFloat(d.open),
+        high: parseFloat(d.high),
+        low: parseFloat(d.low),
+        close: parseFloat(d.close),
+      }
+    }
+
+    var startX;
+    var index
+
+    function dragstart(){
+      startX = d3.event.x - parseInt(d3.select(this).attr('x'));
+    }
+
+    function dragged(d) {
+      var fullWidth = width + margin.left + margin.right - SLIDERWIDTH;
+      var xPos = Math.max(0, Math.min(fullWidth, d3.event.x - startX));
+      index = Math.round(nav.invert(xPos))
+      d3.select(this).attr('x', Math.max(0, Math.min(fullWidth, d3.event.x - startX))); 
+      navigation.select('text')
+        .attr('x', Math.max(0, Math.min(fullWidth, d3.event.x - startX)))
+        .text(tsToDate(DATA[index].timestamp));
+    }
+
+    function dragended(d) {
+      startX = 0;
+      draw(
+        DATA[index].timestamp,
+        DATA[index + CANDLECOUNT].timestamp,
+        Math.max(index - CANDLECOUNT, 0),
+        Math.min(DATA.length - 1, index + CANDLECOUNT)
+      );
+    }
+    function tsToDate(ts){
+      var date = new Date(ts);
+      return date.getDate() + "." + (date.getMonth() + 1) + "." + date.getFullYear()
+    }
+  </script>
+</body>
+</html>
+
