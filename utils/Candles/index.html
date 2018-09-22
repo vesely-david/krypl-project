@@ -44,6 +44,12 @@
     }
     text {
       pointer-events: none;
+    }
+    .buys circle{
+      fill: #006aff
+    }
+    .sells circle{
+      fill: #bb00ff
     }    
   </style>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -58,6 +64,8 @@
     var LASTSCALE = 1;
     var TSDIFF = 0;
     var DATA = null;
+    var SELLS = null;
+    var BUYS = null;
     var FROMDRAW = false;
     var SLIDERWIDTH = 120;
 
@@ -89,7 +97,13 @@
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     var candles = focus.append("g")
-        .attr('class', 'circlesGroup');
+      .attr('class', 'circlesGroup');
+    
+    var buysG = focus.append("g")
+      .attr("class", "buys");
+
+    var sellsG = focus.append("g")
+      .attr("class", "sells");
 
     var xObj = focus.append("g")
       .attr("class", "axis x-axis")
@@ -131,13 +145,29 @@
 
     d3.tsv("./candles.tsv", row, function(error, data) {
       DATA = data;
+      var loaded = false;
       TSDIFF = data[1].timestamp - data[0].timestamp;
       nav.domain([0, data.length - 1 - CANDLECOUNT]);
-      draw(
-        data[Math.max(data.length-1-CANDLECOUNT, 0)].timestamp,
-        data[data.length - 1].timestamp,
-        Math.max(data.length - 1 - (2*CANDLECOUNT), 0),
-        data.length - 1);
+      d3.tsv("./transactions-buy.tsv", transactionRow, function(error, buys) {
+        BUYS = buys;
+        if(loaded){
+          draw(
+            data[Math.max(data.length-1-CANDLECOUNT, 0)].timestamp,
+            data[data.length - 1].timestamp,
+            Math.max(data.length - 1 - (2*CANDLECOUNT), 0),
+            data.length - 1);
+        } else loaded = true;
+      });
+      d3.tsv("./transactions-sell.tsv", transactionRow, function(error, sells) {
+        SELLS = sells;
+        if(loaded){
+          draw(
+            data[Math.max(data.length-1-CANDLECOUNT, 0)].timestamp,
+            data[data.length - 1].timestamp,
+            Math.max(data.length - 1 - (2*CANDLECOUNT), 0),
+            data.length - 1);
+        } else loaded = true;
+      });
     });
 
     function zoomed() {
@@ -152,6 +182,14 @@
       navigation.select('text')
         .attr('x', (width + margin.left + margin.right -120)*pos)
         .text(tsToDate(value0));
+
+      buysG.selectAll('circle')
+        .attr('cx', function(d){return xt(d.timestamp)})
+        .attr('cy', function(d){return yt(d.price)});
+
+      sellsG.selectAll('circle')
+        .attr('cx', function(d){return xt(d.timestamp)})
+        .attr('cy', function(d){return yt(d.price)});        
 
 
       var tmp = focus.selectAll(".candle");
@@ -196,9 +234,11 @@
       var ts1 = new Date(xt.invert(0)).getTime();
       var ts2 = new Date(xt.invert(width)).getTime();
 
+      var sliderPos = navigation.select('.slider').attr('x');
+      var startIndex = Math.max(0, Math.round(nav.invert(sliderPos)) - 10);
       var middleTS = new Date(xt.invert(width/2)).getTime();
 
-      for(var  i = 0; i < DATA.length - 1; i++){
+      for(var i = startIndex; i < DATA.length - 1; i++){
         if(Math.abs(DATA[i].timestamp - middleTS) <= TSDIFF){
           return{
             sts: ts1,
@@ -212,9 +252,21 @@
     }
 
     function draw(startTimeStamp, endTimeStamp, leftIndex, rightIndex, topValue){
+
       LOADED = rightIndex - leftIndex;
       var firstCandle = DATA[leftIndex];
       var lastCandle = DATA[rightIndex];
+
+      drawTransactions(
+        DATA[leftIndex].timestamp,
+        DATA[rightIndex].timestamp,
+        false
+      )
+      drawTransactions(
+        DATA[leftIndex].timestamp,
+        DATA[rightIndex].timestamp,
+        true
+      )
 
       var slice = getData(DATA, leftIndex, rightIndex);
       var max = d3.max(slice, function(d){return d.high});
@@ -232,21 +284,12 @@
       var candleElements =  candles.selectAll(".candle").data(getData(DATA, leftIndex, rightIndex))
         .enter().append("g")
         .attr("class", "candle")
-        .attr("transform", function(d){return "translate(" + x(d.timestamp) + ",0)";});
     
       candleElements.append("line")
-        .attr("x1", (width/CANDLECOUNT)/2)
-        .attr("x2", (width/CANDLECOUNT)/2)
-        .attr("y1", function(d) { return y(d.low); })
-        .attr("y2", function(d) { return y(d.high); });
-
       candleElements.append("rect")
         .attr("class", function(d){return d.open > d.close ? "red" : "green"})
         .attr("x", 0)
-        .attr("y", function(d) { return d.open > d.close ? y(d.open) : y(d.close);})
-        .attr("height", function(d) { return Math.abs(y(d.open) - y(d.close));})
-        .attr("width", width/CANDLECOUNT)
-        .style("opacity", 0.4)
+        .style("opacity", 0.6)
 
       FROMDRAW = true;
       xObj.call(xAxis);
@@ -255,11 +298,24 @@
       var d1 = x(endTimeStamp);
       var scale = width / (d1 - d0)
 
-      zoom.scaleExtent([Math.min(3, scale), 10])
+      zoom.scaleExtent([Math.min(3, scale), 15])
       zoomObj.call(zoom)
         .call(zoom.transform, d3.zoomIdentity
         .scale(scale)
         .translate(-d0,topValue ? -y(topValue) : -height/4));
+    }
+
+    function drawTransactions(start, end, buys){
+
+      var dataset = buys ? BUYS : SELLS;
+      var g = buys ? buysG : sellsG;
+      var filtered = dataset.filter(function(d){return d.timestamp >= start && d.timestamp <= end})
+      debugger;
+      g.selectAll("circle").remove();
+      
+      g.selectAll('circle').data(filtered).enter()
+        .append('circle')
+        .attr('r', 4)
     }
 
     function row(d){
@@ -271,6 +327,12 @@
         close: parseFloat(d.close),
       }
     }
+    function transactionRow(d){
+      return{
+        timestamp: parseInt(d.timestamp) * 1000,
+        price: parseFloat(d.price),
+      }
+    }    
 
     var startX;
     var index
@@ -296,12 +358,16 @@
         DATA[index + CANDLECOUNT].timestamp,
         Math.max(index - CANDLECOUNT, 0),
         Math.min(DATA.length - 1, index + CANDLECOUNT)
-      );
+      ); 
     }
     function tsToDate(ts){
       var date = new Date(ts);
       return date.getDate() + "." + (date.getMonth() + 1) + "." + date.getFullYear()
     }
+    function tsTime(ts){
+      var date = new Date(ts);
+      return date.getHours() + ":" + date.getMinutes();
+    }    
   </script>
 </body>
 </html>
