@@ -1,0 +1,8 @@
+version: '3'
+
+services:
+  marketdataprovider:
+    image: marketdataprovider
+    build:
+      context: ./MarketDataProvider
+      dockerfile: Dockerfile

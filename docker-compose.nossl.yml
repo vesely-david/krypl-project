@@ -1,0 +1,33 @@
+version: '2'
+
+services:
+  masterdatamanager:
+    image: masterdatamanager
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    expose:
+      - "80"
+    volumes:
+      - "./database/Database.db:/app/database/Database.db"
+    build:
+      context: ./masterDataManager
+      dockerfile: Dockerfile
+
+  web:
+    image: kryplweb
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    expose:
+      - "80"   
+
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "/etc/nginx/vhost.d"
+      - "/usr/share/nginx/html"
+      - "/var/run/docker.sock:/tmp/docker.sock:ro"
+

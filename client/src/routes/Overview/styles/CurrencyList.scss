@@ -1,0 +1,31 @@
+.currencyList{
+  display: flex;
+  flex-wrap: wrap;
+  width: 75vw;
+  margin: auto;
+  justify-content: space-around;
+}
+
+.currencyList p{
+
+  margin: 0;
+
+  &:nth-child(1){
+    
+    font-weight: bold;
+
+    &::after{
+      content: ":"
+    }
+  }
+  &:nth-child(n + 2){
+    padding-left: 5px;
+  }
+}
+
+
+.currencyItem {
+  width: 20%;
+  padding: 0 1rem;
+  padding-bottom: 1rem;
+}
