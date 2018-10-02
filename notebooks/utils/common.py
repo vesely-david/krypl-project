@@ -7,6 +7,7 @@ from mpl_finance import candlestick2_ohlc
 from matplotlib.ticker import MaxNLocator, FuncFormatter
 from trading.money.transaction import Transaction
 from sqlite3 import connect
+from sklearn.externals import joblib
 
 
 def resolve_multiple(args, f):
@@ -141,3 +142,26 @@ def load_split(root):
     X_test = read_tsv(f"{root}/X_test.tsv")
     y_test = read_tsv(f"{root}/y_test.tsv", header=None).iloc[:, 0]
     return X_train, y_train, X_val, y_val, X_test, y_test
+
+
+def save_model(model, file):
+    joblib.dump(model, file)
+
+
+def load_model(file):
+    return joblib.load(file)
+
+
+def fillna(df, what, na_list=[np.inf, -np.inf, np.nan]):
+    df_filled = df.copy()
+    for na_value in na_list:
+        df_filled = df_filled.replace(na_value, what)
+    return df_filled.fillna(what)
+
+
+def dropna(df):
+    return fillna(df, np.nan).dropna()
+
+
+def reset_index_hard(df):
+    return df.reset_index().drop('index', axis=1)
