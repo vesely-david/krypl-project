@@ -114,9 +114,8 @@ def read_table(table, db=None, conn=None):
 
 
 def load_trading_data(db, table, from_date=None, to_date=None, period=None):
-    data = read_table(table, db) \
-        .sort_values('date').reset_index().drop('index', axis=1)
-    data['timestamp'] = data.date.apply(str_time_to_timestamp).astype(int)
+    data = read_table(table, db).sort_values('timestamp')
+    data = reset_index_hard(data)
     if from_date is not None:
         data = data.query(f"date >= '{from_date}'")
     if to_date is not None:
@@ -124,7 +123,7 @@ def load_trading_data(db, table, from_date=None, to_date=None, period=None):
     if period is not None:
         data = data.query(f"period == '{period}'")
 
-    return data
+    return reset_index_hard(data)
 
 
 def divide_train_and_test(data, train_ratio=0.7):
