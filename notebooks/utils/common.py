@@ -21,7 +21,7 @@ def resolve_multiple(args, f):
 
 def timestamp_to_date(*timestamps):
     def f(x):
-        return dt.datetime.fromtimestamp(int(x))
+        return dt.datetime.utcfromtimestamp(int(x))
     return resolve_multiple(timestamps, f)
 
 
