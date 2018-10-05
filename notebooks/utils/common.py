@@ -1,91 +1,9 @@
-import pandas as pd
-import datetime as dt
 import pickle
-import numpy as np
-import matplotlib.pyplot as plt
-from mpl_finance import candlestick2_ohlc
-from matplotlib.ticker import MaxNLocator, FuncFormatter
-from trading.money.transaction import Transaction
 from sqlite3 import connect
+
+import numpy as np
+import pandas as pd
 from sklearn.externals import joblib
-
-
-def resolve_multiple(args, f):
-    if len(args) == 0:
-        return None
-    elif len(args) == 1:
-        return f(args[0])
-    else:
-        return [f(arg) for arg in args]
-
-
-def timestamp_to_date(*timestamps):
-    def f(x):
-        return dt.datetime.utcfromtimestamp(int(x))
-    return resolve_multiple(timestamps, f)
-
-
-def str_time_to_datetime(*str_times):
-    def f(x):
-        return dt.datetime.strptime(x, "%Y-%m-%d %H:%M:%S")
-    return resolve_multiple(str_times, f)
-
-
-def str_time_to_timestamp(*str_times):
-    def f(x):
-        return str_time_to_datetime(x).timestamp()
-    return resolve_multiple(str_times, f)
-
-
-def set_date_axis(timestamp_data, ax, fig):
-    def get_date(x, _):
-        try:
-            return xdate[int(x)]
-        except IndexError:
-            return ''
-
-    xdate = [dt.datetime.fromtimestamp(i) for i in timestamp_data]
-    ax.xaxis.set_major_locator(MaxNLocator(6))
-    ax.xaxis.set_major_formatter(FuncFormatter(get_date))
-
-    fig.autofmt_xdate()
-    fig.tight_layout()
-
-
-def plot_candles(ohlc):
-    fig, ax = plt.subplots(figsize=(10, 6))
-    candlestick2_ohlc(ax, ohlc['open'], ohlc['high'], ohlc['low'], ohlc['close'], width=0.6)
-    set_date_axis(ohlc['timestamp'], ax, fig)
-    plt.show()
-    return fig, ax
-
-
-def transactions_to_plot(transactions, _type):
-    filtered = [[t['timestamp'], t['price']] for t in transactions if t['type'] == _type]
-    return np.array(filtered)
-
-
-def restrict_ohlc(ohlc, transactions):
-    timestamps = [t['timestamp'] for t in transactions]
-    neighborhood = 50
-    min_timestamp = abs(min(timestamps) - neighborhood)
-    max_timestamp = min(max(timestamps) + neighborhood, len(ohlc))
-    return ohlc.copy()\
-        .iloc[min_timestamp:max_timestamp, :]\
-        .reset_index()
-
-
-def plot_transactions(ohlc, transactions):
-    restricted = restrict_ohlc(ohlc, transactions)
-    plot_candles(restricted)
-    buys = transactions_to_plot(transactions, Transaction.BUY)
-    sells = transactions_to_plot(transactions, Transaction.SELL)
-
-    first_index = restricted['index'].min()
-    buyScatter = plt.scatter(buys[:, 0] - first_index, buys[:, 1], s=50, c='g', label='buy')
-    sellScatter = plt.scatter(sells[:, 0] - first_index, sells[:, 1], s=50, c='m', label='sell')
-
-    plt.legend(handles=[buyScatter, sellScatter], loc='upper left')
 
 
 def load_data(file_name):
