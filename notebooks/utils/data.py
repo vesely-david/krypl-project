@@ -44,7 +44,7 @@ class ModelingData:
         self.X_train, self.X_val, self.X_test, self.y_train, self.y_val, self.y_test = \
             self.train_validation_test_split(X, y)
 
-    def write_split(self, root):
+    def write(self, root):
         write_tsv(self.X_train, f"{root}/X_train.tsv")
         write_tsv(self.y_train, f"{root}/y_train.tsv")
         write_tsv(self.X_val, f"{root}/X_val.tsv")
