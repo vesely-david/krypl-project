@@ -26,10 +26,10 @@ Lines should not exceed 100 characters. This allows the message to be easier to 
 
 ```
  #271 feat(standard): add style config and refactor to match
- #270 fix(config): only override publicPath when served by webpack 
- #269 feat(eslint-config-defaults): replace eslint-config-airbnb 
- #268 feat(config): allow user to configure webpack stats output 
-``` 
+ #270 fix(config): only override publicPath when served by webpack
+ #269 feat(eslint-config-defaults): replace eslint-config-airbnb
+ #268 feat(config): allow user to configure webpack stats output
+```
 
 #### Type
 
@@ -41,7 +41,7 @@ Must be one of the following:
 * **style**: Changes that do not affect the meaning of the code (white-space, formatting, missing
   semi-colons, etc)
 * **refactor**: A code change that neither fixes a bug or adds a feature
-* **test**: Adding missing tests
+* **test**: Adding missing test
 * **chore**: Changes to the build process or auxiliary tools and libraries such as documentation
   generation
 

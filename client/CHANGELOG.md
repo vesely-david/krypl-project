@@ -34,7 +34,7 @@ Changelog
 * Replaced `file-loader` with `url-loader`
 * Moved all build-related dependencies back to `devDependencies`
 * Replaced `better-npm-run` with `cross-env`
-* Cleaned up some sloppy tests
+* Cleaned up some sloppy test
 
 ### Fixes
 * `console.log` now works correctly inside of Karma
@@ -171,9 +171,9 @@ Changelog
 * Fixed CSS being minified twice with both `cssnano` and `css-loader`
 * Updated `cssnano` to not use unsafe options by default
 * Redux devtools now looks for the browser extension if available
-* Added webpack entry point for tests to replace file globs in Karma
+* Added webpack entry point for test to replace file globs in Karma
 * Made Webpack compiler script generic so it can accept any webpack configuration file
-* Added sample tests for counter redux module
+* Added sample test for counter redux module
 * Replaced `react-hmre` with `redbox-react` and `react-transform-hmr`
 * Disabled verbose uglify warnings during compilation
 * Updated route definition file to have access to the redux store
@@ -239,7 +239,7 @@ Changelog
 * Added CSS best practices to root tag, node, and `core.scss` file
 * Disabled manifest extraction due to broken production builds
 * Updated Webpack dev server uses explicit publicPath during live development
-* Fixed Karma running tests twice after file change during watch mode
+* Fixed Karma running test twice after file change during watch mode
 
 ### Deprecations
 * Removed `eslint-config-airbnb`
@@ -264,7 +264,7 @@ Changelog
 * Content hashes are now injected directly into the filename rather than appended as query strings
 * Better reporting of webpack build status
 * Use object-style configuration for `sass-loader` rather than inline query string
-* Rename `test:lint` task to `lint:tests`
+* Rename `test:lint` task to `lint:test`
 * Various documentation improvements
 
 ### Fixes
@@ -281,7 +281,7 @@ Changelog
 * Karma coverage now generates proper coverage reports
 * Added chai-as-promised
 * Added `npm run lint` script to lint all `~/src` code
-* Added `npm run test:lint` script to lint all `*.spec.js` files in `~/tests`
+* Added `npm run test:lint` script to lint all `*.spec.js` files in `~/test`
 * Updated `npm run deploy` to explicitly run linter on source code
 * Added `dotenv` (thanks [dougvk](https://github.com/dougvk))
 
@@ -290,7 +290,7 @@ Changelog
 * Refactored sample counter constants and actions to their appropriate locations (thanks [kyleect](https://github.com/kyleect))
 * Devtools in `npm run dev:nw` now take up the full window (thanks [jhgg](https://github.com/jhgg))
 * Webpack no longer runs an eslint pre-loader (cleans up console messages while developing)
-* Moved tests into their own directory (alleviates lint/organization issues)
+* Moved test into their own directory (alleviates lint/organization issues)
 * Renamed `stores` to `store` to be more intuitive
 * Webpack-dev-server now uses a configurable host (thanks [waynelkh](https://github.com/waynelkh))
 * Sass-loader is now configured independently of its loader definition
@@ -344,7 +344,7 @@ Changelog
 * react-transform-hmr now only runs when HMR is enabled.
 
 ### Improvements
-* Unit tests now only run in watch mode when explicitly requested. This makes it much more convenient to run tests on any environment without having to struggle with the `singleRun` flag in Karma.
+* Unit test now only run in watch mode when explicitly requested. This makes it much more convenient to run test on any environment without having to struggle with the `singleRun` flag in Karma.
 * There is now only a single webpack configuration (rather than one for the client and one for the server). As a result, configuration has once again been split into a base configuration which is then extended based on the current `NODE_ENV`.
 
 ### Deprecations
@@ -406,7 +406,7 @@ Changelog
 * Adds option to disable eslint when in development
 
 #### Improvements
-* Improved example unit tests using react-addons-test-utils and Sinon Chai
+* Improved example unit test using react-addons-test-utils and Sinon Chai
 
 0.10.0
 ------
