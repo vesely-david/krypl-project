@@ -49,3 +49,69 @@ class Strategy:
 
     def trade(self):
         raise NotImplementedError()
+
+
+class HoldStrategy(Strategy):
+    def __init__(self, exchange, data_manager, contract_pair, trade_size):
+        super().__init__(exchange, data_manager, contract_pair, trade_size, 0., 0.)
+
+    def trade(self):
+        while self.data_manager.has_tick():
+            history, price = self.data_manager.tick(1)
+
+            if history.shape[0] == 0:
+                self.buy(price)
+
+        if self.opened:
+            self.sell_all(price)
+
+
+class MLStrategy(Strategy):
+    def __init__(self, exchange, data_manager, contract_pair, trade_size, willing_loss, target_profit, clf,
+                 max_hold_time):
+        super().__init__(exchange, data_manager, contract_pair, trade_size, willing_loss, target_profit)
+        self.history_len = 1
+        self.max_hold_time = max_hold_time
+        self.clf = clf
+        self.last_prediction = 0
+
+    def should_buy(self, history):
+        if self.trade_size >= self.exchange.wallet[self.contract_pair['priceContract']] * 1.1:
+            return False
+
+        self.last_prediction = self.clf.predict(history)[0]
+        return bool(self.last_prediction)
+
+    def should_sell(self, hold):
+        return hold >= self.max_hold_time
+
+    def trade(self):
+        hold = 0
+        while self.data_manager.has_tick():
+            history, price = self.data_manager.tick(self.history_len)
+
+            if history.shape[0] == 0:
+                continue
+
+            if not self.opened and self.should_buy(history):
+                try:
+                    self.buy(price)
+                    price_bought = price
+                    hold = 0
+                except ValueError:
+                    break
+            elif self.opened and self.is_risky(price_bought, price):
+                self.sell_all(price)
+                hold = 0
+            elif self.opened and self.is_target_satisfied(price_bought, price):
+                self.sell_all(price)
+                hold = 0
+            elif self.opened and self.should_sell(hold):
+                self.sell_all(price)
+                hold = 0
+
+            if self.opened:
+                hold += 1
+
+        if self.opened:
+            self.sell_all(price)

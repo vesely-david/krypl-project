@@ -1,11 +1,17 @@
-from sklearn.metrics import precision_score, recall_score, f1_score, confusion_matrix
-import pandas as pd
+from copy import deepcopy
+
 import matplotlib.pyplot as plt
-import seaborn as sns
 import numpy as np
-from utils.commonImports import axis_font, title_font
+import pandas as pd
+import seaborn as sns
 from IPython.display import display, Markdown, HTML
+from sklearn.metrics import precision_score, recall_score, f1_score, confusion_matrix
 from utils.common import load_split, load_model
+from utils.commonImports import axis_font, title_font
+
+from trading.dataManager import CurrencyDataManager
+from trading.exchange import BackTestExchange
+from modeling.strategy import MLStrategy, HoldStrategy
 
 
 def gs_stats(grid_search, X, y):
@@ -38,6 +44,10 @@ def display_md(text):
     display(Markdown(text))
 
 
+def display_pandas(df):
+    display(HTML(df.to_html()))
+
+
 def gs_report(data_root, gs_path):
     X_train, y_train, X_val, y_val, _, _ = load_split(data_root)
     grid_search = load_model(gs_path)
@@ -66,7 +76,7 @@ def cm(y_true, y_pred):
 def print_clf_eval(clf, X, y_true):
     y_pred = clf.predict(X)
     conf_matrix = cm(y_true, y_pred)
-    display(HTML(conf_matrix.to_html()))
+    display_pandas(conf_matrix)
     print(f'Precision: %.3f' % precision_score(y_true, y_pred))
     print(f'Recall: %.3f' % recall_score(y_true, y_pred))
     print()
@@ -82,3 +92,21 @@ def clf_report(clf, data_root):
 
     display_md("## Test data")
     print_clf_eval(clf, X_test, y_test)
+
+
+def hold_strategy_stats(data_manager_p, contract_pair, wallet):
+    data_manager = deepcopy(data_manager_p)
+    exchange = BackTestExchange(data_manager, deepcopy(wallet), 0.0025)
+    strategy = HoldStrategy(exchange, data_manager, contract_pair, 100)
+    strategy.trade()
+    return strategy.stats(contract_pair['priceContract']).report()
+
+
+def strategy_report(data, price_data, strategy, contract_pair, wallet):
+    data_manager = CurrencyDataManager(price_data, data)
+    hold_stats = hold_strategy_stats(data_manager, contract_pair, wallet)
+    strategy.trade()
+    strategy_stats = strategy.stats(contract_pair['priceContract']).report()
+    stats = hold_stats.join(strategy_stats, lsuffix='_hold', rsuffix='_strategy')
+    display_pandas(stats)
+    return stats
