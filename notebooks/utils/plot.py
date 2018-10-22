@@ -27,7 +27,6 @@ def plot_candles(ohlc):
     fig, ax = plt.subplots(figsize=(10, 6))
     candlestick2_ohlc(ax, ohlc['open'], ohlc['high'], ohlc['low'], ohlc['close'], width=0.6)
     set_date_axis(ohlc['timestamp'], ax, fig)
-    plt.show()
     return fig, ax
 
 
