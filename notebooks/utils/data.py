@@ -1,5 +1,5 @@
 from sklearn.model_selection import train_test_split
-from utils.common import reset_index_hard, write_tsv
+from utils.common import reset_index_hard, write_tsv, dropna
 
 
 class ModelingData:
@@ -17,7 +17,7 @@ class ModelingData:
 
     @staticmethod
     def train_validation_test_split(X, y):
-        X_trainval, X_test, y_trainval, y_test = train_test_split(X, y, test_size=0.3)
+        X_trainval, X_test, y_trainval, y_test = train_test_split(dropna(X), y, test_size=0.3)
         X_train, X_val, y_train, y_val = train_test_split(X_trainval, y_trainval, test_size=0.3)
         return X_train, X_val, X_test, y_train, y_val, y_test
 
