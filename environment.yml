@@ -33,4 +33,7 @@ dependencies:
   - wheel=0.31.1=py36_0
   - wincertstore=0.2=py36h7fe50ca_0
   - zeromq=4.2.5=hc6251cf_0
-prefix: C:\Anaconda3\envs\crypto36
+  - pandas
+  - sklearn
+  - seaborn
+  - talib
