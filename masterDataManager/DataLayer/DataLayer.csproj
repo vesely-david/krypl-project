@@ -12,8 +12,18 @@
   </ItemGroup>
 
   <ItemGroup>
-	<DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.0" />
+	<DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.3" />
   	<DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="Migrations\20180512072116_InitialCreate.Designer.cs" />
+    <Compile Remove="Migrations\20180512072116_InitialCreate.cs" />
+    <Compile Remove="Migrations\MasterDataContextModelSnapshot.cs" />
+    <Compile Remove="Migrations\20190213123635_InitialCreate.cs" />
+    <Compile Remove="Migrations\20190213123635_InitialCreate.Designer.cs" />
+    <Compile Remove="Migrations\MasterDataContextModelSnapshot.cs" />
+    <Compile Remove="Migrations\20190213125226_InitialCreate.cs" />
+    <Compile Remove="Migrations\MasterDataContextModelSnapshot.cs" />
+  </ItemGroup>
 </Project>

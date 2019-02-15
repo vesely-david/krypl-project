@@ -37,9 +37,9 @@ namespace MasterDataManager.Services
                 var ticks = JsonConvert.DeserializeObject<List<Tick>>(response);
 
                 var btcDict = ticks.Where(o => o.symbol.EndsWith("BTC"))
-                    .ToDictionary(o => o.symbol.Remove(o.symbol.Length - 3), o => Decimal.Parse(o.price));
+                    .ToDictionary(o => o.symbol.Remove(o.symbol.Length - 3), o => decimal.Parse(o.price));
                 var usdtDict = ticks.Where(o => o.symbol.EndsWith("USDT"))
-                    .ToDictionary(o => o.symbol.Remove(o.symbol.Length - 4), o => Decimal.Parse(o.price));
+                    .ToDictionary(o => o.symbol.Remove(o.symbol.Length - 4), o => decimal.Parse(o.price));
 
                 var btcPrice = usdtDict["BTC"];
 

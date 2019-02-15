@@ -21,54 +21,45 @@ namespace MasterDataManager.Services
             _userAssetRepository = userAssetRepository;
         }
 
-        public void UpdateUserAssets(IEnumerable<Asset> assets, string userId, string exchange, TradingMode tradingMode)
+        public Result UpdateUserAssets(string userId, IEnumerable<Asset> assets, TradingMode tradingMode)
         {
-            var userAssets = _userAssetRepository.GetByUserAndExchange(userId, exchange).Where(o => o.TradingMode == tradingMode);
-            var toDelete = userAssets.Where(o => !assets.Any(p => p.Currency == o.Currency));
-
-            foreach (var userAsset in toDelete) DeleteUserAsset(userAsset);
-
+            var userAssets = _userAssetRepository.GetByUserId(userId).Where(o => o.TradingMode == tradingMode);
             foreach(var asset in assets)
             {
-                var userAsset = userAssets.FirstOrDefault(o => o.Currency == asset.Currency);
-                if (userAsset == null)
+
+                if (!string.IsNullOrEmpty(asset.Id))
                 {
-                    if (asset.Amount <= 0) continue;
-                    _userAssetRepository.AddNotSave(new UserAsset
+                    var original = userAssets.FirstOrDefault(o => o.Id == asset.Id);
+                    if(original == null) return new Result { Success = false, Message = "Asset not found" };
+                    if (original.StrategyAssets.Any() && original.StrategyAssets.Sum(o => o.Amount) > asset.Amount)
                     {
-                        Amount = asset.Amount,
-                        Currency = asset.Currency,
-                        Exchange = exchange,
-                        UserId = userId,
-                        StrategyAssets = new List<StrategyAsset>(),
-                        TradingMode = tradingMode,
-                    });
-                }
-                else
-                {
-                    if (asset.Amount <= 0)
+                        return new Result { Success = false, Message = "Asset locked" };
+                    }
+                    if (asset.Amount == 0)
                     {
-                        DeleteUserAsset(userAsset);
+                        _userAssetRepository.DeleteNotSave(original);
                     }
                     else
                     {
-                        userAsset.Amount = asset.Amount;
-                        _userAssetRepository.EditNotSave(userAsset);
+                        original.Amount = asset.Amount;
+                        _userAssetRepository.EditNotSave(original);
                     }
+                }
+                else
+                {
+                    _userAssetRepository.AddNotSave(new UserAsset
+                    {
+                        UserId = userId,
+                        TradingMode = tradingMode,
+                        Amount = asset.Amount,
+                        Currency = asset.Currency,
+                        Exchange = asset.Exchange,
+                        StrategyAssets = new List<StrategyAsset>(),
+                    });
                 }
             }
             _userAssetRepository.Save();
-        }
-
-        private void DeleteUserAsset(UserAsset userAsset)
-        {
-            // Preserve asset for running strategies
-            if (userAsset.StrategyAssets != null && userAsset.StrategyAssets.Any())
-            {
-                userAsset.Amount = 0;
-                _userAssetRepository.EditNotSave(userAsset);
-            } 
-            _userAssetRepository.DeleteNotSave(userAsset);
+            return new Result { Success = true };
         }
     }
 }

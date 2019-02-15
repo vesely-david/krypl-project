@@ -12,9 +12,10 @@ namespace DataLayer.Models
         public TradingMode TradingMode { get; set; }
 
         public string Currency { get; set; }
-        public string UserId { get; set; }
         public string Exchange { get; set; }
-        public ICollection<StrategyAsset> StrategyAssets { get; set; }
+        public string UserId { get; set; }
+        public virtual User User { get; set; }
+        public virtual ICollection<StrategyAsset> StrategyAssets { get; set; }
 
         public decimal GetFreeAmount()
         {

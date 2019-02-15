@@ -17,7 +17,6 @@ namespace DataLayer.Models
         public double Price { get; set; }
         public OrderType OrderType { get; set; }
 
-        public string ExchangeId { get; set; }
         public string MarketId { get; set; }
         public string StrategyId { get; set; }
         public Strategy Strategy { get; set; }

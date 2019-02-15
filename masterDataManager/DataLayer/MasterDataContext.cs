@@ -15,14 +15,14 @@ namespace DataLayer
         public DbSet<ExchangeSecret> ExchangeSecrets { get; set; }
 
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder builder)
         {
-            base.OnModelCreating(modelBuilder);
+            base.OnModelCreating(builder);
 
-            modelBuilder.Entity<ExchangeSecret>()
+            builder.Entity<ExchangeSecret>()
                 .HasAlternateKey(t => new { t.ExchangeId, t.UserId });
 
-            modelBuilder.Entity<UserAsset>()
+            builder.Entity<UserAsset>()
               .HasAlternateKey(t => new { t.Currency, t.TradingMode, t.Exchange });
         }
         public MasterDataContext(DbContextOptions<MasterDataContext> options) : base(options)

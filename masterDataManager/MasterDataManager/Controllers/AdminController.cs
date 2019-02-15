@@ -69,8 +69,60 @@ namespace MasterDataManager.Controllers
                     Email = "h.kirchner@seznam.cz",
                     EmailConfirmed = true,
                     UserName = "kirchjan",
+
                 };
                 var a = await _userManager.CreateAsync(honza, "kirchjan!Hesl0");
+
+                honza.Strategies = new List<Strategy>
+                    {
+                        new Strategy
+                        {
+                            Start = DateTime.Now,
+                            TradingMode = TradingMode.Real,
+                            IsOverview = true,
+                            Evaluations = new List<EvaluationTick>
+                            {
+                                new EvaluationTick
+                                {
+                                    TimeStamp = DateTime.Now,
+                                    BtcValue = 0,
+                                    UsdValue = 0
+                                }
+                            }
+
+                        },
+                        new Strategy
+                        {
+                            Start = DateTime.Now,
+                            TradingMode = TradingMode.PaperTesting,
+                            IsOverview = true,
+                            Evaluations = new List<EvaluationTick>
+                            {
+                                new EvaluationTick
+                                {
+                                    TimeStamp = DateTime.Now,
+                                    BtcValue = 0,
+                                    UsdValue = 0
+                                }
+                            }
+                        },
+                        new Strategy
+                        {
+                            Start = DateTime.Now,
+                            TradingMode = TradingMode.BackTesting,
+                            IsOverview = true,
+                            Evaluations = new List<EvaluationTick>
+                            {
+                                new EvaluationTick
+                                {
+                                    TimeStamp = DateTime.Now,
+                                    BtcValue = 0,
+                                    UsdValue = 0
+                                }
+                            }
+                        }
+                    };
+                var r  = await _userManager.UpdateAsync(honza);
             }
 
             return Ok();

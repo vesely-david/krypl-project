@@ -23,6 +23,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using System.Web.Http.Cors;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Caching.Memory;
+using AutoMapper;
 
 namespace MasterDataManager
 {
@@ -79,7 +80,12 @@ namespace MasterDataManager
 
             services.AddMemoryCache();
 
-            services.AddMvc();
+            services.AddAutoMapper(o => new MapperConfig());
+
+            services.AddMvc()
+                .AddJsonOptions( options => //https://stackoverflow.com/questions/42521722/how-to-stop-self-referencing-loop-in-net-core-web-api
+                    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+            );
 
             services.AddSwaggerGen(c =>
             {

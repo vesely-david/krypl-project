@@ -32,11 +32,19 @@ namespace DataLayer.Infrastructure
                 .Where(o => o.UserId == userId);
         }
 
-        public Strategy GetOverview(string strategyId)
+        public Strategy GetUserOverviewByMode(string userId, TradingMode mode)
         {
             return _dbContext.Strategies
                 .Include(o => o.Evaluations)
-                .FirstOrDefault(o => o.Id == strategyId);
+                .FirstOrDefault(o => o.UserId == userId && o.TradingMode == mode && o.IsOverview);
+        }
+
+        public IEnumerable<Strategy> GetUserStrategiesByMode(string userId, TradingMode mode)
+        {
+            return _dbContext.Strategies
+                .Include(o => o.Evaluations)
+                .Include(o => o.StrategyAssets)
+                .Where(o => o.UserId == userId && o.TradingMode == mode && !o.IsOverview);
         }
     }
 }

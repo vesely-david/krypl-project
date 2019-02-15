@@ -27,7 +27,14 @@ namespace MarketDataProvider.Controllers
         [Route("exchanges")]
         public IActionResult ExchangeList()
         {
-            var exchangeInfo = _marketDataService.ExchangeList();
+            var exchangeInfo = _marketDataService.ExchangeList().Select(o => new
+            {
+                id = o.Id,
+                name = o.Name,
+                history = o.ProvidesFullHistoryData,
+                currencies = o.Currencies,
+            });
+
             return Ok(exchangeInfo);
         }
 

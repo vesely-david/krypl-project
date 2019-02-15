@@ -1,15 +1,104 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using MasterDataManager.Utils;
+using DataLayer.Enums;
+using DataLayer.Infrastructure.Interfaces;
+using MasterDataManager.Services.Interfaces;
+using MasterDataManager.Models;
+using AutoMapper;
 
 namespace MasterDataManager.Controllers
 {
     [Produces("application/json")]
+    [Authorize]
     [Route("strategy")]
     public class StrategyController : Controller
     {
+        private IStrategyRepository _strategyRepository;
+        private IUserAssetRepository _userAssetRepository;
+        private ITradeRepository _tradeRepository;
+        private IExchangeObjectFactory _exchangeFactory;
+        private IBalanceService _balanceService;
+        private IMapper _mapper;
+
+        public StrategyController(
+            IStrategyRepository strategyRepository,
+            IUserAssetRepository userAssetRepository,
+            ITradeRepository tradeRepository,
+            IExchangeObjectFactory exchangeFactory,
+            IBalanceService balanceService,
+            IMapper mapper)
+        {
+            _strategyRepository = strategyRepository;
+            _userAssetRepository = userAssetRepository;
+            _tradeRepository = tradeRepository;
+            _exchangeFactory = exchangeFactory;
+            _balanceService = balanceService;
+            _mapper = mapper;
+        }
+
+
+        [HttpGet("{strategyId}/overview")]
+        public IActionResult GetStrategyOverview(string strategyId)
+        {
+            var userId = HttpContext.User.GetUserId();
+            if (string.IsNullOrEmpty(userId)) return BadRequest("User not found");
+
+            var strategy = _strategyRepository.GetById(strategyId);
+            var result = _mapper.Map<JsonStrategyModel>(strategy);
+
+            strategy.LastCheck = DateTime.Now;
+            _strategyRepository.Edit(strategy);
+
+            return Ok(strategy);
+        }
+
+
+        [HttpGet("{strategyId}/trades")]
+        public IActionResult GetStrategyTrades(string strategyId, int page = 0, int perPage = 15)
+        {
+            var userId = HttpContext.User.GetUserId();
+            if (string.IsNullOrEmpty(userId)) return BadRequest("User not found");
+
+            var allTrades = _tradeRepository.GetByStrategyId(strategyId);
+            var trades = allTrades.OrderBy(o => o.Opened)
+                .Skip(page * perPage).Take(perPage);
+
+            return Ok(new
+            {
+                trades = trades.Select(_mapper.Map<JsonTradeModel>),
+                page,
+                perPage,
+                count = allTrades.Count()
+            });
+        }
+
+
+        [HttpPost("{strategyId}/stop")]
+        public IActionResult StopStrategy(string strategyId)
+        {
+            var userId = HttpContext.User.GetUserId();
+            if (string.IsNullOrEmpty(userId)) return BadRequest("User not found");
+
+            var strategy = _strategyRepository.GetByUserId(userId).FirstOrDefault(o => o.Id == strategyId);
+            if (strategy == null) return BadRequest("Strategy not found");
+
+            if(strategy.StrategyState != StrategyState.Stopped)
+            {
+                strategy.Stop = DateTime.Now;
+                strategy.StrategyState = StrategyState.Stopped;
+                _strategyRepository.Edit(strategy);
+            }
+            return Ok();
+        }
+
+
+        [HttpPost("{strategyId}/changestate")]
+        public IActionResult ChangeStrategyMode(string strategyId)
+        {
+            return BadRequest("Not implemented");
+        }
     }
 }

@@ -32,5 +32,20 @@ namespace MasterDataManager.Services
             }
 
         }
+
+        public async Task<Dictionary<string, ValueTuple<decimal, decimal>>> GetCurrentPrices(string exchange)
+        {
+            try
+            {
+                var exchangeInfo = await _client.GetStringAsync(_baseUrl + "exchanges/" + exchange + "/prices");
+                var template = new { currencies = new[] { new { id = "", btcValue= 0, usdValue = 0 } } };
+                var currencies = JsonConvert.DeserializeAnonymousType(exchangeInfo, template).currencies;
+                return currencies.ToDictionary(o => o.id, o => new ValueTuple<decimal, decimal>(o.btcValue, o.usdValue));
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
     }
 }

@@ -2,8 +2,7 @@
 using DataLayer.Infrastructure;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
+using System.Linq;
 
 namespace DataLayer.Models
 {
@@ -12,10 +11,11 @@ namespace DataLayer.Models
         public string Name { get; set; }
         public string Description { get; set; }
         public DateTime Start { get; set; }
-        public DateTime Stop { get; set; }
+        public DateTime? Stop { get; set; }
         public StrategyState StrategyState { get; set; }
-        public TradingMode TradingMode { get; set; }
-        public int NewTrades { get; set; }
+        public TradingMode? TradingMode { get; set; } //null in case of overview
+        public DateTime? LastCheck { get; set; }
+        public bool IsOverview { get; set; }
 
         public string ExchangeId { get; set; }
         public string UserId { get; set; }
@@ -24,17 +24,14 @@ namespace DataLayer.Models
         public virtual ICollection<StrategyAsset> StrategyAssets { get; set; }
         public virtual ICollection<Trade> Trades { get; set; }
 
-        //public virtual IEnumerable<SomeError> Errors { get; set; } in case of error (insufficient funds)
-
-
-
-        public decimal Get24HoursBtcChange()
+        public int GetNewTrades()
         {
-            return 1m;
+            return Trades.Count(o => o.Closed.HasValue ? o.Closed <= LastCheck : o.Opened <= LastCheck);
         }
-        public decimal Get24HoursUsdChange()
+
+        public EvaluationTick GetYesterdayValue()
         {
-            return 1m;
+            return Evaluations.ElementAt(Math.Max(0, Evaluations.Count - 24));
         }
     }
 }

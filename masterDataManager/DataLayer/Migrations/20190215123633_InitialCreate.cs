@@ -1,6 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
-using System;
-using System.Collections.Generic;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace DataLayer.Migrations
 {
@@ -13,9 +12,9 @@ namespace DataLayer.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(nullable: false),
-                    ConcurrencyStamp = table.Column<string>(nullable: true),
                     Name = table.Column<string>(maxLength: 256, nullable: true),
-                    NormalizedName = table.Column<string>(maxLength: 256, nullable: true)
+                    NormalizedName = table.Column<string>(maxLength: 256, nullable: true),
+                    ConcurrencyStamp = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -27,20 +26,20 @@ namespace DataLayer.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(nullable: false),
-                    AccessFailedCount = table.Column<int>(nullable: false),
-                    ConcurrencyStamp = table.Column<string>(nullable: true),
-                    Email = table.Column<string>(maxLength: 256, nullable: true),
-                    EmailConfirmed = table.Column<bool>(nullable: false),
-                    LockoutEnabled = table.Column<bool>(nullable: false),
-                    LockoutEnd = table.Column<DateTimeOffset>(nullable: true),
-                    NormalizedEmail = table.Column<string>(maxLength: 256, nullable: true),
+                    UserName = table.Column<string>(maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(maxLength: 256, nullable: true),
+                    Email = table.Column<string>(maxLength: 256, nullable: true),
+                    NormalizedEmail = table.Column<string>(maxLength: 256, nullable: true),
+                    EmailConfirmed = table.Column<bool>(nullable: false),
                     PasswordHash = table.Column<string>(nullable: true),
+                    SecurityStamp = table.Column<string>(nullable: true),
+                    ConcurrencyStamp = table.Column<string>(nullable: true),
                     PhoneNumber = table.Column<string>(nullable: true),
                     PhoneNumberConfirmed = table.Column<bool>(nullable: false),
-                    SecurityStamp = table.Column<string>(nullable: true),
                     TwoFactorEnabled = table.Column<bool>(nullable: false),
-                    UserName = table.Column<string>(maxLength: 256, nullable: true)
+                    LockoutEnd = table.Column<DateTimeOffset>(nullable: true),
+                    LockoutEnabled = table.Column<bool>(nullable: false),
+                    AccessFailedCount = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -53,9 +52,9 @@ namespace DataLayer.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
+                    RoleId = table.Column<string>(nullable: false),
                     ClaimType = table.Column<string>(nullable: true),
-                    ClaimValue = table.Column<string>(nullable: true),
-                    RoleId = table.Column<string>(nullable: false)
+                    ClaimValue = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -74,9 +73,9 @@ namespace DataLayer.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
+                    UserId = table.Column<string>(nullable: false),
                     ClaimType = table.Column<string>(nullable: true),
-                    ClaimValue = table.Column<string>(nullable: true),
-                    UserId = table.Column<string>(nullable: false)
+                    ClaimValue = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -180,14 +179,15 @@ namespace DataLayer.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(nullable: false),
-                    Description = table.Column<string>(nullable: true),
-                    ExchangeId = table.Column<string>(nullable: true),
                     Name = table.Column<string>(nullable: true),
-                    NewTrades = table.Column<int>(nullable: false),
+                    Description = table.Column<string>(nullable: true),
                     Start = table.Column<DateTime>(nullable: false),
-                    Stop = table.Column<DateTime>(nullable: false),
+                    Stop = table.Column<DateTime>(nullable: true),
                     StrategyState = table.Column<int>(nullable: false),
-                    TradingMode = table.Column<int>(nullable: false),
+                    TradingMode = table.Column<int>(nullable: true),
+                    LastCheck = table.Column<DateTime>(nullable: true),
+                    IsOverview = table.Column<bool>(nullable: false),
+                    ExchangeId = table.Column<string>(nullable: true),
                     UserId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -207,9 +207,9 @@ namespace DataLayer.Migrations
                 {
                     Id = table.Column<string>(nullable: false),
                     Amount = table.Column<decimal>(nullable: false),
+                    TradingMode = table.Column<int>(nullable: false),
                     Currency = table.Column<string>(nullable: false),
                     Exchange = table.Column<string>(nullable: false),
-                    TradingMode = table.Column<int>(nullable: false),
                     UserId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -229,10 +229,10 @@ namespace DataLayer.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(nullable: false),
-                    BtcValue = table.Column<decimal>(nullable: false),
-                    StrategyId = table.Column<string>(nullable: true),
                     TimeStamp = table.Column<DateTime>(nullable: false),
-                    UsdValue = table.Column<decimal>(nullable: false)
+                    BtcValue = table.Column<decimal>(nullable: false),
+                    UsdValue = table.Column<decimal>(nullable: false),
+                    StrategyId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -250,17 +250,16 @@ namespace DataLayer.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(nullable: false),
-                    Closed = table.Column<DateTime>(nullable: true),
-                    ExchangeId = table.Column<string>(nullable: true),
                     ExchangeUuid = table.Column<string>(nullable: true),
-                    MarketId = table.Column<string>(nullable: true),
-                    Opened = table.Column<DateTime>(nullable: false),
-                    OrderType = table.Column<int>(nullable: false),
-                    Price = table.Column<double>(nullable: false),
                     Quantity = table.Column<double>(nullable: false),
                     QuantityRemaining = table.Column<double>(nullable: false),
-                    StrategyId = table.Column<string>(nullable: true),
-                    TradeState = table.Column<int>(nullable: false)
+                    Opened = table.Column<DateTime>(nullable: false),
+                    Closed = table.Column<DateTime>(nullable: true),
+                    TradeState = table.Column<int>(nullable: false),
+                    Price = table.Column<double>(nullable: false),
+                    OrderType = table.Column<int>(nullable: false),
+                    MarketId = table.Column<string>(nullable: true),
+                    StrategyId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -279,8 +278,8 @@ namespace DataLayer.Migrations
                 {
                     Id = table.Column<string>(nullable: false),
                     Amount = table.Column<decimal>(nullable: false),
-                    StrategyId = table.Column<string>(nullable: true),
-                    UserAssetId = table.Column<string>(nullable: true)
+                    UserAssetId = table.Column<string>(nullable: true),
+                    StrategyId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {

@@ -6,8 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Database\" />
     <Folder Include="wwwroot\" />
+    <Folder Include="Database\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -26,4 +26,7 @@
     <ProjectReference Include="..\DataLayer\DataLayer.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="Database\MarketsDatabase.db" />
+  </ItemGroup>
 </Project>
