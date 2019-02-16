@@ -8,6 +8,6 @@ namespace MasterDataManager.Services.Interfaces
     public interface IMarketDataService
     {
         Task<Dictionary<string, string>> GetCurrencyTranslationsAsync(string exchange);
-        Task<Dictionary<string, ValueTuple<decimal, decimal>>> GetCurrentPrices(string exchange);
+        Task<Dictionary<string, (decimal BtcValue, decimal UsdValue)>> GetCurrentPrices(string exchange);
     }
 }

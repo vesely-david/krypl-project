@@ -29,7 +29,7 @@ namespace MarketDataProvider
         {
             services.AddDbContext<MarketDataContext>(options =>
                 options.UseSqlite(
-                    Configuration.GetConnectionString("Sqlite"), b => b.MigrationsAssembly("MarketDataProvider")
+                    Configuration.GetConnectionString("Sqlite")
                 ));
 
             services.AddScoped<IMarketRepository, MarketRepository>();
@@ -44,7 +44,10 @@ namespace MarketDataProvider
             services.AddCors();
             services.AddMemoryCache();
 
-            services.AddMvc();
+            services.AddMvc()
+                .AddJsonOptions(options => //https://stackoverflow.com/questions/42521722/how-to-stop-self-referencing-loop-in-net-core-web-api
+                   options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+            );
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

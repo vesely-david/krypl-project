@@ -43,8 +43,8 @@ namespace MarketDataProvider.Controllers
         public IActionResult ExchangeInfo(string exchange)
         {
             var exchangeInfo = _marketDataService.GetExchange(exchange);
-            if (exchangeInfo != null) return Ok(exchangeInfo);
-            else return BadRequest("Exchange not found");
+            if (exchangeInfo == null) return BadRequest("Exchange not found");
+            return Ok(exchangeInfo);
         }
     }
 }

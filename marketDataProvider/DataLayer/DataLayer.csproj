@@ -9,7 +9,22 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="2.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="2.0.1" />
   </ItemGroup>
 
+  <ItemGroup>
+	  <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.3" />
+  	<DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.0" />
+  </ItemGroup>  
+
+  <ItemGroup>
+    <Compile Remove="Migrations\20190216120935_InitialCreate.Designer.cs" />
+    <Compile Remove="Migrations\20190216120935_InitialCreate.cs" />
+    <Compile Remove="Migrations\MarketDataContextModelSnapshot.cs" />
+    <Compile Remove="Migrations\20190216121847_InitialCreate.cs" />
+    <Compile Remove="Migrations\20190216121847_InitialCreate.Designer.cs" />
+    <Compile Remove="Migrations\20190216123457_InitialCreate.cs" />
+    <Compile Remove="Migrations\20190216185233_InitialCreate.cs" />
+  </ItemGroup>
 </Project>

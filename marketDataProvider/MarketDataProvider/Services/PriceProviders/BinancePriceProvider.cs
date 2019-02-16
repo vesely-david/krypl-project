@@ -12,62 +12,92 @@ namespace MarketDataProvider.Services.PriceProviders
 {
     public class BinancePriceProvider : PriceProvider
     {
-        private IEnumerable<BinanceTick> _ticks;
         private string _exchangeName = "binance";
 
+
         private IMarketDataMemCacheService _marketDataMemCacheService;
-        public BinancePriceProvider(IMarketDataMemCacheService marketDataMemCacheService) 
+        private Dictionary<string, decimal> _marketRates;
+        //private ExchangeMemCache _exchangeInfo;
+
+        public BinancePriceProvider(IMarketDataMemCacheService marketDataMemCacheService)
            : base() {
             _marketDataMemCacheService = marketDataMemCacheService;
-            _ticks = new List<BinanceTick>();
+            //_exchangeInfo = marketDataMemCacheService.GetExchange(_exchangeName);
         }
 
-        public override IEnumerable<Tick> GetMarketPrices(string market)
+
+        public override decimal? GetRate(string symbol)
         {
-            return _ticks.Where(o => o.symbol.EndsWith(market.ToUpper())).Select(o => new Tick
-            {
-                Price = decimal.Parse(o.price),
-                Market = market,
-                Currency = o.symbol.Substring(0, o.symbol.Length - market.Length)
-            });
+            if (_marketRates.ContainsKey(symbol)) return _marketRates[symbol];
+            return null;
         }
 
-        public override decimal? GetPrice(string symbol)
-        {
-            var binanceSymbol = _marketDataMemCacheService.GetExchange(_exchangeName)?.Markets
-                .FirstOrDefault(o => o.Id.ToUpper() == symbol.ToUpper())?.MarketExchangeId;
-            if (binanceSymbol == null) return null;
- 
-            decimal price;
-            if (decimal.TryParse(_ticks.FirstOrDefault(o => o.symbol.ToUpper() == binanceSymbol.ToUpper()).price, out price)){
-                return price;
-            }
-            else return null;
-        }
 
-        public override decimal? GetPrice(string market, string currency)
+        public override decimal? GetRate(string market, string currency)
         {
             var symbol = market + "_" + currency;
-            return GetPrice(symbol);
+            return GetRate(symbol);
         }
+
 
         public override async Task UpdatePrices()
         {
             var binancePrices = await _client.GetStringAsync("https://www.binance.com/api/v3/ticker/price");
-            _ticks = JsonConvert.DeserializeObject<List<BinanceTick>>(binancePrices);
+            var ticks = JsonConvert.DeserializeObject<List<BinanceTick>>(binancePrices);
+            var exchangeInfo = _marketDataMemCacheService.GetExchange(_exchangeName);
+            var market = "";
+            _marketRates = ticks.Where(o => exchangeInfo.TranslateMarket(o.symbol, out market))
+                .ToDictionary(o => market, o => decimal.Parse(o.price));
         }
+
 
         public override string GetUrl(OrderType orderType, string market, string currency, decimal amount)
         {
-            var url = QueryHelpers.AddQueryString(String.Empty, new Dictionary<string, string>
+            var url = QueryHelpers.AddQueryString(string.Empty, new Dictionary<string, string>
             {
                 { "side", orderType.ToString() },
                 { "amount", amount.ToString() },
                 //......
             });
             return url;
+        }
 
+        public override IEnumerable<object> GetValues()
+        {
+            var exchangeInfo = _marketDataMemCacheService.GetExchange(_exchangeName);
 
+            var result = exchangeInfo.Currencies
+                .Select(o => {
+                    if(o.Id == "BTC")
+                    {
+                        return (currency: "BTC", (btcValue: 1m, usdValue: _marketRates["USDT_BTC"]));
+                    }
+                    else if(_marketRates.ContainsKey("BTC_" + o.Id)) //weaker coins
+                    {
+                        if (_marketRates.ContainsKey("USDT_" + o.Id))
+                        {
+                            return (currency: o.Id, (
+                                btcValue: _marketRates["BTC_" + o.Id], 
+                                usdValue: _marketRates["USDT_" + o.Id]
+                            ));
+                        }
+                        else
+                        {
+                            return (currency: o.Id, (
+                                btcValue: _marketRates["BTC_" + o.Id],
+                                usdValue: _marketRates["USDT_BTC"] * _marketRates["BTC_" + o.Id]
+                            ));
+                        }
+                    }
+                    else //stronger coins
+                    {
+                        return (currency: o.Id, (
+                            btcValue: 1/_marketRates[o.Id + "_BTC"],
+                            usdValue: o.Id == "USDT" ? 1 : _marketRates["USDT_" + o.Id]
+                        ));
+                    }
+                }).Select(o => new { o.currency, o.Item2.btcValue, o.Item2.usdValue});
+            return result;
 
         }
     }

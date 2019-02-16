@@ -27,6 +27,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Database\MarketsDatabase.db" />
+    <Compile Remove="Migrations\20180513093146_InitialCreate.Designer.cs" />
+    <Compile Remove="Migrations\20180513093146_InitialCreate.cs" />
+    <Compile Remove="Migrations\MarketDataContextModelSnapshot.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Database\MarketsDatabase.db" />
   </ItemGroup>
 </Project>

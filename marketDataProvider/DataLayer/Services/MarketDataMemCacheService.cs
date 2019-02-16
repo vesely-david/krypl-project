@@ -27,7 +27,7 @@ namespace DataLayer.Services
         public IEnumerable<ExchangeMemCache> ExchangeList()
         {
             var ex = ExchangeIds();
-            return ex.Select(o => GetExchange(o));
+            return ex.Select(GetExchange);
         }
         private IEnumerable<string> ExchangeIds()
         {
@@ -51,25 +51,28 @@ namespace DataLayer.Services
                     var exchangeRepository = scope.ServiceProvider.GetRequiredService<IExchangeRepository>();
                     entry.SlidingExpiration = TimeSpan.FromDays(1);
                     var exchange = exchangeRepository.GetForMemCache(exchangeId);
-                    return exchange == null ? null : new ExchangeMemCache
+
+                    var currencies = exchange.ExchangeCurrencies.Select(o => new CurrencyMemCache
+                    {
+                        CurrencyExchangeId = o.CurrencyExchangeId,
+                        Id = o.CurrencyId,
+                        Name = o.Currency.Name
+                    }).ToList();
+
+                    var markets = exchange.ExchangeMarkets.Select(o => new MarketMemCache
+                    {
+                        MarketExchangeId = o.MarketExchangeId,
+                        Id = o.MarketId,
+                        CurrencyId = o.Market.CurrencyId,
+                        MarketCurrencyId = o.Market.MarketCurrencyId,
+                    }).ToList();
+
+                    return new ExchangeMemCache(markets, currencies)
                     {
                         Id = exchange.Id,
                         Name = exchange.Name,
                         ProvidesFullHistoryData = exchange.ProvidesFullHistoryData,
                         Web = exchange.Web,
-                        Currencies = exchange.ExchangeCurrencies.Select(o => new CurrencyMemCache
-                        {
-                            CurrencyExchangeId = o.CurrencyExchangeId,
-                            Id = o.CurrencyId,
-                            Name = o.Currency.Name
-                        }).ToList(),
-                        Markets = exchange.ExchangeMarkets.Select(o => new MarketMemCache
-                        {
-                            MarketExchangeId = o.MarketExchangeId,
-                            Id = o.MarketId,
-                            CurrencyId = o.Market.CurrencyId,
-                            MarketCurrencyId = o.Market.MarketCurrencyId,
-                        }).ToList()
                     };
                 }
             });

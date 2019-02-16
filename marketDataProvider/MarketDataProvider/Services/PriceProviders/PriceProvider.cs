@@ -1,8 +1,5 @@
 ﻿using MarketDataProvider.Enums;
-using MarketDataProvider.Services.Models;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -15,13 +12,12 @@ namespace MarketDataProvider.Services.PriceProviders
         public PriceProvider()
         {
             _client = new HttpClient();
-
         }
 
         public abstract Task UpdatePrices();
-        public abstract IEnumerable<Tick> GetMarketPrices(string market);
-        public abstract decimal? GetPrice(string symbol);
-        public abstract decimal? GetPrice(string market, string currency);
+        public abstract decimal? GetRate(string symbol);
+        public abstract decimal? GetRate(string market, string currency);
+        public abstract IEnumerable<object> GetValues();
         public abstract string GetUrl(OrderType orderType, string market, string currency, decimal amount);
     }
 }

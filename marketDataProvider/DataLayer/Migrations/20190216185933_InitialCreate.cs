@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace MarketDataProvider.Migrations
+namespace DataLayer.Migrations
 {
     public partial class InitialCreate : Migration
     {

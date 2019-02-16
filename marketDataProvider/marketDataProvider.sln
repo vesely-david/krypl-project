@@ -7,12 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MarketDataProvider", "Marke
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{FF60991F-30CA-488F-A08E-F603BBFCF57E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataLayer", "DataLayer\DataLayer.csproj", "{05C8C6AA-E847-4F42-893B-34849779AA0C}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database", "Database", "{AEB0682B-FC6D-46DE-B885-4A0C18E6DA06}"
-	ProjectSection(SolutionItems) = preProject
-		MarketsDatabase.db = MarketsDatabase.db
-	EndProjectSection
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataLayer", "DataLayer\DataLayer.csproj", "{1EE3697C-1705-4A92-B483-28ECB6AA79F4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -28,10 +23,10 @@ Global
 		{FF60991F-30CA-488F-A08E-F603BBFCF57E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FF60991F-30CA-488F-A08E-F603BBFCF57E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FF60991F-30CA-488F-A08E-F603BBFCF57E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{05C8C6AA-E847-4F42-893B-34849779AA0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{05C8C6AA-E847-4F42-893B-34849779AA0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{05C8C6AA-E847-4F42-893B-34849779AA0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{05C8C6AA-E847-4F42-893B-34849779AA0C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1EE3697C-1705-4A92-B483-28ECB6AA79F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1EE3697C-1705-4A92-B483-28ECB6AA79F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1EE3697C-1705-4A92-B483-28ECB6AA79F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1EE3697C-1705-4A92-B483-28ECB6AA79F4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -32,9 +32,9 @@ namespace MarketDataProvider.Controllers
         [Route("price/{exchange}/{market}_{currency}")]
         public IActionResult GetPrice(string exchange, string market, string currency)
         {
-            var price = _priceService.GetExchange(exchange)?.GetPrice(market, currency);
-            if (price != null) return Ok(price);
-            else return BadRequest("Not found");
+            var price = _priceService.GetExchange(exchange)?.GetRate(market, currency);
+            if (price == null) return BadRequest("Not found");
+            return Ok(price);
         }
 
         [HttpGet]
@@ -45,6 +45,15 @@ namespace MarketDataProvider.Controllers
             var url = _priceService.GetExchange(exchange)?.GetUrl(orderType.Value, market, currency, amount.Value);
             if (url != null) return Ok(url);
             else return BadRequest("Not found");
+        }
+
+        [HttpGet]
+        [Route("price/{exchange}")]
+        public IActionResult GetPrices(string exchange)
+        {
+            var prices = _priceService.GetExchange(exchange)?.GetValues();
+            if (prices == null) return BadRequest("Not found");
+            return Ok(prices);
         }
     }
 }

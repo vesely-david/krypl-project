@@ -7,13 +7,12 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage;
 using System;
 
-namespace MarketDataProvider.Migrations
+namespace DataLayer.Migrations
 {
     [DbContext(typeof(MarketDataContext))]
-    [Migration("20180513093146_InitialCreate")]
-    partial class InitialCreate
+    partial class MarketDataContextModelSnapshot : ModelSnapshot
     {
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -18,10 +18,22 @@ namespace MarketDataProvider.Controllers
     {
         private IExchangeRepository _repo;
         private HttpClient _httpClient;
+        private IMarketRepository _marketRepository;
+        private ICurrencyRepository _currencyRepository;
+        private IExchangeCurrencyRepository _exchangeCurrencyRepository;
+        private IExchangeMarketRepository _exchangeMarketRepository;
 
-        public AdminController(IExchangeRepository repo)
+        public AdminController(IExchangeRepository repo, 
+            IMarketRepository marketRepository, 
+            ICurrencyRepository currencyRepository,
+            IExchangeCurrencyRepository exchangeCurrencyRepository,
+            IExchangeMarketRepository exchangeMarketRepository)
         {
             _repo = repo;
+            _marketRepository = marketRepository;
+            _currencyRepository = currencyRepository;
+            _exchangeCurrencyRepository = exchangeCurrencyRepository;
+            _exchangeMarketRepository = exchangeMarketRepository;
             _httpClient = new HttpClient();
         }
 
@@ -29,15 +41,16 @@ namespace MarketDataProvider.Controllers
         [Route("seedBinance")]
         public async Task<IActionResult> SeedBinance()
         {
-            var binancePrices = _httpClient.GetStringAsync("https://www.binance.com/api/v3/ticker/price");
             var coinMarketCapData = _httpClient.GetStringAsync("https://api.coinmarketcap.com/v2/listings/");
+            var binanceInfo = _httpClient.GetStringAsync("https://www.binance.com/api/v1/exchangeInfo");
 
-            await Task.WhenAll(binancePrices, coinMarketCapData);
+            await Task.WhenAll(binanceInfo, coinMarketCapData);
 
             var cmcTemplate = new { data = new[] { new { name= "", symbol=""} }};
             var cmcData = JsonConvert.DeserializeAnonymousType(coinMarketCapData.Result, cmcTemplate).data;
-            var markets = new string[] { "BTC", "ETH", "BNB", "USDT" };
-            var ticks = JsonConvert.DeserializeObject<List<BinanceTick>>(binancePrices.Result);
+            var binanceInfoTemplate = new { symbols = new[] { new { symbol = "", baseAsset = "", quoteAsset = "" } } };
+
+            var symbols = JsonConvert.DeserializeAnonymousType(binanceInfo.Result, binanceInfoTemplate).symbols;
 
             var binance = new Exchange
             {
@@ -45,77 +58,70 @@ namespace MarketDataProvider.Controllers
                 Web = "www.binance.com",
                 Name = "Binance",
                 ProvidesFullHistoryData = true,
-                ExchangeCurrencies = new List<ExchangeCurrency>(),
-                ExchangeMarkets = new List<ExchangeMarket>()
             };
 
-            var notResolved = new List<string>();
-            var moreOccurrences = new List<string>();
-            var resolved = new List<KeyValuePair<string, string>>();
-
-            foreach (var market in markets)
-            {
-                var length = market.Length;
-                var currencies = ticks.Where(o => o.symbol.EndsWith(market))
-                    .Select(o => o.symbol.Substring(0, o.symbol.Length - length));
-                foreach(var c in currencies)
-                {
-                    var matches = cmcData.Where(o => o.symbol == c);
-                    resolved.Add(new KeyValuePair<string, string>(c, matches.Count() == 1 ? matches.First().name : ""));
-                    if (matches.Count() == 0) notResolved.Add(c);
-                    if (matches.Count() > 1) moreOccurrences.Add(c);
-                }
-            }
-
-            binance.ExchangeCurrencies = resolved.Distinct().Select(o => new ExchangeCurrency
-            {
-                Currency = new Currency
-                {
-                    Id = o.Key.ToUpper(),
-                    Name = o.Value,
-                },
-                Id = "binance_" + o.Key.ToUpper(),
-                CurrencyExchangeId = o.Key,
-            }).ToList();
-
-            binance.ExchangeCurrencies.Add(new ExchangeCurrency //Base Currency
-            {
-                Currency = new Currency
-                {
-                    Id = "USDT",
-                    Name = "Tether"
-                },
-                Id = "binance_USDT",
-                CurrencyExchangeId = "USDT",
-            });
-
-            foreach (var market in markets)
-            {
-                var length = market.Length;
-                var currencies = ticks.Where(o => o.symbol.EndsWith(market))
-                    .Select(o => o.symbol.Substring(0, o.symbol.Length - length));
-                foreach (var c in currencies)
-                {
-                    var matches = cmcData.Where(o => o.symbol == c);
-                    binance.ExchangeMarkets.Add(new ExchangeMarket
-                    {
-                        Id = "binance_" + market.ToUpper() + "_" + c.ToUpper(),
-                        MarketExchangeId = c + market,
-                        Market = new Market
-                        {
-                            Id = market.ToUpper() + "_" + c.ToUpper(),
-                            CurrencyId = c.ToUpper(),
-                            MarketCurrencyId = market.ToUpper()
-                        }
-                    });
-                }
-            }
             _repo.Add(binance);
-            return Ok(new
+
+            var errors = new List<string>();
+
+            var currencies = symbols.Aggregate(new HashSet<string>(), (res, val) => //Get unique currencies
             {
-                notResolved = notResolved.Distinct(),   
-                moreOccurrences = moreOccurrences.Distinct(),
+                res.Add(val.baseAsset);
+                res.Add(val.quoteAsset);
+                return res;
             });
+
+            foreach(var c in currencies) // Set currencies
+            {
+
+                var cmcMatches = cmcData.Where(o => o.symbol == c);
+                if (cmcMatches.Count() != 1) errors.Add(c);
+
+
+                _currencyRepository.AddNotSave(new Currency
+                {
+                    Id = c,
+                    Name = cmcMatches.FirstOrDefault()?.name ?? c
+                });
+            }
+            _currencyRepository.Save();
+
+            foreach(var c in currencies) // Set exchangeCurrencies
+            {
+                _exchangeCurrencyRepository.AddNotSave(new ExchangeCurrency
+                {
+                    Id = "binance_" + c,
+                    CurrencyId = c,
+                    ExchangeId = "binance",
+                    CurrencyExchangeId = c
+                });
+            }
+            _exchangeCurrencyRepository.Save();
+
+            foreach (var m in symbols) // Set markets
+            {
+                _marketRepository.AddNotSave(new Market
+                {
+                    MarketCurrencyId = m.quoteAsset,
+                    CurrencyId = m.baseAsset,
+                    Id = m.quoteAsset + "_" + m.baseAsset,
+                });
+            }
+            _marketRepository.Save();
+
+            foreach(var m in symbols) // Set exchange markets 
+            {
+                _exchangeMarketRepository.AddNotSave(new ExchangeMarket
+                {
+                    ExchangeId = "binance",
+                    Id = "binance_" + m.quoteAsset + "_" + m.baseAsset,
+                    MarketExchangeId = m.symbol,
+                    MarketId = m.quoteAsset + "_" + m.baseAsset
+                });
+            }
+            _exchangeMarketRepository.Save();
+
+            return Ok(errors);
         }
 
 

@@ -17,10 +17,7 @@ namespace MasterDataManager.Controllers
     public class StrategyController : Controller
     {
         private IStrategyRepository _strategyRepository;
-        private IUserAssetRepository _userAssetRepository;
         private ITradeRepository _tradeRepository;
-        private IExchangeObjectFactory _exchangeFactory;
-        private IBalanceService _balanceService;
         private IMapper _mapper;
 
         public StrategyController(
@@ -32,10 +29,7 @@ namespace MasterDataManager.Controllers
             IMapper mapper)
         {
             _strategyRepository = strategyRepository;
-            _userAssetRepository = userAssetRepository;
             _tradeRepository = tradeRepository;
-            _exchangeFactory = exchangeFactory;
-            _balanceService = balanceService;
             _mapper = mapper;
         }
 

@@ -11,7 +11,6 @@ using MasterDataManager.Services.Interfaces;
 using MasterDataManager.Utils;
 using Microsoft.AspNetCore.Mvc;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace MasterDataManager.Controllers
 {
@@ -80,11 +79,11 @@ namespace MasterDataManager.Controllers
             if (userId == null) return BadRequest("User not found");
 
             var allStrategies = _strategyRepository.GetUserStrategiesByMode(userId, mode).OrderBy(o => o.Start);
-            var strategies = allStrategies.Skip(page * perPage).Take(perPage).Select(_mapper.Map<JsonStrategyModel>);
+            var strategies = allStrategies.Skip(page * perPage).Take(perPage);
 
             return Ok(new
             {
-                strategies,
+                strategies = strategies.Select(_mapper.Map<JsonStrategyModel>),
                 page,
                 perPage,
                 count = allStrategies.Count()
@@ -103,6 +102,14 @@ namespace MasterDataManager.Controllers
                 .Where(o => o.TradingMode == model.tradingMode);
 
             var strategyAssets = new List<StrategyAsset>();
+            var currentPrices = await _marketDataService.GetCurrentPrices(model.exchange);
+            var firstEvaluation = new EvaluationTick
+            {
+                BtcValue = 0,
+                UsdValue = 0,
+                TimeStamp = DateTime.Now,
+            };
+
             foreach (var modelAsset in model.assets)
             {
                 var asset = assets.FirstOrDefault(o => o.Currency.Equals(modelAsset.currency, StringComparison.InvariantCultureIgnoreCase));
@@ -110,25 +117,18 @@ namespace MasterDataManager.Controllers
                 {
                     return BadRequest("Insufficient funds");
                 }
+                if (!currentPrices.ContainsKey(asset.Currency))
+                {
+                    return BadRequest("Cannot evaluate strategy");
+                }
+                firstEvaluation.BtcValue += currentPrices[asset.Currency].BtcValue;
+                firstEvaluation.UsdValue += currentPrices[asset.Currency].UsdValue;
                 strategyAssets.Add(new StrategyAsset
                 {
                     Amount = modelAsset.amount,
                     UserAsset = asset
                 });
             }
-            var currentPrices = await _marketDataService.GetCurrentPrices(model.exchange);
-
-            var firstEvaluation = assets.Aggregate(new EvaluationTick
-            {
-                BtcValue = 0,
-                UsdValue = 0,
-                TimeStamp = DateTime.Now,
-            }, (res, val) => 
-            {
-                res.BtcValue += currentPrices[val.Currency].Item1;
-                res.UsdValue += currentPrices[val.Currency].Item2;
-                return res;
-            });
 
             var strategy = new Strategy
             {
