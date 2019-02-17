@@ -1,10 +1,12 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { IndexLink, Link } from 'react-router'
+import { bindActionCreators } from 'redux'
+
 import PropTypes from 'prop-types'
 import { authenticationActions } from '../../commonModules/authentication'
 import { Button, Menu } from 'semantic-ui-react'
-import { bindActionCreators } from 'redux'
+
 import './PageLayout.scss'
 import DuckImage from './assets/Duck.jpg'
 
@@ -56,7 +58,6 @@ class PageLayout extends React.Component {
           {this.props.children}
         </div>
       </div>
-
     )
   }
 }
