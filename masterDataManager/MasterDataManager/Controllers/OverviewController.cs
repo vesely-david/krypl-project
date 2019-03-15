@@ -58,6 +58,15 @@ namespace MasterDataManager.Controllers
                 return res;
             });
 
+            var allOpenededTradesCount = strategies.SelectMany(o => o.Trades).Count(o => !o.Closed.HasValue);
+            var allTradesCount = strategies.SelectMany(o => o.Trades).Count();
+            var allNewTradesCount = strategies.Sum(o => o.GetNewTrades());
+            var runningCount = strategies.Count(o => !o.Stop.HasValue);
+            var allCount = strategies.Count();
+            var currentVal = _mapper.Map<JsonEvaluationModel>(currentValue);
+            var yesterdayVal = _mapper.Map<JsonEvaluationModel>(yesterdayValue);
+            var reserv = _mapper.Map<JsonEvaluationModel>(reserved);
+
             return Ok(new
             {
                 allOpenededTradesCount = strategies.SelectMany(o => o.Trades).Count(o => !o.Closed.HasValue),
@@ -112,7 +121,7 @@ namespace MasterDataManager.Controllers
 
             foreach (var modelAsset in model.assets)
             {
-                var asset = assets.FirstOrDefault(o => o.Currency.Equals(modelAsset.currency, StringComparison.InvariantCultureIgnoreCase));
+                var asset = assets.FirstOrDefault(o => o.Id.Equals(modelAsset.id));
                 if (asset == null || (asset.GetFreeAmount() < modelAsset.amount))
                 {
                     return BadRequest("Insufficient funds");

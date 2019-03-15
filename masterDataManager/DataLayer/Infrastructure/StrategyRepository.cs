@@ -44,6 +44,7 @@ namespace DataLayer.Infrastructure
             return _dbContext.Strategies
                 .Include(o => o.Evaluations)
                 .Include(o => o.StrategyAssets)
+                .Include(o => o.Trades)
                 .Where(o => o.UserId == userId && o.TradingMode == mode && !o.IsOverview);
         }
     }

@@ -25,7 +25,6 @@ const PrivateRoute = ({ component: Component, authenticated, ...rest }) => {
 class Routes extends Component {
   render() {
     const { isAuthenticated } = this.props.user;
-
     return (
       <Switch>
         <Route exact path='/' component={Home}/>

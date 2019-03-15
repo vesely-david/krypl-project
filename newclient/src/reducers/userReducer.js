@@ -17,7 +17,7 @@ const ACTION_HANDLERS = {
 
 const initialState = {
   email: '',
-  isAuthenticated: false,
+  isAuthenticated: !!localStorage.getItem('token'),
   isFetching: false,
 }
 

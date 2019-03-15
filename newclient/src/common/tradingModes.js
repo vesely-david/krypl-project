@@ -1,0 +1,1 @@
+export const PAPER_TESTING = 'PaperTesting';

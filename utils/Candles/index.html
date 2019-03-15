@@ -310,7 +310,6 @@
       var dataset = buys ? BUYS : SELLS;
       var g = buys ? buysG : sellsG;
       var filtered = dataset.filter(function(d){return d.timestamp >= start && d.timestamp <= end})
-      debugger;
       g.selectAll("circle").remove();
       
       g.selectAll('circle').data(filtered).enter()

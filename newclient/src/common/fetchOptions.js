@@ -5,6 +5,14 @@ export const get = () => ({
   }
 });
 
+export const authorizedGet = () => ({
+  method: 'GET',
+  headers: {
+    'Accept': 'application/json',
+    'Authorization': `Bearer ${localStorage.getItem('token')}`
+  }
+});
+
 export const post = () => ({
   method: 'POST',
   headers: {
@@ -15,5 +23,6 @@ export const post = () => ({
 
 export default{
   get,
+  authorizedGet,
   post,
 }
