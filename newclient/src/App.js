@@ -23,9 +23,9 @@ class App extends Component {
     return (
       <div className="App">
         <AlertsContainer />
+        <Header />
         <div>
-          <Header />
-          <Routes />
+          <Routes/>
           <Footer />
         </div>
       </div>

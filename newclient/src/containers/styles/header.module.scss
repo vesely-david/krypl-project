@@ -1,6 +1,11 @@
 @import '../../common/common.module.scss';
 
-
+.header{
+  position: fixed;
+  z-index: 10;
+  top: 0;
+  width: 100vw;
+}
 
 .mainItem{
   font-size: 1.3rem;

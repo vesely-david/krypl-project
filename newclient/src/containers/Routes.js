@@ -6,6 +6,7 @@ import Real from './subpages/Real';
 import Paper from './subpages/Paper';
 import Back from './subpages/Back';
 import Login from './subpages/Login';
+import Strategy from './subpages/Strategy';
 
 
 const PublicRoute = ({ component: Component, authenticated, ...rest }) => {
@@ -31,6 +32,7 @@ class Routes extends Component {
         <PrivateRoute path="/real" authenticated={isAuthenticated} component={Real} />
         <PrivateRoute path="/papertesting" authenticated={isAuthenticated} component={Paper} />
         <PrivateRoute path="/backtesting" authenticated={isAuthenticated} component={Back} />
+        <PrivateRoute path="/strategy/:strategyId" authenticated={isAuthenticated} component={Strategy} />
         <PublicRoute path='/login'  authenticated={isAuthenticated} component={Login} />
       </Switch>
     );

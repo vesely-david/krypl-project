@@ -96,8 +96,12 @@ class NewStrategyModal extends React.Component {
       strategyAssets.filter(o => o.exchange === selectedExchange)
         .map(o => ({id: o.id, amount: Number.parseFloat(o.amount)}))
     )
+    if(!res){
+      alert('Error');
+      return;
+    }
     this.setState({ returnedId: res.value })
-    if (res.value) this.cleanForm(false)
+    this.cleanForm(false)
   }
 
   cleanForm = (deleteReturnedId) => {

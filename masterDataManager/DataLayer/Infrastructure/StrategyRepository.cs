@@ -15,6 +15,13 @@ namespace DataLayer.Infrastructure
         {
         }
 
+        public Strategy GetByIdForOverview(string strategyId)
+        {
+            return _dbContext.Strategies
+                .Include(o => o.Evaluations)
+                .FirstOrDefault(o => o.Id == strategyId);
+        }
+
         public IEnumerable<Strategy> GetAllForEvaluation()
         {
             return _dbContext.Strategies
