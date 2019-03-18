@@ -1,0 +1,11 @@
+@import '../../common/common.module.scss';
+
+.exchange_block{
+  
+
+  .asset_wrapper{
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 100px;
+  }
+}

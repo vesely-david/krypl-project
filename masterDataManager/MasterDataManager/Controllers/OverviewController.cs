@@ -38,7 +38,7 @@ namespace MasterDataManager.Controllers
 
 
         [HttpGet("{mode}/overview")]
-        public IActionResult GetOverview(TradingMode mode)
+        public async Task<IActionResult> GetOverview(TradingMode mode)
         {
             var userId = HttpContext.User.GetUserId();
             if (userId == null) return BadRequest("User not found");
@@ -48,7 +48,10 @@ namespace MasterDataManager.Controllers
 
             var overview = _strategyRepository.GetUserOverviewByMode(userId, mode);
 
-            var currentValue = overview.Evaluations.Last();
+            var assets = _userAssetRepository.GetByUserId(userId)
+                .Where(o => o.TradingMode == mode).Select(o => (currency: o.Currency, amount: o.Amount));
+
+            var currentValue = await _marketDataService.EvaluateAssetSet(assets, "binance");
             var yesterdayValue = overview.GetYesterdayValue();
             var reserved = strategies.Aggregate(new EvaluationTick(), (res, val) =>
             {
@@ -57,15 +60,6 @@ namespace MasterDataManager.Controllers
                 res.UsdValue += eval.UsdValue;
                 return res;
             });
-
-            var allOpenededTradesCount = strategies.SelectMany(o => o.Trades).Count(o => !o.Closed.HasValue);
-            var allTradesCount = strategies.SelectMany(o => o.Trades).Count();
-            var allNewTradesCount = strategies.Sum(o => o.GetNewTrades());
-            var runningCount = strategies.Count(o => !o.Stop.HasValue);
-            var allCount = strategies.Count();
-            var currentVal = _mapper.Map<JsonEvaluationModel>(currentValue);
-            var yesterdayVal = _mapper.Map<JsonEvaluationModel>(yesterdayValue);
-            var reserv = _mapper.Map<JsonEvaluationModel>(reserved);
 
             return Ok(new
             {

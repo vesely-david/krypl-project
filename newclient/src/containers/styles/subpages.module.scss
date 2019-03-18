@@ -1,0 +1,16 @@
+@import '../../common/common.module.scss';
+
+
+.home_segment{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid $light-grey;
+
+  h1,h2,h3,h4{
+    margin: 0;
+  }
+}
+

@@ -20,7 +20,6 @@ const StrategyRow = ({
   const profitUsd = currentValue.usdValue - initialValue.usdValue;
   const dayChangeBtc = (currentValue.btcValue - yesterdayValue.btcValue) / currentValue.btcValue;
   const dayChangeUsd = (currentValue.usdValue - yesterdayValue.usdValue) / currentValue.usdValue;
-  debugger;
   return (
     <Table.Row
       textAlign='center'

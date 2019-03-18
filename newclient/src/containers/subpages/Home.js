@@ -33,9 +33,9 @@ class Home extends React.Component{
       marketData,
     } = this.props;
     return isAuthenticated ? (
-      <div>
-        <Segment color='teal' className='mainOverviewSegment' loading={false}>
-          <div className='mainOverviewSegmanetHeading'>
+      <div className={styles.app}>
+        <Segment color='teal' loading={false}>
+          <div className={styles.home_segment}>
             <h3>Paper Assets</h3>
             <FakeAssetManagerModal
               color='teal'

@@ -70,7 +70,7 @@ const StrategyList = ({
               <Table.Row>
                 <Table.Cell><Icon name='dollar' /></Table.Cell>
                 <Table.Cell>{reserved.usdValue}</Table.Cell>
-                <Table.Cell>{currentValue.btcValue}</Table.Cell>
+                <Table.Cell>{currentValue.usdValue}</Table.Cell>
                 <Table.Cell>{usdChange * 100}</Table.Cell>
               </Table.Row>
             </Table.Body>

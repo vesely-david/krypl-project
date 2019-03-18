@@ -4,6 +4,7 @@ using DataLayer.Infrastructure;
 using DataLayer.Infrastructure.Interfaces;
 using DataLayer.Models;
 using MasterDataManager.Models;
+using MasterDataManager.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System;
@@ -32,21 +33,14 @@ namespace MasterDataManager.Services
         {
             while (!cancellationToken.IsCancellationRequested)
             {
-                var response = await _client.GetStringAsync("https://www.binance.com/api/v3/ticker/price");
-                //TODO: Exception
-                var ticks = JsonConvert.DeserializeObject<List<Tick>>(response);
-
-                var btcDict = ticks.Where(o => o.symbol.EndsWith("BTC"))
-                    .ToDictionary(o => o.symbol.Remove(o.symbol.Length - 3), o => decimal.Parse(o.price));
-                var usdtDict = ticks.Where(o => o.symbol.EndsWith("USDT"))
-                    .ToDictionary(o => o.symbol.Remove(o.symbol.Length - 4), o => decimal.Parse(o.price));
-
-                var btcPrice = usdtDict["BTC"];
-
                 //https://www.stevejgordon.co.uk/asp-net-core-2-ihostedservice
                 //https://docs.microsoft.com/en-us/aspnet/core/fundamentals/hosted-services
                 using (var scope = ScopeFactory.CreateScope())
                 {
+                    var marketDataService = scope.ServiceProvider
+                        .GetRequiredService<IMarketDataService>();
+                    var currentPrices = await marketDataService.GetCurrentPrices("binance");
+
                     var strategyRepository = scope.ServiceProvider
                         .GetRequiredService<IStrategyRepository>();
 
@@ -54,21 +48,44 @@ namespace MasterDataManager.Services
                         .Where(o => o.StrategyState != StrategyState.Stopped);
                     var timeStamp = DateTime.Now;
 
-                    foreach (var strategy in strategies)
+                    var valueSums = new Dictionary<TradingMode, (decimal btcValue, decimal usdValue)>
                     {
-                        decimal btcSum;
-                        try
-                        {
-                            btcSum = strategy.StrategyAssets.Sum(o => {
-                                var rate = o.UserAsset.Currency == "BTC" ? 1 : btcDict[o.UserAsset.Currency];
-                                return o.Amount * rate;
-                            });
-                        } catch(Exception ex)
-                        {
-                            btcSum = -1;
-                        }
-                        var usdSum = btcSum == -1 ? -1 : btcSum * btcPrice;
+                        {TradingMode.Real, (btcValue: 0, usdValue: 0)},
+                        {TradingMode.PaperTesting, (btcValue: 0, usdValue: 0)},
+                        {TradingMode.BackTesting, (btcValue: 0, usdValue: 0)},
+                    };
 
+                    foreach (var strategy in strategies.Where(o => !o.IsOverview)) // Strategies
+                    {
+                        var valueSum = strategy.StrategyAssets.Aggregate((btcSum: 0m, usdSum: 0m), (res, val) =>
+                        {
+                            if (currentPrices.ContainsKey(val.UserAsset.Currency))
+                            {
+                                res.btcSum += val.Amount * currentPrices[val.UserAsset.Currency].BtcValue;
+                                res.usdSum += val.Amount * currentPrices[val.UserAsset.Currency].UsdValue;
+                            }
+                            return res;
+                        });
+                        strategy.Evaluations.Add(new EvaluationTick
+                        {
+                            TimeStamp = timeStamp,
+                            BtcValue = valueSum.btcSum,
+                            UsdValue = valueSum.usdSum
+                        });
+                        strategyRepository.EditNotSave(strategy);
+                    }
+                    foreach (var strategy in strategies.Where(o => o.IsOverview)) // Overviews
+                    {
+                        var (btcSum, usdSum) = strategy.User.UserAssets.Where(o => o.TradingMode == strategy.TradingMode)
+                            .Aggregate((btcSum: 0m, usdSum: 0m), (res, val) =>
+                        {
+                            if (currentPrices.ContainsKey(val.Currency))
+                            {
+                                res.btcSum += val.Amount * currentPrices[val.Currency].BtcValue;
+                                res.usdSum += val.Amount * currentPrices[val.Currency].UsdValue;
+                            }
+                            return res;
+                        });
                         strategy.Evaluations.Add(new EvaluationTick
                         {
                             TimeStamp = timeStamp,

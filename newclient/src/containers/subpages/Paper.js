@@ -4,7 +4,8 @@ import { bindActionCreators } from 'redux'
 import { overviewActions } from '../../actions/overviewActions'
 import StrategyPage from '../../components/StrategyPage/StrategyPage'
 import NewStrategyModal from '../modals/NewStrategyModal';
-import { getAssets, getGroupedAssets } from '../../selectors/assetSelectors';
+import { getGroupedAssets } from '../../selectors/assetSelectors';
+import styles from '../styles/subpages.module.scss';
 
 class PaperContainer extends React.Component {
   componentDidMount () {
@@ -16,28 +17,27 @@ class PaperContainer extends React.Component {
     const {
       overviewActions:{ registerPaperStrategy },
       paper,
-      assets: {
-        paperAssets
-      },
       groupedAssets: {
         groupedPaperAssets
       }
     } = this.props
     return (
-      <StrategyPage
-        data={paper}
-        actions={{
-          forgetAllNews: () => alert('forget'),
-          registerStrategy: () => alert('register'),
-        }}
-        addStrategyModal={(
-          <NewStrategyModal
-            registrationPending={paper.registrationPending}
-            registerStrategy={registerPaperStrategy}
-            allAssets={groupedPaperAssets}
-          />
-        )}
-      />
+      <div className={styles.app}>
+        <StrategyPage
+          data={paper}
+          actions={{
+            forgetAllNews: () => alert('forget'),
+            registerStrategy: () => alert('register'),
+          }}
+          addStrategyModal={(
+            <NewStrategyModal
+              registrationPending={paper.registrationPending}
+              registerStrategy={registerPaperStrategy}
+              allAssets={groupedPaperAssets}
+            />
+          )}
+        />
+      </div>
     )
   }
 }
@@ -50,7 +50,6 @@ const mapDispatchToProps = (dispatch) => {
 
 const mapStateToProps = (state) => ({
   paper: state.paper,
-  assets: getAssets(state),
   groupedAssets: getGroupedAssets(state),
 })
 

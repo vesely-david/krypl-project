@@ -3,16 +3,15 @@ version: '2'
 services:
   masterdatamanager:
     image: masterdatamanager
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
     expose:
       - "80"
     volumes:
-      - "./database/Database.db:/app/database/Database.db"
+      - "./database/Database.db:/app/Database/Database.db"
     build:
       context: ./masterDataManager
       dockerfile: Dockerfile
     environment:
+      ASPNETCORE_ENVIRONMENT: Development
       VIRTUAL_HOST: api.kryplproject.cz,www.api.kryplproject.cz
       LETSENCRYPT_HOST: api.kryplproject.cz,www.api.kryplproject.cz
       LETSENCRYPT_EMAIL: h.kirchner@seznam.cz

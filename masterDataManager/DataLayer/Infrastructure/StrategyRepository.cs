@@ -18,6 +18,7 @@ namespace DataLayer.Infrastructure
         public IEnumerable<Strategy> GetAllForEvaluation()
         {
             return _dbContext.Strategies
+                .Include(o => o.User).ThenInclude(o => o.UserAssets)
                 .Include(o => o.Trades)
                 .Include(o => o.Evaluations)
                 .Include(o => o.StrategyAssets).ThenInclude(p => p.UserAsset);
@@ -36,6 +37,7 @@ namespace DataLayer.Infrastructure
         {
             return _dbContext.Strategies
                 .Include(o => o.Evaluations)
+                .Include(o => o.StrategyAssets)
                 .FirstOrDefault(o => o.UserId == userId && o.TradingMode == mode && o.IsOverview);
         }
 

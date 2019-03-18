@@ -1,4 +1,5 @@
-﻿using MasterDataManager.Services.Interfaces;
+﻿using DataLayer.Models;
+using MasterDataManager.Services.Interfaces;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,27 @@ namespace MasterDataManager.Services
         {
             _client = new HttpClient();
         }
+
+        public async Task<EvaluationTick> EvaluateAssetSet(IEnumerable<(string currency, decimal amount)> assets, string exchange)
+        {
+            var result = new EvaluationTick
+            {
+                TimeStamp = DateTime.Now,
+                BtcValue = 0,
+                UsdValue = 0
+            };
+            var prices = await GetCurrentPrices(exchange);
+            return assets.Aggregate(result, (res, val) =>
+            {
+                if (prices.ContainsKey(val.currency))
+                {
+                    res.BtcValue += prices[val.currency].BtcValue * val.amount;
+                    res.UsdValue += prices[val.currency].UsdValue * val.amount;
+                }
+                return res;
+            });
+        }
+
         public async Task<Dictionary<string, string>> GetCurrencyTranslationsAsync(string exchange)
         {
             try

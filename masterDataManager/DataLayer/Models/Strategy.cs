@@ -13,7 +13,7 @@ namespace DataLayer.Models
         public DateTime Start { get; set; }
         public DateTime? Stop { get; set; }
         public StrategyState StrategyState { get; set; }
-        public TradingMode? TradingMode { get; set; } //null in case of overview
+        public TradingMode TradingMode { get; set; } //null in case of overview
         public DateTime? LastCheck { get; set; }
         public bool IsOverview { get; set; }
 
