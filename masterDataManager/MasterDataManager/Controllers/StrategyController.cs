@@ -8,6 +8,7 @@ using DataLayer.Infrastructure.Interfaces;
 using MasterDataManager.Services.Interfaces;
 using MasterDataManager.Models;
 using AutoMapper;
+using System.Collections.Generic;
 
 namespace MasterDataManager.Controllers
 {
@@ -31,6 +32,18 @@ namespace MasterDataManager.Controllers
             _strategyRepository = strategyRepository;
             _tradeRepository = tradeRepository;
             _mapper = mapper;
+        }
+
+        [HttpGet("{strategyId}/history")]
+        public IActionResult GetStrategyHistory(string strategyId)
+        {
+            var userId = HttpContext.User.GetUserId();
+            if (string.IsNullOrEmpty(userId)) return BadRequest("User not found");
+
+            var strategy = _strategyRepository.GetByIdForEvaluations(strategyId);
+            if (strategy == null) return BadRequest("Strategy not found");
+
+            return Ok(strategy.Evaluations.Select(_mapper.Map<JsonEvaluationModel>));
         }
 
 

@@ -1,6 +1,7 @@
 import {
   GET_STRATEGY_OVERVIEW,
   GET_STRATEGY_TRADES,
+  GET_STRATEGY_VALUE_HISTORY,
 } from '../actions/types';
 
 
@@ -50,13 +51,38 @@ const ACTION_HANDLERS = {
       strategyTradesFetching: false
     }
   },
+  //====================================================   
+  [`${GET_STRATEGY_VALUE_HISTORY}_PENDING`] : (state, action) => {
+    return {
+      ...state, 
+      historyFetching: true
+    }
+  },
+  [`${GET_STRATEGY_VALUE_HISTORY}_FULFILLED`] : (state, action) => {
+    return {
+      ...state,
+      historyFetching: false,
+      histories: {
+        ...state.histories,
+        [action.payload.id] : action.payload.history,
+      }
+    }
+  },
+  [`${GET_STRATEGY_VALUE_HISTORY}_REJECTED`] : (state, action) => {
+    return {
+      ...state, 
+      historyFetching: false
+    }
+  },  
 }
 
 const initialState = {
   overviews: {},
   trades: {},
+  histories: {},
   strategyOverviewFetching: false,
   strategyTradesFetching: false,
+  historyFetching: false,
 }
 
 export default function userReducer (state = initialState, action) {

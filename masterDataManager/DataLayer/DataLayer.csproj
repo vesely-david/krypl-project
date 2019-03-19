@@ -25,5 +25,6 @@
     <Compile Remove="Migrations\MasterDataContextModelSnapshot.cs" />
     <Compile Remove="Migrations\20190213125226_InitialCreate.cs" />
     <Compile Remove="Migrations\MasterDataContextModelSnapshot.cs" />
+    <Compile Remove="Infrastructure\Interfaces\EvaluationRepository.cs" />
   </ItemGroup>
 </Project>

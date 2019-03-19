@@ -13,6 +13,7 @@ namespace DataLayer
         public DbSet<UserAsset> UserAssets { get; set; }
         public DbSet<StrategyAsset> StrategyAssets { get; set; }
         public DbSet<ExchangeSecret> ExchangeSecrets { get; set; }
+        //public DbSet<EvaluationTick> Evaluations{ get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)

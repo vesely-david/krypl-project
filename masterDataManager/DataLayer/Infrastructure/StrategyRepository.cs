@@ -56,5 +56,12 @@ namespace DataLayer.Infrastructure
                 .Include(o => o.Trades)
                 .Where(o => o.UserId == userId && o.TradingMode == mode && !o.IsOverview);
         }
+
+        public Strategy GetByIdForEvaluations(string strategyId)
+        {
+            return _dbContext.Strategies
+                .Include(o => o.Evaluations)
+                .FirstOrDefault(o => o.Id == strategyId);
+        }
     }
 }

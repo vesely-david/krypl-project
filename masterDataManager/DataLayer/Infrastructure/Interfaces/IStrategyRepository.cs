@@ -10,6 +10,7 @@ namespace DataLayer.Infrastructure.Interfaces
     {
         IEnumerable<Strategy> GetByUserId(string userId);
         Strategy GetByIdForOverview(string strategyId);
+        Strategy GetByIdForEvaluations(string strategyId);
         IEnumerable<Strategy> GetAllForEvaluation();
         IEnumerable<Strategy> GetUserStrategiesByMode(string userId, TradingMode mode);
         Strategy GetUserOverviewByMode(string userId, TradingMode mode);

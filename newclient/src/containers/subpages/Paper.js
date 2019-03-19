@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { overviewActions } from '../../actions/overviewActions'
-import StrategyPage from '../../components/StrategyPage/StrategyPage'
+import OverviewContainer from '../../components/Overview/OverviewContainer'
 import NewStrategyModal from '../modals/NewStrategyModal';
 import { getGroupedAssets } from '../../selectors/assetSelectors';
 import styles from '../styles/subpages.module.scss';
@@ -23,7 +23,7 @@ class PaperContainer extends React.Component {
     } = this.props
     return (
       <div className={styles.app}>
-        <StrategyPage
+        <OverviewContainer
           data={paper}
           actions={{
             forgetAllNews: () => alert('forget'),

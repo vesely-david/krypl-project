@@ -2,7 +2,7 @@ import React from 'react'
 import SmallOverview from './SmallOverview'
 import StrategyList from './StrategyList'
 
-const StrategyPage = ({
+const OverviewContainer = ({
   data: {
     strategyList,
     overview,
@@ -33,4 +33,4 @@ const StrategyPage = ({
     </div>)
   }
 
-export default StrategyPage
+export default OverviewContainer

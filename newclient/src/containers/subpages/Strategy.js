@@ -2,27 +2,35 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { strategyActions } from '../../actions/strategyActions';
-// import TradeList from '../components/TradeList'
-// import StrategyOverview from '../components/StrategyOverview'
+import TradeList from '../../components/Strategy/TradeList'
+import StrategyOverview from '../../components/Strategy/StrategyOverview'
+import styles from '../styles/subpages.module.scss';
 
 class StrategyContainer extends React.Component {
   componentDidMount () {
-    var id = this.props.match.params.strategyId
-    this.props.strategyActions.getStrategyData(id)
+    this.props.strategyActions.getStrategyData(this.props.match.params.strategyId)
   }
 
   render () {
     const {
-      overview,
+      overviews,
       trades,
-      overviewFetching,
-      tradesFetching,
-    } = this.props
-    
+      histories,
+      strategyOverviewFetching,
+      strategyTradesFetching,
+      historyFetching,
+    } = this.props;
+    const id = this.props.match.params.strategyId
     return (
-      <div>
-        {/* <StrategyOverview overview={overview} isFetching={overviewFetching} /> */}
-        {/* <TradeList tradeList={trades} isFetching={tradesFetching} /> */}
+      <div className={styles.app}>
+        <StrategyOverview 
+          overview={overviews[id]} 
+          isFetching={strategyOverviewFetching} 
+          strategyId={id}
+          history={histories[id]}
+          isHistoryFetching={historyFetching}
+        />
+        <TradeList tradeList={trades[id]} isFetching={strategyTradesFetching} />
       </div>
     )
   }
@@ -34,17 +42,8 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 const mapStateToProps = (state) => {
-  // const {
-  //   overview,
-  //   trades,
-  //   overviewFetching,
-  //   tradesFetching,
-  // } = state.strategy
-  // return {
-  //   overview,
-  //   trades,
-  //   overviewFetching,
-  //   tradesFetching,
-  // }
+  return{
+    ...state.strategies,
+  }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(StrategyContainer)
