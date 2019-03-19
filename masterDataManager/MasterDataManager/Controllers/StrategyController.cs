@@ -40,13 +40,13 @@ namespace MasterDataManager.Controllers
             var userId = HttpContext.User.GetUserId();
             if (string.IsNullOrEmpty(userId)) return BadRequest("User not found");
 
-            var strategy = _strategyRepository.GetById(strategyId);
+            var strategy = _strategyRepository.GetByIdForOverview(strategyId);
             var result = _mapper.Map<JsonStrategyModel>(strategy);
 
             strategy.LastCheck = DateTime.Now;
             _strategyRepository.Edit(strategy);
 
-            return Ok(strategy);
+            return Ok(result);
         }
 
 

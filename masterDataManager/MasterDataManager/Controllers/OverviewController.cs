@@ -106,12 +106,7 @@ namespace MasterDataManager.Controllers
 
             var strategyAssets = new List<StrategyAsset>();
             var currentPrices = await _marketDataService.GetCurrentPrices(model.exchange);
-            var firstEvaluation = new EvaluationTick
-            {
-                BtcValue = 0,
-                UsdValue = 0,
-                TimeStamp = DateTime.Now,
-            };
+            var firstEvaluation = new EvaluationTick();
 
             foreach (var modelAsset in model.assets)
             {
@@ -120,12 +115,8 @@ namespace MasterDataManager.Controllers
                 {
                     return BadRequest("Insufficient funds");
                 }
-                if (!currentPrices.ContainsKey(asset.Currency))
-                {
-                    return BadRequest("Cannot evaluate strategy");
-                }
-                firstEvaluation.BtcValue += currentPrices[asset.Currency].BtcValue;
-                firstEvaluation.UsdValue += currentPrices[asset.Currency].UsdValue;
+                firstEvaluation.BtcValue += currentPrices[asset.Currency].BtcValue * modelAsset.amount;
+                firstEvaluation.UsdValue += currentPrices[asset.Currency].UsdValue * modelAsset.amount;
                 strategyAssets.Add(new StrategyAsset
                 {
                     Amount = modelAsset.amount,

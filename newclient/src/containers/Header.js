@@ -24,14 +24,14 @@ class Header extends React.Component{
     )
 
     return (
-      <Menu size='large' >
+      <Menu size='large' className={styles.header}>
         {indexLink}
         {this.props.user.isAuthenticated ? 
           (
             <React.Fragment>
-              <Menu.Item as={NavLink} to='/real' key='realLink' activeClassName={styles.active_navlink} name='real'/>,
-              <Menu.Item as={NavLink} to='/papertesting' key='paperLink' activeClassName={styles.active_navlink} name='paper'/>,
-              <Menu.Item as={NavLink} to='/backtesting' key='backtestLink' activeClassName={styles.active_navlink} name='backtest'/>,
+              <Menu.Item as={NavLink} to='/real' key='realLink' activeClassName={styles.active_navlink} name='real'/>
+              <Menu.Item as={NavLink} to='/papertesting' key='paperLink' activeClassName={styles.active_navlink} name='paper'/>
+              <Menu.Item as={NavLink} to='/backtesting' key='backtestLink' activeClassName={styles.active_navlink} name='backtest'/>
               <Menu.Menu key='righSection' position='right'>
                 <Menu.Item>
                   <Button onClick={() => this.props.userActions.logout()}>Log out</Button>
