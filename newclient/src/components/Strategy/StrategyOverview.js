@@ -13,7 +13,6 @@ const StrategyOverview = ({
   const{
     name = '',
   } = overview;
-  debugger;
   return (
     <Segment>
       <Dimmer active={isFetching} inverted >

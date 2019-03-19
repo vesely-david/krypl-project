@@ -8,8 +8,16 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 
-document.masterApi = 'http://localhost:54850';
-document.marketApi = 'http://localhost:9999';
+const env = process.env.NODE_ENV; //TODO: Create env. files
+if(env === 'development'){
+  document.masterApi = 'http://localhost:54850';
+  document.marketApi = 'http://localhost:9999';
+} else {
+  document.masterApi = 'https://api.kryplproject.cz';
+  document.marketApi = 'https://marketData.kryplproject.cz';
+}
+
+console.log(process.env.NODE_ENV);
 
 ReactDOM.render(
   <Provider store={configureStore()}>

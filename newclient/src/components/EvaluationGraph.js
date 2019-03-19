@@ -6,32 +6,29 @@ import { Threshold } from '@vx/threshold';
 import { scaleTime, scaleLinear } from '@vx/scale';
 import { AxisLeft, AxisBottom } from '@vx/axis';
 import { GridRows, GridColumns } from '@vx/grid';
-import { cityTemperature as data } from '@vx/mock-data';
-import { timeParse } from 'd3-time-format';
 
-const parseDate = timeParse('%Y%m%d');
+const date = d => new Date(d.timeStamp);
+const usd = d => d.usdValue;
+const btc = d => d.btcValue;
 
-const date = d => parseDate(d.date);
-const ny = d => d['New York'];
-const sf = d => d['San Francisco'];
-
-const xScale = scaleTime({
+const xScaleF = data => scaleTime({
   domain: [Math.min(...data.map(date)), Math.max(...data.map(date))]
 });
-const yScale = scaleLinear({
+
+const yScaleF = data => scaleLinear({
   domain: [
-    Math.min(...data.map(d => Math.min(ny(d), sf(d)))),
-    Math.max(...data.map(d => Math.max(ny(d), sf(d))))
+    Math.min(...data.map(usd)),
+    Math.max(...data.map(usd)),
   ],
   nice: true
 });
 
-export default function Theshold({ width, height, margin= {top: 25, left: 25, right:25, bottom:25} }) {
+export default function Theshold({ width, height, margin= {top: 25, left: 25, right:25, bottom:25}, history }) {
   const xMax = width - margin.left - margin.right;
   const yMax = height - margin.top - margin.bottom;
 
-  xScale.range([0, xMax]);
-  yScale.range([yMax, 0]);
+  const xScale = xScaleF(history).range([0, Math.max(0, xMax)]);
+  const yScale = yScaleF(history).range([yMax, 0]);
   return (
     <div>
       <svg width={width} height={height}>
@@ -42,44 +39,22 @@ export default function Theshold({ width, height, margin= {top: 25, left: 25, ri
           <line x1={xMax} x2={xMax} y1={0} y2={yMax} stroke="#e0e0e0" />
           <AxisBottom top={yMax} scale={xScale} numTicks={width > 520 ? 10 : 5} />
           <AxisLeft scale={yScale} />
-          <text x="-70" y="15" transform="rotate(-90)" fontSize={10}>
-            Temperature (°F)
-          </text>
-          <Threshold
-            data={data}
-            x={d => xScale(date(d))}
-            y0={d => yScale(ny(d))}
-            y1={d => yScale(sf(d))}
-            clipAboveTo={0}
-            clipBelowTo={yMax}
-            curve={curveBasis}
-            belowAreaProps={{
-              fill: 'red',
-              fillOpacity: 0.4
-            }}
-            aboveAreaProps={{
-              fill: 'green',
-              fillOpacity: 0.4
-            }}
-          />
           <LinePath
-            data={data}
+            data={history}
             curve={curveBasis}
             x={d => xScale(date(d))}
-            y={d => yScale(sf(d))}
+            y={d => yScale(usd(d))}
             stroke="#000"
             strokeWidth={1.5}
-            strokeOpacity={0.8}
-            strokeDasharray="1,2"
           />
-          <LinePath
+          {/* <LinePath
             data={data}
             curve={curveBasis}
             x={d => xScale(date(d))}
             y={d => yScale(ny(d))}
             stroke="#000"
             strokeWidth={1.5}
-          />
+          /> */}
         </Group>
       </svg>
     </div>
