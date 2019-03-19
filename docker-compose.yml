@@ -45,7 +45,10 @@ services:
       LETSENCRYPT_EMAIL: h.kirchner@seznam.cz      
 
   nginx-proxy:
-    image: jwilder/nginx-proxy
+    image: proxy
+    build: 
+      context: ./proxy
+      dockerfile: Dockerfile
     ports:
       - "80:80"
       - "443:443"

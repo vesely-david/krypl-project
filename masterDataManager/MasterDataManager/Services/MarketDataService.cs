@@ -57,17 +57,17 @@ namespace MasterDataManager.Services
 
         public async Task<Dictionary<string, (decimal BtcValue, decimal UsdValue )>> GetCurrentPrices(string exchange)
         {
-            try
-            {
+            //try
+            //{
                 var exchangeInfo = await _client.GetStringAsync(_baseUrl + "price/" + exchange);
                 var template = new[] { new { currency = "", btcValue= 0m, usdValue = 0m } };
                 var currencies = JsonConvert.DeserializeAnonymousType(exchangeInfo, template);
                 return currencies.ToDictionary(o => o.currency, o => (BtcValue: o.btcValue, UsdValue: o.usdValue));
-            }
-            catch (Exception ex)
-            {
-                return null;
-            }
+            //}
+            //catch (Exception ex)
+            //{
+            //    return null;
+            //}
         }
     }
 }
