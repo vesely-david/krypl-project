@@ -35,7 +35,7 @@ services:
   web:
     image: kryplweb
     build:
-      context: ./client
+      context: ./newclient
       dockerfile: Dockerfile
     expose:
       - "80"
