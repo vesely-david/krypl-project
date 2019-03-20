@@ -12,12 +12,61 @@ namespace MasterDataManager.Services
     public class MarketDataService : IMarketDataService
     {
         private HttpClient _client;
-        private string _baseUrl = "marketdataprovider/business/"; //Use docker network instead
+        private string _baseUrl = "https://marketdataprovider/business/"; //Use docker network instead
         //private string _baseUrl = "https://marketdata.kryplproject.cz/business/"; //Use docker network instead
 
         public MarketDataService()
         {
             _client = new HttpClient();
+        }
+
+        public async Task<Dictionary<string, string>> GetCurrencyTranslationsAsync(string exchange)
+        {
+            try
+            {
+                var exchangeInfo = await _client.GetStringAsync(_baseUrl + "exchanges/" + exchange);
+                var template = new { currencies = new[] { new { id = "", currencyExchangeId = "" } } };
+                var currencies = JsonConvert.DeserializeAnonymousType(exchangeInfo, template).currencies;
+                return currencies.ToDictionary(o => o.currencyExchangeId, o => o.id);
+
+            } catch (Exception ex)
+            {
+                //TODO: Logger
+                return new Dictionary<string, string>();
+            }
+
+        }
+
+        public async Task<Dictionary<string, (decimal BtcValue, decimal UsdValue )>> GetCurrentPrices(string exchange)
+        {
+            try
+            {
+                var exchangeInfo = await _client.GetStringAsync(_baseUrl + "price/" + exchange);
+                var template = new[] { new { currency = "", btcValue= 0m, usdValue = 0m } };
+                var currencies = JsonConvert.DeserializeAnonymousType(exchangeInfo, template);
+                return currencies.ToDictionary(o => o.currency, o => (BtcValue: o.btcValue, UsdValue: o.usdValue));
+            }
+            catch (Exception ex)
+            {
+                //TODO: Logger
+                return new Dictionary<string, (decimal BtcValue, decimal UsdValue)>();
+            }
+        }
+
+        public async Task<Dictionary<string, decimal>> GetCurrentRates(string exchange)
+        {
+            try
+            {
+                var exchangeInfo = await _client.GetStringAsync(_baseUrl + "rate/" + exchange);
+                var template = new[] { new { symbol = "", rate = 0m } };
+                var currencies = JsonConvert.DeserializeAnonymousType(exchangeInfo, template);
+                return currencies.ToDictionary(o => o.symbol, o => o.rate);
+            }
+            catch (Exception ex)
+            {
+                //TODO: Logger
+                return new Dictionary<string, decimal>();
+            }
         }
 
         public async Task<EvaluationTick> EvaluateAssetSet(IEnumerable<(string currency, decimal amount)> assets, string exchange)
@@ -38,37 +87,6 @@ namespace MasterDataManager.Services
                 }
                 return res;
             });
-        }
-
-        public async Task<Dictionary<string, string>> GetCurrencyTranslationsAsync(string exchange)
-        {
-            try
-            {
-                var exchangeInfo = await _client.GetStringAsync(_baseUrl + "exchanges/" + exchange);
-                var template = new { currencies = new[] { new { id = "", currencyExchangeId = "" } } };
-                var currencies = JsonConvert.DeserializeAnonymousType(exchangeInfo, template).currencies;
-                return currencies.ToDictionary(o => o.currencyExchangeId, o => o.id);
-
-            } catch (Exception ex)
-            {
-                return null;
-            }
-
-        }
-
-        public async Task<Dictionary<string, (decimal BtcValue, decimal UsdValue )>> GetCurrentPrices(string exchange)
-        {
-            //try
-            //{
-                var exchangeInfo = await _client.GetStringAsync(_baseUrl + "price/" + exchange);
-                var template = new[] { new { currency = "", btcValue= 0m, usdValue = 0m } };
-                var currencies = JsonConvert.DeserializeAnonymousType(exchangeInfo, template);
-                return currencies.ToDictionary(o => o.currency, o => (BtcValue: o.btcValue, UsdValue: o.usdValue));
-            //}
-            //catch (Exception ex)
-            //{
-            //    return null;
-            //}
         }
     }
 }

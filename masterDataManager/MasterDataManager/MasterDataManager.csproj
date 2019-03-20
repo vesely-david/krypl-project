@@ -11,6 +11,7 @@
     <EmbeddedResource Remove="wwwroot\**" />
     <None Remove="wwwroot\**" />
     <Compile Remove="Models\JsonStrategyOverviewModel.cs" />
+    <Compile Remove="Controllers\BittrexController.cs" />
   </ItemGroup>
 
   <ItemGroup>

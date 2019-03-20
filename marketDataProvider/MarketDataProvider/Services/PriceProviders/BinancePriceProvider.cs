@@ -32,7 +32,6 @@ namespace MarketDataProvider.Services.PriceProviders
             return null;
         }
 
-
         public override decimal? GetRate(string market, string currency)
         {
             var symbol = market + "_" + currency;
@@ -60,6 +59,11 @@ namespace MarketDataProvider.Services.PriceProviders
                 //......
             });
             return url;
+        }
+
+        public override IEnumerable<object> GetRates()
+        {
+            return _marketRates.Select(o => new { symbol= o.Key, rate = o.Value });
         }
 
         public override IEnumerable<object> GetValues()

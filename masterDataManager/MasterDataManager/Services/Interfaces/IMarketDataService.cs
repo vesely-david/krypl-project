@@ -10,6 +10,7 @@ namespace MasterDataManager.Services.Interfaces
     {
         Task<Dictionary<string, string>> GetCurrencyTranslationsAsync(string exchange);
         Task<Dictionary<string, (decimal BtcValue, decimal UsdValue)>> GetCurrentPrices(string exchange);
+        Task<Dictionary<string, decimal>> GetCurrentRates(string exchange);
         Task<EvaluationTick> EvaluateAssetSet(IEnumerable<(string currency, decimal amount)> assets, string exchange);
     }
 }

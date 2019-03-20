@@ -23,7 +23,7 @@ const yScaleF = data => scaleLinear({
   nice: true
 });
 
-export default function Theshold({ width, height, margin= {top: 25, left: 25, right:25, bottom:25}, history }) {
+export default function Theshold({ width, height, margin= {top: 25, left: 75, right:25, bottom:25}, history }) {
   const xMax = width - margin.left - margin.right;
   const yMax = height - margin.top - margin.bottom;
 
