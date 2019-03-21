@@ -20,7 +20,8 @@ class PaperContainer extends React.Component {
       groupedAssets: {
         groupedPaperAssets
       }
-    } = this.props
+    } = this.props;
+
     return (
       <div className={styles.app}>
         <OverviewContainer

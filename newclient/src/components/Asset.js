@@ -2,12 +2,13 @@ import React from 'react'
 
 const StrategyList = ({
   currency,
-  hold
+  free,
+  taken,
 }) => {
   return (
     <div className='smallPaddingLeft'>
-      <div><b>{currency}</b></div>
-      <div className='littlePaddingLeft'>{hold}</div>
+      <div><b>{currency}</b><span style={{marginLeft: '5px'}}>{free + taken}</span></div>
+      <div className='littlePaddingLeft'>{`free: ${free}`}</div>
     </div>
   )
 }

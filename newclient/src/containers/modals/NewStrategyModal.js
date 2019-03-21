@@ -37,14 +37,8 @@ class NewStrategyModal extends React.Component {
       strategyAssets,
     } = this.state;
     const curr = strategyAssets.find(o => o.id === value);
-    if (curr){ 
-      this.setState({ 
-        assetValue: curr.amount,
-        selectedCurrency: value,
-        assetValueTouched: false,
-      })
-    } else this.setState({
-      assetValue: '',
+    this.setState({ 
+      assetValue: curr ? curr.amount : '',
       selectedCurrency: value,
       assetValueTouched: false,
     })
@@ -58,6 +52,7 @@ class NewStrategyModal extends React.Component {
       strategyAssets
     } = this.state
     const strategyAsset = strategyAssets.find(o => o.id === selectedCurrency);
+    debugger;
     if(strategyAsset){
       this.setState({
         strategyAssets: strategyAssets.map(o => o.id === selectedCurrency ? ({...o, amount: assetValue}) : o),
@@ -133,8 +128,8 @@ class NewStrategyModal extends React.Component {
 
     const possibleExchanges = Object.keys(allAssets).map(o => ({ key: o, text: o, value: o }));
     const possibleCurrencies = selectedExchange ? 
-      allAssets[selectedExchange].filter(o => o.free > 0).map(o => ({ key: o.currency, text: o.currency, value: o.id })) : [];
-    const assetOrigin = selectedExchange ? allAssets[selectedExchange].find(o => o.id === selectedCurrency) : null;
+      allAssets[selectedExchange].filter(o => o.freeAssetId && o.free > 0).map(o => ({ key: o.currency, text: o.currency, value: o.freeAssetId })) : [];
+    const assetOrigin = selectedExchange ? allAssets[selectedExchange].find(o => o.freeAssetId === selectedCurrency) : null;
     const assetValueError = (assetOrigin && assetOrigin.free < assetValue) || (assetValueTouched && !assetValue);
     return (
       <Modal

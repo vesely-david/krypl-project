@@ -125,6 +125,7 @@ namespace MasterDataManager.Controllers
                     TradingMode = model.tradingMode,
                     UserId = userId,
                 });
+                if(!currentPrices.ContainsKey(asset.Currency)) return BadRequest("Cannot estimate initial value");
                 firstEvaluation.BtcValue += currentPrices[asset.Currency].BtcValue * modelAsset.amount;
                 firstEvaluation.UsdValue += currentPrices[asset.Currency].UsdValue * modelAsset.amount;
                 if (asset.Amount == 0) _assetRepository.DeleteNotSave(asset);

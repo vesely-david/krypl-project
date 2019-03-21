@@ -1,9 +1,6 @@
 import React from 'react'
 import { Button, Header, Modal, Message, Form, Icon, Label } from 'semantic-ui-react'
 
-const getExchange = (dataObject, exchange) => {
-  return dataObject.find(o => o.id === exchange)
-}
 
 class FakeAssetManagerModal extends React.Component {
   constructor (props) {
@@ -21,7 +18,7 @@ class FakeAssetManagerModal extends React.Component {
   }
 
   onModalOpen = () => {
-    this.setState({ toSubmit: this.props.assets.map(o => ({...o})) })
+    this.setState({ toSubmit: this.props.assets.filter(o => !o.strategyId).map(o => ({...o})) })
   }
 
   onInputChange = (e, { name, value }) => {
@@ -107,6 +104,7 @@ class FakeAssetManagerModal extends React.Component {
       selectedExchange: null,
       selectedCurrency: null,
       assetValue: '',
+      modalOpened: false,
     })
   }
 

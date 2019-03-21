@@ -1,5 +1,5 @@
 import React from 'react'
-import { Dimmer, Loader, Segment } from 'semantic-ui-react'
+import { Dimmer, Loader, Segment, Label } from 'semantic-ui-react'
 import { ParentSize } from '@vx/responsive';
 import EvaluationGraph from '../EvaluationGraph';
 import styles from '../styles/strategy.module.scss';
@@ -9,6 +9,7 @@ const StrategyOverview = ({
   isFetching, 
   history = [],
   isHistoryFetching,
+  strategyAssets,
 }) => {
   const{
     name = '',
@@ -28,8 +29,15 @@ const StrategyOverview = ({
             <EvaluationGraph height={200} width={parent.width} history={history}/>
           </div>
         )}
-      </ParentSize>      
-
+      </ParentSize>
+      <h3>Strategy assets</h3>
+      <div>
+        {strategyAssets.map(curr => (
+          <Label className='currencyLabel' key={curr.id}>
+            {`${curr.currency} ${curr.amount}`}
+          </Label>
+        ))}
+      </div>
     </Segment>    
   )
 }
