@@ -23,7 +23,6 @@ class StrategyContainer extends React.Component {
       assets,
     } = this.props;
     const id = this.props.match.params.strategyId;
-    debugger
     const strategyAssets = assets.filter(o => o.strategyId === id);
     return (
       <div className={styles.app}>

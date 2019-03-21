@@ -3,9 +3,11 @@ import thunk from 'redux-thunk';
 import rootReducer from './reducers/rootReducer';
 import { createLogger } from 'redux-logger';
 import promiseMiddleware from 'redux-promise-middleware';
+import { setupInterceptors } from './middleware/axiosMiddleware';
+
 
 export default function configureStore(initialState={}) {
-  return createStore(
+  const store = createStore(
     rootReducer,
     initialState,
     applyMiddleware(
@@ -14,4 +16,6 @@ export default function configureStore(initialState={}) {
       createLogger()
     )
   );
+  setupInterceptors(store); //Axios middleware
+  return store;
 }

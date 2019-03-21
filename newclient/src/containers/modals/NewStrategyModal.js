@@ -52,7 +52,6 @@ class NewStrategyModal extends React.Component {
       strategyAssets
     } = this.state
     const strategyAsset = strategyAssets.find(o => o.id === selectedCurrency);
-    debugger;
     if(strategyAsset){
       this.setState({
         strategyAssets: strategyAssets.map(o => o.id === selectedCurrency ? ({...o, amount: assetValue}) : o),
