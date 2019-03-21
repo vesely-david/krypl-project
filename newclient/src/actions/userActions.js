@@ -8,7 +8,7 @@ import {
 } from '../services';
 
 import { marketDataActions } from './marketDataActions';
-import { assetActions } from './marketDataActions';
+import { assetActions } from './assetActions';
 
 function login(credentials) {
   return dispatch => dispatch({
