@@ -16,6 +16,7 @@ class App extends Component {
     if(this.props.isAuthenticated){
       this.props.marketDataActions.getMarketData();
       this.props.assetActions.getAssets();
+      this.props.marketDataActions.getCurrencyValues();
     }
   }
 

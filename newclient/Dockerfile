@@ -1,7 +1,6 @@
 FROM node:11.10.0 as react-build
 
 # Override the base log level (info).
-ENV NPM_CONFIG_LOGLEVEL warn
 
 # Install and configure `serve`.
 # RUN npm install -g serve
@@ -23,8 +22,8 @@ ENV NPM_CONFIG_LOGLEVEL warn
 
 WORKDIR /app
 COPY . ./
-RUN yarn
-RUN yarn build
+RUN yarn install 
+RUN yarn build --production
 
 # Stage 2 - the production environment
 FROM nginx:alpine

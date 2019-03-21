@@ -10,7 +10,7 @@ export const UPDATE_PAPER_ASSETS = 'UPDATE_PAPER_ASSETS';
 
 //========== MARKET DATA ACTION ==========
 export const GET_MARKET_DATA = 'GET_MARKET_DATA';
-
+export const GET_CURRENCY_VALUES = 'GET_CURRENCY_VALUES';
 
 //========== OVERVIEW ACTION ==========
 export const GET_PAPER_OVERVIEW = 'GET_PAPER_OVERVIEW';

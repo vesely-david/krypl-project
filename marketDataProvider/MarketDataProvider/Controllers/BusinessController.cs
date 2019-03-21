@@ -37,6 +37,17 @@ namespace MarketDataProvider.Controllers
             return Ok(prices);
         }
 
+
+        [HttpGet]
+        [Route("price")]
+        public IActionResult GetAllPrices()
+        {
+            var prices = _priceService.GetExchange("binance")?.GetRates(); //TODO: All exchanges
+            if (prices == null) return BadRequest("Not found");
+            return Ok(new { binance = prices });
+        }
+
+
         [HttpGet]
         [Route("rate/{exchange}")]
         public IActionResult GetRates(string exchange)

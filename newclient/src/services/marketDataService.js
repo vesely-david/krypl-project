@@ -10,8 +10,18 @@ async function getMarketData(){
   return response.data;
 }
 
+async function getCurrencyValues(){
+  const response = await axios.get(`${document.marketApi}/business/price`, {
+    headers: {
+      'Accept': 'application/json',
+    },
+  })
+  return response.data;
+}
+
 export const marketDataService = {
   getMarketData,
+  getCurrencyValues,
 }
 
 // const response = await axios.post(

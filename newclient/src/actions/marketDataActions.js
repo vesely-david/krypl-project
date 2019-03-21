@@ -1,5 +1,6 @@
 import {
   GET_MARKET_DATA,
+  GET_CURRENCY_VALUES,
 } from './types';
 
 import { marketDataService } from '../services/marketDataService';
@@ -13,6 +14,17 @@ function getMarketData(){
   })
 }
 
-export const marketDataActions = {
-  getMarketData
+function getCurrencyValues(){
+  return dispatch => dispatch({
+    type: GET_CURRENCY_VALUES,
+    payload: marketDataService.getCurrencyValues()
+  }).catch(err => {
+    // dispatch(alertActions.error(err));
+  })
 }
+
+export const marketDataActions = {
+  getMarketData,
+  getCurrencyValues,
+}
+

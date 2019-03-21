@@ -46,9 +46,6 @@ services:
 
   nginx-proxy:
     image: jwilder/nginx-proxy
-    # build: 
-    #   context: ./proxy
-    #   dockerfile: Dockerfile
     ports:
       - "80:80"
       - "443:443"
