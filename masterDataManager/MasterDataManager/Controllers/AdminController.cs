@@ -19,16 +19,13 @@ namespace MasterDataManager.Controllers
     public class AdminController : Controller
     {
         private UserManager<User> _userManager;
-        private IUserAssetRepository _userAssetRepository;
         private IExchangeSecretRepository _exchangeSecretRepository;
 
         public AdminController(
             UserManager<User> userManager,
-            IUserAssetRepository userAssetRepository,
             IExchangeSecretRepository exchangeSecretRepository)
         {
             _userManager = userManager;
-            _userAssetRepository = userAssetRepository;
             _exchangeSecretRepository = exchangeSecretRepository;
         }
         //================ SEED METHODS =====================

@@ -15,11 +15,17 @@ namespace MasterDataManager
 
             CreateMap<EvaluationTick, JsonEvaluationModel>().ReverseMap();
 
-            CreateMap<JsonTradeModel, Trade>().ReverseMap();
+            CreateMap<Trade, JsonTradeModel>()
+                .ForMember(dest => dest.type,
+                    opts => opts.MapFrom(src => src.OrderType))
+                .ForMember(dest => dest.market,
+                    opts => opts.MapFrom(src => src.MarketId))
+                .ForMember(dest => dest.rate,
+                    opts => opts.MapFrom(src => src.Price))
+                .ForMember(dest => dest.volume,
+                    opts => opts.MapFrom(src => src.Quantity));
 
             CreateMap<Strategy, JsonStrategyModel>()
-                .ForMember(dest => dest.exchange,
-                    opts => opts.MapFrom(src => src.ExchangeId))
                 .ForMember(dest => dest.tradesCount,
                     opts => opts.MapFrom(src => src.Trades.Count()))
                 .ForMember(dest => dest.openedTradesCount,
@@ -32,11 +38,6 @@ namespace MasterDataManager
                     opts => opts.MapFrom(src => src.Evaluations.Last()))
                 .ForMember(dest => dest.yesterdayValue,
                     opts => opts.MapFrom(src => src.GetYesterdayValue()));
-
-            CreateMap<UserAsset, JsonUserAssetModel>()
-                .ForMember(dest => dest.free,
-                    opts => opts.MapFrom(src => src.GetFreeAmount()));
-
         }
     }
 }

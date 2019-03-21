@@ -20,18 +20,18 @@ namespace MasterDataManager.Controllers
     {
 
         private IStrategyRepository _strategyRepository;
-        private IUserAssetRepository _userAssetRepository;
+        private IAssetRepository _assetRepository;
         private IMarketDataService _marketDataService;
         private IMapper _mapper;
 
         public OverviewController(
             IStrategyRepository strategyRepository,
-            IUserAssetRepository userAssetRepository,
+            IAssetRepository assetRepository,
             IMarketDataService marketDataService,
             IMapper mapper)
         {
             _strategyRepository = strategyRepository;
-            _userAssetRepository = userAssetRepository;
+            _assetRepository = assetRepository;
             _marketDataService = marketDataService;
             _mapper = mapper;
         }
@@ -48,7 +48,7 @@ namespace MasterDataManager.Controllers
 
             var overview = _strategyRepository.GetUserOverviewByMode(userId, mode);
 
-            var assets = _userAssetRepository.GetByUserId(userId)
+            var assets = _assetRepository.GetByUserId(userId)
                 .Where(o => o.TradingMode == mode).Select(o => (currency: o.Currency, amount: o.Amount));
 
             var currentValue = await _marketDataService.EvaluateAssetSet(assets, "binance");
@@ -100,28 +100,34 @@ namespace MasterDataManager.Controllers
             if (userId == null) return BadRequest("User not found");
             if (model.assets == null || !model.assets.Any()) return BadRequest("No asset selected");
 
-            var assets = _userAssetRepository.GetByUserId(userId)
-                .Where(o => o.Exchange.Equals(model.exchange, StringComparison.InvariantCultureIgnoreCase))
-                .Where(o => o.TradingMode == model.tradingMode);
+            var assets = _assetRepository.GetByUserId(userId).Where(o => 
+                o.Exchange.Equals(model.exchange, StringComparison.InvariantCultureIgnoreCase) &&
+                o.TradingMode == model.tradingMode &&
+                string.IsNullOrEmpty(o.StrategyId));
 
-            var strategyAssets = new List<StrategyAsset>();
+            var strategyAssets = new List<Asset>();
             var currentPrices = await _marketDataService.GetCurrentPrices(model.exchange);
             var firstEvaluation = new EvaluationTick();
 
             foreach (var modelAsset in model.assets)
             {
                 var asset = assets.FirstOrDefault(o => o.Id.Equals(modelAsset.id));
-                if (asset == null || (asset.GetFreeAmount() < modelAsset.amount))
+                if (asset == null || (asset.Amount < modelAsset.amount))
                 {
                     return BadRequest("Insufficient funds");
                 }
-                firstEvaluation.BtcValue += currentPrices[asset.Currency].BtcValue * modelAsset.amount;
-                firstEvaluation.UsdValue += currentPrices[asset.Currency].UsdValue * modelAsset.amount;
-                strategyAssets.Add(new StrategyAsset
+                asset.Amount -= modelAsset.amount;
+                strategyAssets.Add(new Asset
                 {
                     Amount = modelAsset.amount,
-                    UserAsset = asset
+                    Currency = asset.Currency,
+                    Exchange = asset.Exchange,
+                    TradingMode = model.tradingMode,
+                    UserId = userId,
                 });
+                firstEvaluation.BtcValue += currentPrices[asset.Currency].BtcValue * modelAsset.amount;
+                firstEvaluation.UsdValue += currentPrices[asset.Currency].UsdValue * modelAsset.amount;
+                if (asset.Amount == 0) _assetRepository.DeleteNotSave(asset);
             }
 
             var strategy = new Strategy
@@ -132,13 +138,13 @@ namespace MasterDataManager.Controllers
                 StrategyState = StrategyState.Running,
                 TradingMode = model.tradingMode,
                 IsOverview = false,
-                StrategyAssets = strategyAssets,
+                Assets = strategyAssets,
                 UserId = userId,
-                ExchangeId = model.exchange,
                 Evaluations = new List<EvaluationTick> { firstEvaluation }
             };
 
             _strategyRepository.Add(strategy);
+            _assetRepository.Save();
             return Ok(strategy.Id);
         }
     }

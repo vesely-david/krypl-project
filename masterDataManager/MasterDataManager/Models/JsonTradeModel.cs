@@ -3,13 +3,13 @@ namespace MasterDataManager.Models
 {
     public class JsonTradeModel
     {
-        DateTime opened { get; set; }
-        DateTime closed { get; set; }
-        string tradeState { get; set; }
-        string market { get; set; }
-        string type { get; set; }
-        string status { get; set; }
-        decimal price { get; set; }
-        decimal volume { get; set; }
+        public DateTime opened { get; set; }
+        public DateTime closed { get; set; }
+        public string tradeState { get; set; }
+        public string market { get; set; }
+        public string type { get; set; }
+        public decimal rate { get; set; }
+        public decimal total { get; set; }
+        public decimal volume { get; set; }
     }
 }

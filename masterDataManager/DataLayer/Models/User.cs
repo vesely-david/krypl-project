@@ -10,7 +10,7 @@ namespace DataLayer.Models
     public class User : IdentityUser
     {
         public virtual ICollection<Strategy> Strategies { get; set; }
-        public virtual ICollection<UserAsset> UserAssets { get; set; }
+        public virtual ICollection<Asset> Assets { get; set; }
         public virtual ICollection<ExchangeSecret> ExchangeSecrets { get; set; }
     }
 }

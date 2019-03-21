@@ -184,10 +184,9 @@ namespace DataLayer.Migrations
                     Start = table.Column<DateTime>(nullable: false),
                     Stop = table.Column<DateTime>(nullable: true),
                     StrategyState = table.Column<int>(nullable: false),
-                    TradingMode = table.Column<int>(nullable: true),
+                    TradingMode = table.Column<int>(nullable: false),
                     LastCheck = table.Column<DateTime>(nullable: true),
                     IsOverview = table.Column<bool>(nullable: false),
-                    ExchangeId = table.Column<string>(nullable: true),
                     UserId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -202,22 +201,28 @@ namespace DataLayer.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserAssets",
+                name: "Assets",
                 columns: table => new
                 {
                     Id = table.Column<string>(nullable: false),
                     Amount = table.Column<decimal>(nullable: false),
                     TradingMode = table.Column<int>(nullable: false),
-                    Currency = table.Column<string>(nullable: false),
-                    Exchange = table.Column<string>(nullable: false),
-                    UserId = table.Column<string>(nullable: true)
+                    Currency = table.Column<string>(nullable: true),
+                    Exchange = table.Column<string>(nullable: true),
+                    UserId = table.Column<string>(nullable: true),
+                    StrategyId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserAssets", x => x.Id);
-                    table.UniqueConstraint("AK_UserAssets_Currency_TradingMode_Exchange", x => new { x.Currency, x.TradingMode, x.Exchange });
+                    table.PrimaryKey("PK_Assets", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_UserAssets_AspNetUsers_UserId",
+                        name: "FK_Assets_Strategies_StrategyId",
+                        column: x => x.StrategyId,
+                        principalTable: "Strategies",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Assets_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
@@ -251,12 +256,13 @@ namespace DataLayer.Migrations
                 {
                     Id = table.Column<string>(nullable: false),
                     ExchangeUuid = table.Column<string>(nullable: true),
-                    Quantity = table.Column<double>(nullable: false),
-                    QuantityRemaining = table.Column<double>(nullable: false),
+                    Quantity = table.Column<decimal>(nullable: false),
+                    QuantityRemaining = table.Column<decimal>(nullable: false),
                     Opened = table.Column<DateTime>(nullable: false),
                     Closed = table.Column<DateTime>(nullable: true),
                     TradeState = table.Column<int>(nullable: false),
-                    Price = table.Column<double>(nullable: false),
+                    Price = table.Column<decimal>(nullable: false),
+                    Total = table.Column<decimal>(nullable: false),
                     OrderType = table.Column<int>(nullable: false),
                     MarketId = table.Column<string>(nullable: true),
                     StrategyId = table.Column<string>(nullable: true)
@@ -268,32 +274,6 @@ namespace DataLayer.Migrations
                         name: "FK_Trades_Strategies_StrategyId",
                         column: x => x.StrategyId,
                         principalTable: "Strategies",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "StrategyAssets",
-                columns: table => new
-                {
-                    Id = table.Column<string>(nullable: false),
-                    Amount = table.Column<decimal>(nullable: false),
-                    UserAssetId = table.Column<string>(nullable: true),
-                    StrategyId = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_StrategyAssets", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_StrategyAssets_Strategies_StrategyId",
-                        column: x => x.StrategyId,
-                        principalTable: "Strategies",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_StrategyAssets_UserAssets_UserAssetId",
-                        column: x => x.UserAssetId,
-                        principalTable: "UserAssets",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -336,6 +316,16 @@ namespace DataLayer.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Assets_StrategyId",
+                table: "Assets",
+                column: "StrategyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Assets_UserId",
+                table: "Assets",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_EvaluationTick_StrategyId",
                 table: "EvaluationTick",
                 column: "StrategyId");
@@ -351,24 +341,9 @@ namespace DataLayer.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StrategyAssets_StrategyId",
-                table: "StrategyAssets",
-                column: "StrategyId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_StrategyAssets_UserAssetId",
-                table: "StrategyAssets",
-                column: "UserAssetId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Trades_StrategyId",
                 table: "Trades",
                 column: "StrategyId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserAssets_UserId",
-                table: "UserAssets",
-                column: "UserId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -389,22 +364,19 @@ namespace DataLayer.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "Assets");
+
+            migrationBuilder.DropTable(
                 name: "EvaluationTick");
 
             migrationBuilder.DropTable(
                 name: "ExchangeSecrets");
 
             migrationBuilder.DropTable(
-                name: "StrategyAssets");
-
-            migrationBuilder.DropTable(
                 name: "Trades");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
-
-            migrationBuilder.DropTable(
-                name: "UserAssets");
 
             migrationBuilder.DropTable(
                 name: "Strategies");

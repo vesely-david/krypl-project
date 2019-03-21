@@ -10,10 +10,8 @@ namespace DataLayer
     {
         public DbSet<Strategy> Strategies { get; set; }
         public DbSet<Trade> Trades { get; set; }
-        public DbSet<UserAsset> UserAssets { get; set; }
-        public DbSet<StrategyAsset> StrategyAssets { get; set; }
+        public DbSet<Asset> Assets { get; set; }
         public DbSet<ExchangeSecret> ExchangeSecrets { get; set; }
-        //public DbSet<EvaluationTick> Evaluations{ get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -23,8 +21,8 @@ namespace DataLayer
             builder.Entity<ExchangeSecret>()
                 .HasAlternateKey(t => new { t.ExchangeId, t.UserId });
 
-            builder.Entity<UserAsset>()
-              .HasAlternateKey(t => new { t.Currency, t.TradingMode, t.Exchange });
+            //builder.Entity<UserAsset>()
+              //.HasAlternateKey(t => new { t.Currency, t.TradingMode, t.Exchange });
         }
         public MasterDataContext(DbContextOptions<MasterDataContext> options) : base(options)
         {

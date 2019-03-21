@@ -11,5 +11,7 @@ namespace MasterDataManager.Models
         public string exchange { get; set; }
         public string currency { get; set; }
         public decimal amount { get; set; }
+        public string strategyId { get; set; }
+        public string tradingMode { get; set; }
     }
 }

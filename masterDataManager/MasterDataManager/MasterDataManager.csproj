@@ -15,7 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\TradingControllers\" />
     <Folder Include="Database\" />
   </ItemGroup>
 

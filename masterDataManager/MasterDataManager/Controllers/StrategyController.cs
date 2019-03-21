@@ -23,10 +23,8 @@ namespace MasterDataManager.Controllers
 
         public StrategyController(
             IStrategyRepository strategyRepository,
-            IUserAssetRepository userAssetRepository,
             ITradeRepository tradeRepository,
             IExchangeObjectFactory exchangeFactory,
-            IBalanceService balanceService,
             IMapper mapper)
         {
             _strategyRepository = strategyRepository;
@@ -50,7 +48,7 @@ namespace MasterDataManager.Controllers
         [HttpGet("{strategyId}/overview")]
         public IActionResult GetStrategyOverview(string strategyId)
         {
-            var userId = HttpContext.User.GetUserId();
+            var userId = HttpContext.User.GetUserId(); //TODO: Add current holdings
             if (string.IsNullOrEmpty(userId)) return BadRequest("User not found");
 
             var strategy = _strategyRepository.GetByIdForOverview(strategyId);
@@ -84,7 +82,7 @@ namespace MasterDataManager.Controllers
 
 
         [HttpPost("{strategyId}/stop")]
-        public IActionResult StopStrategy(string strategyId)
+        public IActionResult StopStrategy(string strategyId) //TODO: Release deposits;
         {
             var userId = HttpContext.User.GetUserId();
             if (string.IsNullOrEmpty(userId)) return BadRequest("User not found");

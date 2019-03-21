@@ -17,11 +17,11 @@ namespace DataLayer.Models
         public DateTime? LastCheck { get; set; }
         public bool IsOverview { get; set; }
 
-        public string ExchangeId { get; set; }
+        //public string ExchangeId { get; set; }
         public string UserId { get; set; }
         public virtual User User { get; set; }
         public virtual ICollection<EvaluationTick> Evaluations { get; set; }
-        public virtual ICollection<StrategyAsset> StrategyAssets { get; set; }
+        public virtual ICollection<Asset> Assets { get; set; }
         public virtual ICollection<Trade> Trades { get; set; }
 
         public int GetNewTrades()

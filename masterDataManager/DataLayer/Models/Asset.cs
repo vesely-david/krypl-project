@@ -1,12 +1,9 @@
 ﻿using DataLayer.Enums;
 using DataLayer.Infrastructure;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace DataLayer.Models
 {
-    public class UserAsset : IdEntity
+    public class Asset : IdEntity
     {
         public decimal Amount { get; set; }
         public TradingMode TradingMode { get; set; }
@@ -14,12 +11,11 @@ namespace DataLayer.Models
         public string Currency { get; set; }
         public string Exchange { get; set; }
         public string UserId { get; set; }
-        public virtual User User { get; set; }
-        public virtual ICollection<StrategyAsset> StrategyAssets { get; set; }
+        public string StrategyId { get; set; }
 
-        public decimal GetFreeAmount()
-        {
-            return Amount - StrategyAssets.Sum(o => o.Amount);
+        public virtual User User { get; set; }
+        public virtual Strategy Strategy { get; set; 
         }
+
     }
 }

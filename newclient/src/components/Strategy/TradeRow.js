@@ -1,17 +1,25 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Table } from 'semantic-ui-react'
+import { formatDate } from '../../common/formaters';
 
 const TradeRow = ({
-  trade,
+  closed,
+  market,
+  opened,
+  rate,
+  total,
+  tradeState,
+  type,
+  volume,
 }) => (
   <Table.Row textAlign='center' >
-    <Table.Cell>{trade.market}</Table.Cell>
-    <Table.Cell>{trade.amount}</Table.Cell>
-    <Table.Cell>{trade.type}</Table.Cell>
-    <Table.Cell>{trade.state}</Table.Cell>
-    <Table.Cell>{trade.opened}</Table.Cell>
-    <Table.Cell>{trade.closed}</Table.Cell>
+    <Table.Cell>{market}</Table.Cell>
+    <Table.Cell>{type}</Table.Cell>
+    <Table.Cell>{`${volume} @ ${rate} => ${total}`}</Table.Cell>
+    <Table.Cell>{tradeState}</Table.Cell>
+    <Table.Cell>{formatDate(opened)}</Table.Cell>
+    <Table.Cell>{formatDate(closed)}</Table.Cell>
   </Table.Row>
 )
 

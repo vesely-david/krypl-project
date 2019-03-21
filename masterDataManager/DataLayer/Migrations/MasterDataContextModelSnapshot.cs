@@ -15,6 +15,32 @@ namespace DataLayer.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "2.2.2-servicing-10034");
 
+            modelBuilder.Entity("DataLayer.Models.Asset", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<decimal>("Amount");
+
+                    b.Property<string>("Currency");
+
+                    b.Property<string>("Exchange");
+
+                    b.Property<string>("StrategyId");
+
+                    b.Property<int>("TradingMode");
+
+                    b.Property<string>("UserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StrategyId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Assets");
+                });
+
             modelBuilder.Entity("DataLayer.Models.EvaluationTick", b =>
                 {
                     b.Property<string>("Id")
@@ -66,8 +92,6 @@ namespace DataLayer.Migrations
 
                     b.Property<string>("Description");
 
-                    b.Property<string>("ExchangeId");
-
                     b.Property<bool>("IsOverview");
 
                     b.Property<DateTime?>("LastCheck");
@@ -80,7 +104,7 @@ namespace DataLayer.Migrations
 
                     b.Property<int>("StrategyState");
 
-                    b.Property<int?>("TradingMode");
+                    b.Property<int>("TradingMode");
 
                     b.Property<string>("UserId");
 
@@ -89,26 +113,6 @@ namespace DataLayer.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Strategies");
-                });
-
-            modelBuilder.Entity("DataLayer.Models.StrategyAsset", b =>
-                {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<decimal>("Amount");
-
-                    b.Property<string>("StrategyId");
-
-                    b.Property<string>("UserAssetId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("StrategyId");
-
-                    b.HasIndex("UserAssetId");
-
-                    b.ToTable("StrategyAssets");
                 });
 
             modelBuilder.Entity("DataLayer.Models.Trade", b =>
@@ -126,13 +130,15 @@ namespace DataLayer.Migrations
 
                     b.Property<int>("OrderType");
 
-                    b.Property<double>("Price");
+                    b.Property<decimal>("Price");
 
-                    b.Property<double>("Quantity");
+                    b.Property<decimal>("Quantity");
 
-                    b.Property<double>("QuantityRemaining");
+                    b.Property<decimal>("QuantityRemaining");
 
                     b.Property<string>("StrategyId");
+
+                    b.Property<decimal>("Total");
 
                     b.Property<int>("TradeState");
 
@@ -191,32 +197,6 @@ namespace DataLayer.Migrations
                         .HasName("UserNameIndex");
 
                     b.ToTable("AspNetUsers");
-                });
-
-            modelBuilder.Entity("DataLayer.Models.UserAsset", b =>
-                {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<decimal>("Amount");
-
-                    b.Property<string>("Currency")
-                        .IsRequired();
-
-                    b.Property<string>("Exchange")
-                        .IsRequired();
-
-                    b.Property<int>("TradingMode");
-
-                    b.Property<string>("UserId");
-
-                    b.HasKey("Id");
-
-                    b.HasAlternateKey("Currency", "TradingMode", "Exchange");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserAssets");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -326,6 +306,17 @@ namespace DataLayer.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("DataLayer.Models.Asset", b =>
+                {
+                    b.HasOne("DataLayer.Models.Strategy", "Strategy")
+                        .WithMany("Assets")
+                        .HasForeignKey("StrategyId");
+
+                    b.HasOne("DataLayer.Models.User", "User")
+                        .WithMany("Assets")
+                        .HasForeignKey("UserId");
+                });
+
             modelBuilder.Entity("DataLayer.Models.EvaluationTick", b =>
                 {
                     b.HasOne("DataLayer.Models.Strategy")
@@ -348,29 +339,11 @@ namespace DataLayer.Migrations
                         .HasForeignKey("UserId");
                 });
 
-            modelBuilder.Entity("DataLayer.Models.StrategyAsset", b =>
-                {
-                    b.HasOne("DataLayer.Models.Strategy", "Strategy")
-                        .WithMany("StrategyAssets")
-                        .HasForeignKey("StrategyId");
-
-                    b.HasOne("DataLayer.Models.UserAsset", "UserAsset")
-                        .WithMany("StrategyAssets")
-                        .HasForeignKey("UserAssetId");
-                });
-
             modelBuilder.Entity("DataLayer.Models.Trade", b =>
                 {
                     b.HasOne("DataLayer.Models.Strategy", "Strategy")
                         .WithMany("Trades")
                         .HasForeignKey("StrategyId");
-                });
-
-            modelBuilder.Entity("DataLayer.Models.UserAsset", b =>
-                {
-                    b.HasOne("DataLayer.Models.User", "User")
-                        .WithMany("UserAssets")
-                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
