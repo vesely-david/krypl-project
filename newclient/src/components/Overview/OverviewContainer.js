@@ -4,12 +4,12 @@ import StrategyList from './StrategyList'
 
 const OverviewContainer = ({
   data: {
-    strategyList,
     overview,
     registrationPending,
     strategiesFetching,
     overviewFetching,
   },
+  strategies,
   actions: {
     registerStrategy,
     forgetAllNews,
@@ -27,7 +27,7 @@ const OverviewContainer = ({
         addStrategyModal={addStrategyModal}
       />
       <StrategyList
-        strategyList={strategyList}
+        strategies={strategies}
         isFetching={strategiesFetching}
       />
     </div>)

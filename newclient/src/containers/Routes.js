@@ -29,10 +29,10 @@ class Routes extends Component {
     return (
       <Switch>
         <Route exact path='/' component={Home}/>
-        <PrivateRoute path="/real" authenticated={isAuthenticated} component={Real} />
-        <PrivateRoute path="/papertesting" authenticated={isAuthenticated} component={Paper} />
-        <PrivateRoute path="/backtesting" authenticated={isAuthenticated} component={Back} />
-        <PrivateRoute path="/strategy/:strategyId" authenticated={isAuthenticated} component={Strategy} />
+        <PrivateRoute path="/real" exact authenticated={isAuthenticated} component={Real} />
+        <PrivateRoute path="/papertesting" exact authenticated={isAuthenticated} component={Paper} />
+        <PrivateRoute path="/backtesting" exact authenticated={isAuthenticated} component={Back}/>
+        <PrivateRoute path="/:tradingMode/:strategyId" authenticated={isAuthenticated} component={Strategy} test={1}/>
         <PublicRoute path='/login'  authenticated={isAuthenticated} component={Login} />
       </Switch>
     );

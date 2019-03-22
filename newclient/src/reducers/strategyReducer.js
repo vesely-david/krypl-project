@@ -1,33 +1,10 @@
 import {
-  GET_STRATEGY_OVERVIEW,
   GET_STRATEGY_TRADES,
   GET_STRATEGY_VALUE_HISTORY,
 } from '../actions/types';
 
 
 const ACTION_HANDLERS = {   
-  [`${GET_STRATEGY_OVERVIEW}_PENDING`] : (state, action) => {
-    return {
-      ...state, 
-      strategyOverviewFetching: true
-    }
-  },
-  [`${GET_STRATEGY_OVERVIEW}_FULFILLED`] : (state, action) => {
-    return {
-      ...state,
-      strategyOverviewFetching: false,
-      overviews: {
-        ...state.overviews,
-        [action.payload.id] : action.payload,
-      }
-    }
-  },
-  [`${GET_STRATEGY_OVERVIEW}_REJECTED`] : (state, action) => {
-    return {
-      ...state, 
-      strategyOverviewFetching: false
-    }
-  },
   //====================================================   
   [`${GET_STRATEGY_TRADES}_PENDING`] : (state, action) => {
     return {
@@ -77,10 +54,8 @@ const ACTION_HANDLERS = {
 }
 
 const initialState = {
-  overviews: {},
   trades: {},
   histories: {},
-  strategyOverviewFetching: false,
   strategyTradesFetching: false,
   historyFetching: false,
 }

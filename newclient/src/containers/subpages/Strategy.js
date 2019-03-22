@@ -6,15 +6,18 @@ import TradeList from '../../components/Strategy/TradeList'
 import StrategyOverview from '../../components/Strategy/StrategyOverview'
 import styles from '../styles/subpages.module.scss';
 import { getAllAssets } from '../../selectors/assetSelectors';
+import { getStrategyCurrentValues, getAllStrategies } from '../../selectors/strategySelector';
 
 class StrategyContainer extends React.Component {
   componentDidMount () {
-    this.props.strategyActions.getStrategyData(this.props.match.params.strategyId)
+    const id = this.props.match.params.strategyId;
+    if(!this.props.strategies[id]) this.props.strategyActions.getStrategy(id, this.props.match.params.tradingMode)
+    this.props.strategyActions.getStrategyData(id)
   }
 
   render () {
     const {
-      overviews,
+      strategies,
       trades,
       histories,
       strategyOverviewFetching,
@@ -22,14 +25,14 @@ class StrategyContainer extends React.Component {
       historyFetching,
       assets,
     } = this.props;
+
     const id = this.props.match.params.strategyId;
     const strategyAssets = assets.filter(o => o.strategyId === id);
     return (
       <div className={styles.app}>
         <StrategyOverview 
-          overview={overviews[id]} 
-          isFetching={strategyOverviewFetching} 
-          strategyId={id}
+          overview={strategies[id]} 
+          isFetching={false} //TODO 
           history={histories[id]}
           isHistoryFetching={historyFetching}
           strategyAssets={strategyAssets}
@@ -49,6 +52,8 @@ const mapStateToProps = (state) => {
   return{
     ...state.strategies,
     assets: getAllAssets(state),
+    currentStrategyValues: getStrategyCurrentValues(state),
+    strategies: getAllStrategies(state),
   }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(StrategyContainer)

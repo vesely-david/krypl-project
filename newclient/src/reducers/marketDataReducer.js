@@ -1,5 +1,6 @@
 import {
   GET_MARKET_DATA,
+  GET_CURRENCY_VALUES,
 } from '../actions/types';
 
 

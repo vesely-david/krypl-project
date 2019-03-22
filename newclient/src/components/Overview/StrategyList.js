@@ -3,9 +3,7 @@ import StrategyRow from './StrategyRow'
 import { Table, Icon, Dimmer, Loader, Segment } from 'semantic-ui-react'
 
 const StrategyList = ({
-  strategyList : {
-    strategies
-  },
+  strategies,
   forgetNews,
   isFetching,
 }) => {

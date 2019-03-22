@@ -1,16 +1,5 @@
 import axios from 'axios';
 
-async function getStrategyOverview(id){
-  const response = await axios.get(
-    `${document.masterApi}/strategy/${id}/overview`, {
-    headers: {
-      'Accept': 'application/json',
-      'Authorization': `Bearer ${localStorage.getItem('token')}`
-    },
-  })
-  return response.data;
-}
-
 async function getStrategyTrades(id){
   const response = await axios.get(
     `${document.masterApi}/strategy/${id}/trades`, {
@@ -33,9 +22,19 @@ async function getStrategyHistory(id){
   return response.data;
 }
 
+async function getStrategy(id, tradingmode){
+  const response = await axios.get(
+    `${document.masterApi}/strategies/${tradingmode}/${id}`, {
+    headers: {
+      'Accept': 'application/json',
+      'Authorization': `Bearer ${localStorage.getItem('token')}`
+    },
+  })
+  return response.data;
+}
 
 export const strategyService = {
-  getStrategyOverview,
+  getStrategy,
   getStrategyTrades,
   getStrategyHistory,
 }

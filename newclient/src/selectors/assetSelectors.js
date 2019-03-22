@@ -60,7 +60,7 @@ export const getAssets = createSelector([getRawAssets], (assets) => {
 
 export const getAllAssets = createSelector([getRawAssets], (assets) => {
   const result =  assets.map(val => {
-    if(val.tradingMode === PAPER_TESTING){
+    // if(val.tradingMode === PAPER_TESTING){
       return {
         id: val.id, 
         currency: val.currency, 
@@ -68,6 +68,7 @@ export const getAllAssets = createSelector([getRawAssets], (assets) => {
         exchange: val.exchange,
         strategyId: val.strategyId,
       }
-    }})
+    // }
+  })
   return result;
 })

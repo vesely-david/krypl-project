@@ -1,26 +1,20 @@
 import {
-  GET_STRATEGY_OVERVIEW,
+  GET_PAPER_STRATEGY,
   GET_STRATEGY_TRADES,
   GET_STRATEGY_VALUE_HISTORY,
 } from './types';
-
 import { strategyService } from '../services';
+
+
+const actionTranslator = {
+  'papertesting': GET_PAPER_STRATEGY,
+}
 
 function getStrategyData(strategyId){
   return dispatch => {
-    dispatch(getStrategyOverview(strategyId));
     dispatch(getStrategyTrades(strategyId));
     dispatch(getStrategyHistory(strategyId));
   }
-}
-
-function getStrategyOverview(strategyId){
-  return dispatch => dispatch({
-    type: GET_STRATEGY_OVERVIEW,
-    payload: strategyService.getStrategyOverview(strategyId)
-  }).catch(err => {
-    // dispatch(alertActions.error(err));
-  })
 }
 
 function getStrategyTrades(strategyId){
@@ -53,6 +47,16 @@ function getStrategyHistory(strategyId){
   })
 }
 
+function getStrategy(strategyId, tradingMode){
+  return dispatch => dispatch({
+    type: actionTranslator[tradingMode],
+    payload: strategyService.getStrategy(strategyId, tradingMode)
+  }).catch(err => {
+    // dispatch(alertActions.error(err));
+  })
+}
+
 export const strategyActions = {
   getStrategyData,
+  getStrategy,
 }

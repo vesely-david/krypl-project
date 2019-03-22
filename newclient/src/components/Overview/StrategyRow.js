@@ -15,7 +15,7 @@ const StrategyRow = ({
   description = '', 
   newTradesCount= 0,
   openedTradesCount= 0,
-  // strategyState = '',
+  tradingMode = '',
   tradesCount= 0,
   currentValue= {},
   initialValue = {},
@@ -29,7 +29,7 @@ const StrategyRow = ({
   return (
     <Table.Row
       textAlign='center'
-      onClick={() => history.push(`strategy/${id}`)}
+      onClick={() => history.push(`/${tradingMode.toLowerCase()}/${id}`)}
     >
       <Table.Cell textAlign='left' style={{ paddingLeft: '1rem' }} width={5}>{name}</Table.Cell>
       <Table.Cell width={2}>{`${openedTradesCount}/${tradesCount}`}</Table.Cell>

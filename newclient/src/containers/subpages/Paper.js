@@ -6,6 +6,7 @@ import OverviewContainer from '../../components/Overview/OverviewContainer'
 import NewStrategyModal from '../modals/NewStrategyModal';
 import { getGroupedAssets } from '../../selectors/assetSelectors';
 import styles from '../styles/subpages.module.scss';
+import { getPaperStrategies } from '../../selectors/strategySelector';
 
 class PaperContainer extends React.Component {
   componentDidMount () {
@@ -17,18 +18,18 @@ class PaperContainer extends React.Component {
     const {
       overviewActions:{ registerPaperStrategy },
       paper,
+      paperStrategies,
       groupedAssets: {
         groupedPaperAssets
       }
     } = this.props;
-
     return (
       <div className={styles.app}>
         <OverviewContainer
           data={paper}
+          strategies={paperStrategies}
           actions={{
             forgetAllNews: () => alert('forget'),
-            registerStrategy: () => alert('register'),
           }}
           addStrategyModal={(
             <NewStrategyModal
@@ -51,6 +52,7 @@ const mapDispatchToProps = (dispatch) => {
 
 const mapStateToProps = (state) => ({
   paper: state.paper,
+  paperStrategies: getPaperStrategies(state),
   groupedAssets: getGroupedAssets(state),
 })
 

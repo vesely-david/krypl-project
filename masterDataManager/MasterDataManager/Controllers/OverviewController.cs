@@ -93,6 +93,17 @@ namespace MasterDataManager.Controllers
             });
         }
 
+        [HttpGet("{mode}/{strategyId}")]
+        public IActionResult GetStrategy(TradingMode mode, string strategyId)
+        {
+            var userId = HttpContext.User.GetUserId();
+            if (userId == null) return BadRequest("User not found");
+
+            var strategy = _strategyRepository.GetUserStrategiesByMode(userId, mode).FirstOrDefault(o => o.Id == strategyId);
+            if (strategy == null) return BadRequest("Strategy not found");
+            return Ok(_mapper.Map<JsonStrategyModel>(strategy));
+        }
+
         [HttpPost]
         public async Task<IActionResult> RegisterStrategy([FromBody]StrategyRegistrationModel model) //TODO: Move logic from controller
         {

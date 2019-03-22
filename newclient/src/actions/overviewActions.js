@@ -19,7 +19,17 @@ function getPaperOverview(){
 function getPaperStrategies(){
   return dispatch => dispatch({
     type: GET_PAPER_STRATEGIES,
-    payload: overviewService.getPaperStrategies()
+    payload: async () =>{
+      const res = await overviewService.getPaperStrategies();
+      return{
+        strategies: res.strategies,
+        pagination:{
+          page: res.page,
+          perPage: res.perPage,
+          total: res.count,
+        },
+      }
+    }
   }).catch(err => {
     // dispatch(alertActions.error(err));
   })
