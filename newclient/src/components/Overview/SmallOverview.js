@@ -1,6 +1,11 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Table, Button, Icon, Segment, Dimmer, Loader } from 'semantic-ui-react'
+import {
+  formatBtc,
+  formatUsd,
+  formatPercentage,
+} from '../../common/formaters';
 
 const StrategyList = ({
   overview: {
@@ -16,7 +21,6 @@ const StrategyList = ({
   registrationPending,
   isFetching,
   forgetAllNews,
-  registerStrategy,
   addStrategyModal,
 }) => {
   const btcChange = currentValue.btcValue === 0 ? -1 : (currentValue.btcValue - yesterdayValue.btcValue ) / currentValue.btcValue;
@@ -63,15 +67,15 @@ const StrategyList = ({
             <Table.Body>
               <Table.Row>
                 <Table.Cell><Icon name='bitcoin' /></Table.Cell>
-                <Table.Cell>{reserved.btcValue}</Table.Cell>
-                <Table.Cell>{currentValue.btcValue}</Table.Cell>
-                <Table.Cell>{btcChange * 100}</Table.Cell>
+                <Table.Cell>{formatBtc(reserved.btcValue)}</Table.Cell>
+                <Table.Cell>{formatBtc(currentValue.btcValue)}</Table.Cell>
+                <Table.Cell>{formatPercentage(btcChange * 100)}</Table.Cell>
               </Table.Row>
               <Table.Row>
                 <Table.Cell><Icon name='dollar' /></Table.Cell>
-                <Table.Cell>{reserved.usdValue}</Table.Cell>
-                <Table.Cell>{currentValue.usdValue}</Table.Cell>
-                <Table.Cell>{usdChange * 100}</Table.Cell>
+                <Table.Cell>{formatUsd(reserved.usdValue)}</Table.Cell>
+                <Table.Cell>{formatUsd(currentValue.usdValue)}</Table.Cell>
+                <Table.Cell>{formatPercentage(usdChange * 100)}</Table.Cell>
               </Table.Row>
             </Table.Body>
           </Table>

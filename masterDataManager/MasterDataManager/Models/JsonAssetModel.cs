@@ -13,5 +13,6 @@ namespace MasterDataManager.Models
         public decimal amount { get; set; }
         public string strategyId { get; set; }
         public string tradingMode { get; set; }
+        public bool isActive { get; set; }
     }
 }

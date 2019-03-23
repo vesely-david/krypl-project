@@ -5,6 +5,7 @@ import { Table, Loader, Segment, Dimmer } from 'semantic-ui-react'
 const TradeList = ({
   tradeList= {},
   isFetching,
+  onTradeHover
 }) => {
   return (
     <div>
@@ -25,7 +26,7 @@ const TradeList = ({
           </Table.Header>
           <Table.Body>
             {(tradeList.trades && tradeList.trades.length > 0) &&
-              tradeList.trades.map(o => <TradeRow key={o.id} {...o} />)}
+              tradeList.trades.map(o => <TradeRow key={o.id} {...o} onHover={onTradeHover}/>)}
           </Table.Body>
         </Table>
       </Segment>

@@ -34,11 +34,13 @@ const ACTION_HANDLERS = {
     }
   },
   [`${GET_PAPER_STRATEGY}_FULFILLED`] : (state, action) => {
+    const original = state.strategies.find(o => o.id === action.payload.id);
     return {
       ...state,
       strategiesFetching: false,
-      strategies: [action.payload],
-      pagination: {page: 0, perPage: 30, total: 0},
+      strategies: original ? 
+      state.strategies.map(o => o.id === action.payload.id ? action.payload : o) : [action.payload],
+      pagination: original ? state.pagination : {page: 0, perPage: 30, total: 0},
     }
   },
   [`${GET_PAPER_STRATEGY}_REJECTED`] : (state, action) => {

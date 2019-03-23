@@ -2,10 +2,15 @@ import { createSelector } from 'reselect'
 import {
   PAPER_TESTING
 } from '../common/tradingModes';
+import { getCurrencyValues } from './marketDataSelectors';
 
 export const getRawAssets = state => state.assets.assets;
 
-export const getGroupedAssetsObject = createSelector([getRawAssets], (assets) => {
+export const getAllActiveAssets = createSelector([getRawAssets], (rawAssets) => {
+  return rawAssets.filter(o => o.isActive);
+})
+
+export const getGroupedAssetsObject = createSelector([getAllActiveAssets], (assets) => {
   const result =  assets.reduce((res, val) => {
     if(val.tradingMode === PAPER_TESTING){
       if(!res.groupedPaperAssets[val.exchange]) res.groupedPaperAssets[val.exchange] = {};
@@ -41,7 +46,7 @@ export const getGroupedAssets = createSelector([getGroupedAssetsObject], (assets
   };
 })
 
-export const getAssets = createSelector([getRawAssets], (assets) => {
+export const getAssets = createSelector([getAllActiveAssets], (assets) => {
   const result =  assets.reduce((res, val) => {
     if(val.tradingMode === PAPER_TESTING){
       if(!res.paperAssets) res.paperAssets = [];
@@ -61,14 +66,26 @@ export const getAssets = createSelector([getRawAssets], (assets) => {
 export const getAllAssets = createSelector([getRawAssets], (assets) => {
   const result =  assets.map(val => {
     // if(val.tradingMode === PAPER_TESTING){
-      return {
-        id: val.id, 
-        currency: val.currency, 
-        amount: val.amount, 
-        exchange: val.exchange,
-        strategyId: val.strategyId,
-      }
+      return {...val}
     // }
   })
   return result;
+})
+
+
+export const getEvaluatedAssets = createSelector([getAllActiveAssets, getCurrencyValues], (assets, currentValues) => {
+  return assets.map(o => {
+    if(!currentValues[o.exchange] || !currentValues[o.exchange][o.currency]){
+      return{
+        ...o,
+        btcValue: 0,
+        usdValue: 0,
+      } 
+    }
+    return {
+      ...o,
+      btcValue: currentValues[o.exchange][o.currency].btcValue * o.amount,
+      usdValue: currentValues[o.exchange][o.currency].usdValue * o.amount,
+    }
+  })
 })

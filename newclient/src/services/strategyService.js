@@ -33,8 +33,22 @@ async function getStrategy(id, tradingmode){
   return response.data;
 }
 
+async function stopStrategy(strategyId){
+  const response = await axios.post(
+    `${document.masterApi}/strategy/${strategyId}/stop`, 
+    JSON.stringify({}), {
+    headers: {
+      'Accept': 'application/json',
+      'Content-type': 'application/json',
+      'Authorization': `Bearer ${localStorage.getItem('token')}`
+    },
+  })
+  return response.data;
+}
+
 export const strategyService = {
   getStrategy,
   getStrategyTrades,
   getStrategyHistory,
+  stopStrategy,
 }

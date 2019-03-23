@@ -9,6 +9,13 @@ import { getAllAssets } from '../../selectors/assetSelectors';
 import { getStrategyCurrentValues, getAllStrategies } from '../../selectors/strategySelector';
 
 class StrategyContainer extends React.Component {
+
+  constructor(props){
+    super(props);
+    this.state = {
+      hovered: null,
+    }
+  }
   componentDidMount () {
     const id = this.props.match.params.strategyId;
     if(!this.props.strategies[id]) this.props.strategyActions.getStrategy(id, this.props.match.params.tradingMode)
@@ -24,6 +31,7 @@ class StrategyContainer extends React.Component {
       strategyTradesFetching,
       historyFetching,
       assets,
+      strategyActions,
     } = this.props;
 
     const id = this.props.match.params.strategyId;
@@ -36,8 +44,10 @@ class StrategyContainer extends React.Component {
           history={histories[id]}
           isHistoryFetching={historyFetching}
           strategyAssets={strategyAssets}
+          hovered={this.state.hovered}
+          stopStrategy={strategyActions.stopStrategy}
         />
-        <TradeList tradeList={trades[id]} isFetching={strategyTradesFetching} />
+        <TradeList tradeList={trades[id]} isFetching={strategyTradesFetching} onTradeHover={(date) => this.setState({hovered: date})}/>
       </div>
     )
   }

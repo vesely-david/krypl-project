@@ -12,9 +12,23 @@ namespace DataLayer.Models
         public string Exchange { get; set; }
         public string UserId { get; set; }
         public string StrategyId { get; set; }
+        public bool IsActive { get; set; } //Asset is inactivate after strategy is stopped
 
         public virtual User User { get; set; }
-        public virtual Strategy Strategy { get; set; 
+        public virtual Strategy Strategy { get; set; }
+
+        public Asset(Asset asset)
+        {
+            Amount = asset.Amount;
+            TradingMode = asset.TradingMode;
+            Currency = asset.Currency;
+            Exchange = asset.Exchange;
+            UserId = asset.UserId;
+            IsActive = true;
+        }
+        public Asset()
+        {
+            IsActive = true;
         }
 
     }

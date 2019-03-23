@@ -7,6 +7,7 @@ import NewStrategyModal from '../modals/NewStrategyModal';
 import { getGroupedAssets } from '../../selectors/assetSelectors';
 import styles from '../styles/subpages.module.scss';
 import { getPaperStrategies } from '../../selectors/strategySelector';
+import { getPaperOverview } from '../../selectors/overviewSelectors';
 
 class PaperContainer extends React.Component {
   componentDidMount () {
@@ -17,23 +18,28 @@ class PaperContainer extends React.Component {
   render () {
     const {
       overviewActions:{ registerPaperStrategy },
-      paper,
+      registrationPending,
+      strategiesFetching,
+      overviewFetching,
+      paperOverview,
       paperStrategies,
       groupedAssets: {
         groupedPaperAssets
       }
     } = this.props;
+
     return (
       <div className={styles.app}>
         <OverviewContainer
-          data={paper}
+          overview={paperOverview}
+          registrationPending={registrationPending}
+          strategiesFetching={strategiesFetching}
+          overviewFetching={overviewFetching}
           strategies={paperStrategies}
-          actions={{
-            forgetAllNews: () => alert('forget'),
-          }}
+          forgetAllNews={() => alert('forget')}
           addStrategyModal={(
             <NewStrategyModal
-              registrationPending={paper.registrationPending}
+              registrationPending={registrationPending}
               registerStrategy={registerPaperStrategy}
               allAssets={groupedPaperAssets}
             />
@@ -51,7 +57,10 @@ const mapDispatchToProps = (dispatch) => {
 }
 
 const mapStateToProps = (state) => ({
-  paper: state.paper,
+  registrationPending: state.paper.registrationPending,
+  strategiesFetching: state.paper.strategiesFetching,
+  overviewFetching: state.paper.overviewFetching,
+  paperOverview: getPaperOverview(state),
   paperStrategies: getPaperStrategies(state),
   groupedAssets: getGroupedAssets(state),
 })

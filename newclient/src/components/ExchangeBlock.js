@@ -12,7 +12,7 @@ const ExchangeBlock = ({
     <div className={styles.exchange_block}>
       <h4>{exchange}</h4>
       <div className={styles.asset_wrapper}>
-        {currencies.map(o => <Asset key={o.id} {...o} />)}
+        {currencies.map(o => <Asset key={`${exchange}_${o.currency}`} {...o} />)}
       </div>
     </div>
   )

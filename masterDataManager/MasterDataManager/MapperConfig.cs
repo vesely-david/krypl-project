@@ -33,11 +33,13 @@ namespace MasterDataManager
                 .ForMember(dest => dest.newTradesCount,
                     opts => opts.MapFrom(src => src.Trades.Count(o => o.Closed.HasValue ? o.Closed.Value > src.LastCheck : o.Opened > src.LastCheck)))
                 .ForMember(dest => dest.initialValue,
-                    opts => opts.MapFrom(src => src.Evaluations.First()));
-                //.ForMember(dest => dest.currentValue,
-                    //opts => opts.MapFrom(src => src.Evaluations.Last()))
-                //.ForMember(dest => dest.yesterdayValue,
-                    //opts => opts.MapFrom(src => src.GetYesterdayValue()));
+                    opts => opts.MapFrom(src => src.Evaluations.First()))
+                .ForMember(dest => dest.finalValue,
+                    opts => opts.MapFrom(src => src.Evaluations.FirstOrDefault(o => o.IsFinal)));
+            //.ForMember(dest => dest.currentValue,
+            //opts => opts.MapFrom(src => src.Evaluations.Last()))
+            //.ForMember(dest => dest.yesterdayValue,
+            //opts => opts.MapFrom(src => src.GetYesterdayValue()));
         }
     }
 }

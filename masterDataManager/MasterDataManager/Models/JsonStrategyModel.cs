@@ -14,8 +14,7 @@ namespace MasterDataManager.Models
         public string tradingMode { get; set; }
 
         public JsonEvaluationModel initialValue { get; set; }
-        //public JsonEvaluationModel currentValue { get; set; }
-        //public JsonEvaluationModel yesterdayValue { get; set; }
+        public JsonEvaluationModel finalValue { get; set; }
         public int tradesCount { get; set; }
         public int openedTradesCount { get; set; }
         public int newTradesCount { get; set; }

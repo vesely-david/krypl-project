@@ -3,17 +3,12 @@ import SmallOverview from './SmallOverview'
 import StrategyList from './StrategyList'
 
 const OverviewContainer = ({
-  data: {
-    overview,
-    registrationPending,
-    strategiesFetching,
-    overviewFetching,
-  },
+  overview,
+  registrationPending,
+  strategiesFetching,
+  overviewFetching,
   strategies,
-  actions: {
-    registerStrategy,
-    forgetAllNews,
-  },
+  forgetAllNews,
   addStrategyModal,
 }) => {
   return (
@@ -21,7 +16,6 @@ const OverviewContainer = ({
       <SmallOverview
         isFetching={overviewFetching}
         registrationPending={registrationPending}
-        registerStrategy={registerStrategy}
         overview={overview}
         forgetAllNews={forgetAllNews}
         addStrategyModal={addStrategyModal}

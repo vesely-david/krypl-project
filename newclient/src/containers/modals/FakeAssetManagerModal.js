@@ -63,7 +63,9 @@ class FakeAssetManagerModal extends React.Component {
         currency: selectedCurrency,
         amount: assetValue,
         free: assetValue,
-      }]})
+      }],
+      exchangeChanges: true,
+    })
     } else{
       this.setState({toSubmit: toSubmit.map(o => o === origin ? 
         ({
@@ -132,9 +134,9 @@ class FakeAssetManagerModal extends React.Component {
         .map(o => ({ key: o.id, text: o.id, value: o.id }))
       : [];
 
-    const origin = toSubmit.find(o => o.exchange === selectedExchange && o.currency === selectedCurrency); 
-    const assetValueMin = origin ? origin.amount - origin.free : 0
-    const assetValueError = assetValueMin > assetValue;
+    // const origin = toSubmit.find(o => o.exchange === selectedExchange && o.currency === selectedCurrency); 
+    // const assetValueMin = origin ? origin.amount - origin.free : 0
+    // const assetValueError = assetValueMin > assetValue;
 
     return (
       <Modal
@@ -186,14 +188,14 @@ class FakeAssetManagerModal extends React.Component {
                   type='number'
                   disabled={selectedCurrency === null}
                   fluid
-                  error={assetValueError}
-                  label={`Value${assetValueMin ? ` (Minimum: ${assetValueMin})` : ''}`}
+                  // error={assetValueError}
+                  label={`Value`}
                   value={assetValue || ''}
                   name='assetValue'
                   width={5}
                   onChange={this.onInputChange} />
                 <Form.Button
-                  disabled={assetValue === '' || assetValueError}
+                  disabled={assetValue === ''}
                   onClick={this.onAssetAdd}
                   color='green'
                   width={2}

@@ -73,7 +73,7 @@ namespace MasterDataManager.Controllers
                         Exchange = orderModel.exchange,
                         StrategyId = strategyId,
                         TradingMode = strategy.TradingMode,
-                        UserId = strategy.UserId
+                        UserId = strategy.UserId,
                     });
                 }
                 else

@@ -63,5 +63,12 @@ namespace DataLayer.Infrastructure
                 .Include(o => o.Evaluations)
                 .FirstOrDefault(o => o.Id == strategyId);
         }
+        public Strategy GetStrategyWithEvaluationsAndAssets(string strategyId)
+        {
+            return _dbContext.Strategies
+                .Include(o => o.Evaluations)
+                .Include(o => o.Assets)
+                .FirstOrDefault(o => o.Id == strategyId);
+        }
     }
 }

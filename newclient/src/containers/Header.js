@@ -14,12 +14,12 @@ class Header extends React.Component{
     const indexLink = this.props.user.isAuthenticated ? (
       <Menu.Item className={styles.mainItem} as={NavLink} to='/' activeClassName={styles.active_navlink}>
         <img alt="" src={DuckIcon} />
-        Krypl project
+        K____ p__
       </Menu.Item>
     ) : (
       <Menu.Item className={styles.mainItem}>
         <img alt="" src={DuckIcon} />
-        Krypl project
+        K____ p__
       </Menu.Item>
     )
 

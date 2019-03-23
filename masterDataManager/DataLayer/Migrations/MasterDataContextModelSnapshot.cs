@@ -26,6 +26,8 @@ namespace DataLayer.Migrations
 
                     b.Property<string>("Exchange");
 
+                    b.Property<bool>("IsActive");
+
                     b.Property<string>("StrategyId");
 
                     b.Property<int>("TradingMode");
@@ -48,6 +50,8 @@ namespace DataLayer.Migrations
 
                     b.Property<decimal>("BtcValue");
 
+                    b.Property<bool>("IsFinal");
+
                     b.Property<string>("StrategyId");
 
                     b.Property<DateTime>("TimeStamp");
@@ -58,7 +62,7 @@ namespace DataLayer.Migrations
 
                     b.HasIndex("StrategyId");
 
-                    b.ToTable("EvaluationTick");
+                    b.ToTable("Evaluations");
                 });
 
             modelBuilder.Entity("DataLayer.Models.ExchangeSecret", b =>
@@ -319,7 +323,7 @@ namespace DataLayer.Migrations
 
             modelBuilder.Entity("DataLayer.Models.EvaluationTick", b =>
                 {
-                    b.HasOne("DataLayer.Models.Strategy")
+                    b.HasOne("DataLayer.Models.Strategy", "Strategy")
                         .WithMany("Evaluations")
                         .HasForeignKey("StrategyId");
                 });

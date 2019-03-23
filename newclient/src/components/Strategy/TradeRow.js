@@ -12,8 +12,9 @@ const TradeRow = ({
   tradeState,
   type,
   volume,
+  onHover
 }) => (
-  <Table.Row textAlign='center' >
+  <Table.Row textAlign='center' onHover={() => onHover(closed ? closed : opened)}>
     <Table.Cell>{market}</Table.Cell>
     <Table.Cell>{type}</Table.Cell>
     <Table.Cell>{`${volume} @ ${rate} => ${total}`}</Table.Cell>

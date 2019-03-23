@@ -46,6 +46,7 @@ namespace MasterDataManager
             services.AddScoped<IStrategyRepository, StrategyRepository>();
             services.AddScoped<IAssetRepository, AssetRepository>();
             services.AddScoped<ITradeRepository, TradeRepository>();
+            services.AddScoped<IEvaluationRepository, EvaluationRepository>();
             services.AddScoped<IExchangeObjectFactory, ExchangeObjectFactory>();
             services.AddScoped<IExchangeSecretRepository, ExchangeSecretRepository>();
             services.AddScoped<IMarketDataService, MarketDataService>();

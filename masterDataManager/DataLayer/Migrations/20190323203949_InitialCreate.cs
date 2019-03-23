@@ -210,7 +210,8 @@ namespace DataLayer.Migrations
                     Currency = table.Column<string>(nullable: true),
                     Exchange = table.Column<string>(nullable: true),
                     UserId = table.Column<string>(nullable: true),
-                    StrategyId = table.Column<string>(nullable: true)
+                    StrategyId = table.Column<string>(nullable: true),
+                    IsActive = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -230,20 +231,21 @@ namespace DataLayer.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "EvaluationTick",
+                name: "Evaluations",
                 columns: table => new
                 {
                     Id = table.Column<string>(nullable: false),
                     TimeStamp = table.Column<DateTime>(nullable: false),
                     BtcValue = table.Column<decimal>(nullable: false),
                     UsdValue = table.Column<decimal>(nullable: false),
+                    IsFinal = table.Column<bool>(nullable: false),
                     StrategyId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_EvaluationTick", x => x.Id);
+                    table.PrimaryKey("PK_Evaluations", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_EvaluationTick_Strategies_StrategyId",
+                        name: "FK_Evaluations_Strategies_StrategyId",
                         column: x => x.StrategyId,
                         principalTable: "Strategies",
                         principalColumn: "Id",
@@ -326,8 +328,8 @@ namespace DataLayer.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_EvaluationTick_StrategyId",
-                table: "EvaluationTick",
+                name: "IX_Evaluations_StrategyId",
+                table: "Evaluations",
                 column: "StrategyId");
 
             migrationBuilder.CreateIndex(
@@ -367,7 +369,7 @@ namespace DataLayer.Migrations
                 name: "Assets");
 
             migrationBuilder.DropTable(
-                name: "EvaluationTick");
+                name: "Evaluations");
 
             migrationBuilder.DropTable(
                 name: "ExchangeSecrets");

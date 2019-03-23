@@ -1,15 +1,15 @@
 import { createSelector } from 'reselect'
-import { getAllAssets } from './assetSelectors';
-import { getCurrencyValues } from './marketDataSelectors';
+import { getEvaluatedAssets } from './assetSelectors';
 
 export const getRawPaperStrategies = state => state.paper.strategies;
 
-export const getStrategyCurrentValues = createSelector([getAllAssets, getCurrencyValues], (assets, currentValues) => {
+
+export const getStrategyCurrentValues = createSelector([getEvaluatedAssets], (assets) => {
   return assets.reduce((res, val) => {
-    if(!val.strategyId || !currentValues[val.exchange] || !currentValues[val.exchange][val.currency]) return res;
+    if(!val.strategyId) return res;
     if(!res[val.strategyId]) res[val.strategyId] = {timestamp: Date.now(), usdValue: 0, btcValue: 0};
-    res[val.strategyId].btcValue += currentValues[val.exchange][val.currency].btcValue * val.amount;
-    res[val.strategyId].usdValue += currentValues[val.exchange][val.currency].usdValue * val.amount;
+    res[val.strategyId].btcValue += val.btcValue;
+    res[val.strategyId].usdValue += val.usdValue;
     return res;
   }, {})
 });

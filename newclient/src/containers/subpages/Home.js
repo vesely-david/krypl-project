@@ -47,7 +47,7 @@ class Home extends React.Component{
           </div>
           {Object.keys(groupedPaperAssets).length > 0 && <div className='divider' />}
           {Object.keys(groupedPaperAssets).map(o => (
-            <ExchangeBlock exchange={o} currencies={groupedPaperAssets[o]} key={o.id} />
+            <ExchangeBlock exchange={o} currencies={groupedPaperAssets[o]} key={o} />
           ))}
         </Segment>
       </div>

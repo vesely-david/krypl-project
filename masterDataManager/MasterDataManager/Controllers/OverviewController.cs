@@ -38,28 +38,25 @@ namespace MasterDataManager.Controllers
 
 
         [HttpGet("{mode}/overview")]
-        public async Task<IActionResult> GetOverview(TradingMode mode)
+        public IActionResult GetOverview(TradingMode mode)
         {
             var userId = HttpContext.User.GetUserId();
             if (userId == null) return BadRequest("User not found");
 
             var strategies = _strategyRepository.GetUserStrategiesByMode(userId, mode);
-            var strategyValuesYesterday = strategies.Select(o => o.GetYesterdayValue());
-
             var overview = _strategyRepository.GetUserOverviewByMode(userId, mode);
 
-            var assets = _assetRepository.GetByUserId(userId)
-                .Where(o => o.TradingMode == mode).Select(o => (currency: o.Currency, amount: o.Amount));
+            //var assets = _assetRepository.GetByUserId(userId)
+                //.Where(o => o.TradingMode == mode).Select(o => (currency: o.Currency, amount: o.Amount));
 
-            var currentValue = await _marketDataService.EvaluateAssetSet(assets, "binance");
-            var yesterdayValue = overview.GetYesterdayValue();
-            var reserved = strategies.Aggregate(new EvaluationTick(), (res, val) =>
-            {
-                var eval = val.Evaluations.Last();
-                res.BtcValue += eval.BtcValue;
-                res.UsdValue += eval.UsdValue;
-                return res;
-            });
+            //var currentValue = await _marketDataService.EvaluateAssetSet(assets, "binance");
+            //var reserved = strategies.Aggregate(new EvaluationTick(), (res, val) =>
+            //{
+            //    var eval = val.Evaluations.Last();
+            //    res.BtcValue += eval.BtcValue;
+            //    res.UsdValue += eval.UsdValue;
+            //    return res;
+            //});
 
             return Ok(new
             {
@@ -68,9 +65,9 @@ namespace MasterDataManager.Controllers
                 allNewTradesCount = strategies.Sum(o => o.GetNewTrades()),
                 runningCount = strategies.Count(o => !o.Stop.HasValue),
                 allCount = strategies.Count(),
-                currentValue = _mapper.Map<JsonEvaluationModel>(currentValue),
-                yesterdayValue = _mapper.Map<JsonEvaluationModel>(yesterdayValue),
-                reserved = _mapper.Map<JsonEvaluationModel>(reserved),
+                //currentValue = _mapper.Map<JsonEvaluationModel>(currentValue),
+                yesterdayValue = _mapper.Map<JsonEvaluationModel>(overview.GetYesterdayValue()),
+                //reserved = _mapper.Map<JsonEvaluationModel>(reserved),
             });
         }
 

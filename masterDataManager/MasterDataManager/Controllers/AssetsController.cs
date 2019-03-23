@@ -90,6 +90,7 @@ namespace MasterDataManager.Controllers
                         Exchange = item.Exchange,
                         TradingMode = TradingMode.PaperTesting,
                         UserId = userId,
+                        IsActive = true,
                     });
                 }
                 else

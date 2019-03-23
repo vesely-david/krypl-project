@@ -10,12 +10,17 @@ namespace DataLayer.Models
         public DateTime TimeStamp { get; set; }
         public decimal BtcValue { get; set; }
         public decimal UsdValue { get; set; }
+        public bool IsFinal { get; set; }
+        public string StrategyId { get; set; }
+
+        public virtual Strategy Strategy { get; set; }
 
         public EvaluationTick()
         {
             BtcValue = 0;
             UsdValue = 0;
             TimeStamp = DateTime.Now;
+            IsFinal = false;
         }
     }
 }
