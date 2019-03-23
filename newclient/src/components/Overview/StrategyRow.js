@@ -6,6 +6,9 @@ import {
   formatUsd,
   formatPercentage,
 } from '../../common/formaters';
+import{
+  RUNNING
+} from '../../common/strategyStates';
 
 // Sipky Btc/Usd | Nazev + last trade |  otevreny/vsechny obchody | aktualni hodnoty Btc/Usd
 // zmena od zacatku Btc/Usd | zmena za den Btc/Usd | nove obchody |Infoicon s popisem
@@ -16,16 +19,19 @@ const StrategyRow = ({
   newTradesCount= 0,
   openedTradesCount= 0,
   tradingMode = '',
+  strategyState,
   tradesCount= 0,
   currentValue= {},
   initialValue = {},
-  yesterdayValue= {},
+  finalValue= {},
   forgetNews,
 }) => {
-  const profitBtc = currentValue.btcValue - initialValue.btcValue;
-  const profitUsd = currentValue.usdValue - initialValue.usdValue;
-  const dayChangeBtc = (currentValue.btcValue - yesterdayValue.btcValue) / currentValue.btcValue;
-  const dayChangeUsd = (currentValue.usdValue - yesterdayValue.usdValue) / currentValue.usdValue;
+  const lastValue = strategyState === RUNNING ? currentValue : finalValue;
+
+  const profitBtc = lastValue.btcValue - initialValue.btcValue;
+  const profitUsd = lastValue.usdValue - initialValue.usdValue;
+  // const dayChangeBtc = (currentValue.btcValue - yesterdayValue.btcValue) / currentValue.btcValue;
+  // const dayChangeUsd = (currentValue.usdValue - yesterdayValue.usdValue) / currentValue.usdValue;
   return (
     <Table.Row
       textAlign='center'
@@ -33,8 +39,8 @@ const StrategyRow = ({
     >
       <Table.Cell textAlign='left' style={{ paddingLeft: '1rem' }} width={5}>{name}</Table.Cell>
       <Table.Cell width={2}>{`${openedTradesCount}/${tradesCount}`}</Table.Cell>
-      <Table.Cell width={1}>{formatBtc(currentValue.btcValue)}</Table.Cell>
-      <Table.Cell width={1}>{formatUsd(currentValue.usdValue)}</Table.Cell>
+      <Table.Cell width={1}>{formatBtc(lastValue.btcValue)}</Table.Cell>
+      <Table.Cell width={1}>{formatUsd(lastValue.usdValue)}</Table.Cell>
       <Table.Cell width={1}>{formatBtc(profitBtc)}</Table.Cell>
       <Table.Cell width={1}>{formatUsd(profitUsd)}</Table.Cell>      
       {/* <Table.Cell width={1}>{formatPercentage(dayChangeBtc * 100)}</Table.Cell> */}
