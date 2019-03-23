@@ -96,7 +96,7 @@ class FakeAssetManagerModal extends React.Component {
   onSubmit = async () => {
     const { toSubmit } = this.state
     this.setState({isSubmitting: true});
-    const res = await this.props.submitAssets(toSubmit)
+    const res = await this.props.submitAssets(toSubmit.filter(o => o.amount > 0))
     this.setState({isSubmitting: false});
     if(res.value) this.setState({modalOpened: false});
   }
@@ -205,7 +205,7 @@ class FakeAssetManagerModal extends React.Component {
               </Form.Group>
             </Form>
             <div style={{ minHeight: '30px' }}>
-              {toSubmit.filter(o => o.exchange === selectedExchange && o.amount > 0)
+              {toSubmit.filter(o => o.exchange === selectedExchange)
                 .map(o => (
                   <Label className='currencyLabel' color={color} key={o.id} onClick={(e) => this.onCurrencySelect(null, {value: o.currency})}>
                     {`${o.currency} ${o.amount}`}
