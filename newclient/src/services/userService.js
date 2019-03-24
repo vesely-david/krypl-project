@@ -1,19 +1,70 @@
-import {
-  get,
-  post
-} from '../common/fetchOptions';
+import axios from 'axios';
 
 async function login(credentials){
-  const response = await fetch(`${document.masterApi}/user/login`, {...post(), body: JSON.stringify(credentials)});
+  const response = await axios.post(
+    `${document.masterApi}/user/login`, 
+    JSON.stringify(credentials), {
+    headers: {
+      'Accept': 'application/json',
+      'Content-type': 'application/json',
+      'Authorization': `Bearer ${localStorage.getItem('token')}`
+    },
+  })
+  return response.data;
+}
 
-  if (response.ok) {
-    return response.json();
-  } else{
-    const json = await response.json();
-    throw new Error(json.message);
-  }
+async function register(credentials){
+  const response = await axios.post(
+    `${document.masterApi}/user/register`, 
+    JSON.stringify(credentials), {
+    headers: {
+      'Accept': 'application/json',
+      'Content-type': 'application/json',
+      'Authorization': `Bearer ${localStorage.getItem('token')}`
+    },
+  })
+  return response.data;  
+}
+
+async function getApiKeys(){
+  const response = await axios.get(
+    `${document.masterApi}/user/apikeys`, {
+    headers: {
+      'Accept': 'application/json',
+      'Authorization': `Bearer ${localStorage.getItem('token')}`
+    },
+  })
+  return response.data;  
+}
+
+async function deleteApiKey(apiKeyId){
+  const response = await axios.delete(
+    `${document.masterApi}/user/apikeys/${apiKeyId}`, {
+    headers: {
+      'Accept': 'application/json',
+      'Authorization': `Bearer ${localStorage.getItem('token')}`
+    },
+  })
+  return response.data;  
+}
+
+async function editApiKey(apiKey){
+  const response = await axios.post(
+    `${document.masterApi}/user/apikeys`, 
+    JSON.stringify(apiKey), {
+    headers: {
+      'Accept': 'application/json',
+      'Content-type': 'application/json',
+      'Authorization': `Bearer ${localStorage.getItem('token')}`
+    },
+  })
+  return response.data;  
 }
 
 export const userService = {
   login,
+  register,
+  getApiKeys,
+  deleteApiKey,
+  editApiKey,
 }

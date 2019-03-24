@@ -15,6 +15,11 @@ namespace MasterDataManager
 
             CreateMap<EvaluationTick, JsonEvaluationModel>().ReverseMap();
 
+            CreateMap<ExchangeSecret, JsonExchangeSecretModel>()
+                .ForMember(dest => dest.apiSecret, opts => opts.MapFrom(o => "")); //Never send API secret on client;
+
+            CreateMap<JsonExchangeSecretModel, ExchangeSecret>();
+
             CreateMap<Trade, JsonTradeModel>()
                 .ForMember(dest => dest.type,
                     opts => opts.MapFrom(src => src.OrderType))

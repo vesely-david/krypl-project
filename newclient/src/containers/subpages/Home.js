@@ -13,7 +13,7 @@ import styles from '../styles/subpages.module.scss';
 class Home extends React.Component{
 
   componentDidMount(){
-    this.props.assetActions.getAssets();
+    if(this.props.user.isAuthenticated) this.props.assetActions.getAssets();
   }
 
   render(){

@@ -4,6 +4,8 @@ import { bindActionCreators } from 'redux'
 import { Button, Menu } from 'semantic-ui-react'
 import { NavLink, withRouter } from 'react-router-dom'
 import {userActions} from '../actions/userActions';
+import LoginModal from './modals/LoginModal';
+import RegisterModal from './modals/RegisterModal';
 
 import DuckIcon from '../content/images/duckling.svg'
 import styles from './styles/header.module.scss';
@@ -33,6 +35,7 @@ class Header extends React.Component{
               <Menu.Item as={NavLink} to='/papertesting' key='paperLink' activeClassName={styles.active_navlink} name='paper'/>
               <Menu.Item as={NavLink} to='/backtesting' key='backtestLink' activeClassName={styles.active_navlink} name='backtest'/>
               <Menu.Menu key='righSection' position='right'>
+                <Menu.Item as={NavLink} to='/account' key='account' activeClassName={styles.active_navlink} name='account'/>           
                 <Menu.Item>
                   <Button onClick={() => this.props.userActions.logout()}>Log out</Button>
                 </Menu.Item>
@@ -42,8 +45,11 @@ class Header extends React.Component{
             <React.Fragment>
               <Menu.Menu key='righSection' position='right'>
                 <Menu.Item>
-                  <Button onClick={() => this.props.userActions.login({username: 'kirchjan', password: 'kirchjan!Hesl0'})}>Log in</Button>
+                  <LoginModal loginAction={this.props.userActions.login}/>
                 </Menu.Item>
+                <Menu.Item>
+                  <RegisterModal registerAction={this.props.userActions.register}/>
+                </Menu.Item>                
               </Menu.Menu>
             </React.Fragment>
           )

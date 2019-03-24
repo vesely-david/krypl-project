@@ -4,16 +4,6 @@
   position: relative;
 }
 
-.strategy_heading{
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.5rem;
-  h2,h3{
-    margin: 0;
-  }
-}
-
 .strategy_info_row{
-  composes: strategy_heading;
+  composes: heading_with_button;
 }

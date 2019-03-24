@@ -8,5 +8,6 @@ namespace DataLayer.Infrastructure.Interfaces
     public interface IExchangeSecretRepository : IRepository<ExchangeSecret>
     {
         ExchangeSecret GetByUserAndExchange(string userId, string exchangeId);
+        IEnumerable<ExchangeSecret> GetByUser(string userId);
     }
 }

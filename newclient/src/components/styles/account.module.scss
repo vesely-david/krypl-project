@@ -1,0 +1,18 @@
+@import '../../common/common.module.scss';
+
+.api_key{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .flex{
+    h3,h6{
+      margin: 0;
+    }
+
+    h6{
+      padding-left: 0.5rem;
+      align-self: flex-end;
+    }
+  }
+}

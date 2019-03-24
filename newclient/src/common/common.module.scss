@@ -4,3 +4,18 @@ $light-grey:          rgba(0,0,0,0.1);
   max-width: 1050px;
   margin: 80px auto 0;
 }
+
+.flex{
+  display: flex;
+  align-items: center;
+}
+
+.heading_with_button{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  h2,h3{
+    margin: 0;
+  }
+}

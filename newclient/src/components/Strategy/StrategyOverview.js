@@ -54,7 +54,7 @@ const StrategyOverview = ({
       <Dimmer active={isFetching} inverted >
         <Loader />
       </Dimmer>
-      <div className={styles.strategy_heading}>
+      <div className={styles.heading_with_button}>
         <h2>{name}</h2>
         {strategyState === RUNNING && (
           <Button onClick={() => setOpened(true)}>Stop strategy</Button>

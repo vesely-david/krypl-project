@@ -14,6 +14,12 @@ namespace DataLayer.Infrastructure
         {
         }
 
+        public IEnumerable<ExchangeSecret> GetByUser(string userId)
+        {
+            return _dbContext.ExchangeSecrets
+                .Where(o => o.UserId == userId);
+        }
+
         public ExchangeSecret GetByUserAndExchange(string userId, string exchange)
         {
             return _dbContext.ExchangeSecrets

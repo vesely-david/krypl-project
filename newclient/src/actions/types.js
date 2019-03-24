@@ -1,6 +1,10 @@
 //========== USER ACTION ==========
+export const REGISTER = 'REGISTER';
 export const LOGIN = 'LOGIN';
 export const LOGOUT = 'LOGOUT';
+export const GET_API_KEYS = 'GET_API_KEYS';
+export const EDIT_API_KEY = 'EDIT_API_KEY';
+export const DELETE_API_KEY = 'DELETE_API_KEY';
 
 
 //========== ASSET ACTION ==========
@@ -11,6 +15,7 @@ export const UPDATE_PAPER_ASSETS = 'UPDATE_PAPER_ASSETS';
 //========== MARKET DATA ACTION ==========
 export const GET_MARKET_DATA = 'GET_MARKET_DATA';
 export const GET_CURRENCY_VALUES = 'GET_CURRENCY_VALUES';
+
 
 //========== OVERVIEW ACTION ==========
 export const GET_PAPER_OVERVIEW = 'GET_PAPER_OVERVIEW';
