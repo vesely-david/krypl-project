@@ -118,12 +118,12 @@ class FakeAssetManagerModal extends React.Component {
       assetValue,
       exchangeChanges,
       modalOpened,
+      isSubmitting,
     } = this.state
     const {
       color,
       marketData,
       marketDataFetching,
-      submitAssetsFetching,
     } = this.props
 
     const possibleExchanges = marketData
@@ -159,7 +159,7 @@ class FakeAssetManagerModal extends React.Component {
         <Header icon='money' content='Asset Management' />
         <Modal.Content>
           <div className='newStrategyModalContent'>
-            <Form widths='equal' loading={submitAssetsFetching}>
+            <Form widths='equal' loading={isSubmitting}>
               <Form.Group>
                 <Form.Dropdown
                   fluid

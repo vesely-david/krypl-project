@@ -23,9 +23,9 @@ class PaperContainer extends React.Component {
       overviewFetching,
       paperOverview,
       paperStrategies,
-      groupedAssets: {
+      groupedAssets:{
         groupedPaperAssets
-      }
+      },
     } = this.props;
 
     return (

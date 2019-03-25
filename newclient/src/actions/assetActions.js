@@ -1,6 +1,7 @@
 import {
   GET_ASSETS,
   UPDATE_PAPER_ASSETS,
+  UPDATE_REAL_ASSETS,
 } from './types';
 
 import {
@@ -28,11 +29,26 @@ function updatePaperAssets(assets) {
   }).catch(err => {
     console.error('updatePaperAssets');
     return false;
-    // dispatch(alertActions.error(err.message));
   })
 }
 
+function updateRealAssets(exchangeId) {
+  return dispatch => dispatch({
+    type: UPDATE_REAL_ASSETS,
+    payload: async () => {
+      await assetService.updateRealAssets(exchangeId);
+      dispatch(getAssets());
+      return true;
+    } 
+  }).catch(err => {
+    console.error('updateRealAssets');
+    return false;
+  })
+}
+
+
 export const assetActions = {
   getAssets,
-  updatePaperAssets
+  updatePaperAssets,
+  updateRealAssets,
 }

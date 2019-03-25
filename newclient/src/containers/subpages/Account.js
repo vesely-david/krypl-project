@@ -4,7 +4,6 @@ import { bindActionCreators } from 'redux'
 import { userActions } from '../../actions/userActions'
 import { Segment, Button } from 'semantic-ui-react';
 import ApiKey from '../../components/Account/ApiKey';
-import EditApiKeyModal from '../modals/EditApiKeyModal';
 import { getExchangesWithApiKey } from '../../selectors/userSelectors';
 import styles from '../styles/subpages.module.scss';
 
@@ -22,8 +21,6 @@ class AccountContainer extends React.Component {
       isApiKeyFetching,
     } = this.props;
 
-    debugger;
-
     return (
       <div className={styles.app}>
         <Segment loading={isAccountInfoFetching}>
@@ -34,7 +31,7 @@ class AccountContainer extends React.Component {
         </Segment>
         <Segment loading={isApiKeyFetching}>
           <div className={styles.heading_with_button}>
-            <h2>Stored API keys</h2>
+            <h2>Stored API keys - READ ONLY ONES!!!</h2>
           </div>
           {exchanges.map(o => (
             <ApiKey 

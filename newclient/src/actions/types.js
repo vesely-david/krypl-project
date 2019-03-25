@@ -10,6 +10,7 @@ export const DELETE_API_KEY = 'DELETE_API_KEY';
 //========== ASSET ACTION ==========
 export const GET_ASSETS = 'GET_ASSETS';
 export const UPDATE_PAPER_ASSETS = 'UPDATE_PAPER_ASSETS';
+export const UPDATE_REAL_ASSETS = 'UPDATE_REAL_ASSETS';
 
 
 //========== MARKET DATA ACTION ==========

@@ -28,7 +28,7 @@ const EditApiKeyModal = ({onClick, newKey = false}) => {
           primary={newKey}
           onClick={() => setModalOpen(true)}
         >
-          {newKey ? 'Add': 'Edit'}
+          New
         </Button>
       } 
       closeIcon 

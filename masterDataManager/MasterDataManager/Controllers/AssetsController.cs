@@ -21,29 +21,17 @@ namespace MasterDataManager.Controllers
     [Route("assets")]
     public class AssetsController : Controller
     {
-        private UserManager<User> _userManager;
-        private IConfiguration _configuration;
-        private IStrategyRepository _strategyRepository;
         private IAssetRepository _assetRepository;
-        private ITradeRepository _tradeRepository;
-        private IExchangeObjectFactory _exchangeFactory;
+        private IExchangeSecretRepository _exchangeSecretRepository;
         private IMapper _mapper;
 
         public AssetsController(
-            UserManager<User> userManager,
-            IConfiguration configuration,
-            IStrategyRepository strategyRepository,
             IAssetRepository assetRepository,
-            ITradeRepository tradeRepository,
-            IExchangeObjectFactory exchangeFactory,
+            IExchangeSecretRepository exchangeSecretRepository,
             IMapper mapper)
         {
-            _userManager = userManager;
-            _configuration = configuration;
-            _strategyRepository = strategyRepository;
             _assetRepository = assetRepository;
-            _tradeRepository = tradeRepository;
-            _exchangeFactory = exchangeFactory;
+            _exchangeSecretRepository = exchangeSecretRepository;
             _mapper = mapper;
         }
 
@@ -57,11 +45,15 @@ namespace MasterDataManager.Controllers
             return Ok(assets.Select(_mapper.Map<JsonAssetModel>));
         }
 
-        //[HttpPost("real")]
-        //public IActionResult UpdateRealAssets()
-        //{
-        //    return Ok();
-        //}
+        [HttpPost("real/{exchangeId}")]
+        public IActionResult UpdateRealAssets(string exchnageId)
+        {
+            var userId = HttpContext.User.GetUserId();
+            if (string.IsNullOrEmpty(userId)) return BadRequest("User not found");
+
+            var secret = _
+            return Ok();
+        }
 
         [HttpPost("paper")]
         public IActionResult UpdatePaperAssets([FromBody]IEnumerable<JsonAssetModel> assetModels)

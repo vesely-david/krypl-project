@@ -123,12 +123,14 @@ class NewStrategyModal extends React.Component {
     } = this.state
     const {
       allAssets,
-    } = this.props
+    } = this.props;
 
-    const possibleExchanges = Object.keys(allAssets).map(o => ({ key: o, text: o, value: o }));
-    const possibleCurrencies = selectedExchange ? 
-      allAssets[selectedExchange].filter(o => o.freeAssetId && o.free > 0).map(o => ({ key: o.currency, text: o.currency, value: o.freeAssetId })) : [];
-    const assetOrigin = selectedExchange ? allAssets[selectedExchange].find(o => o.freeAssetId === selectedCurrency) : null;
+    const originAssets = selectedExchange ? allAssets.find(o => o.exchange === selectedExchange).assets : null;
+
+    const possibleExchanges = allAssets.map(o => ({ key: o.exchange, text: o.exchange, value: o.exchange }));
+    const possibleCurrencies = originAssets ? originAssets.filter(o => o.freeAssetId && o.free > 0)
+      .map(o => ({ key: o.currency, text: o.currency, value: o.freeAssetId })) : [];
+    const assetOrigin = originAssets ? originAssets.find(o => o.freeAssetId === selectedCurrency) : null;
     const assetValueError = (assetOrigin && assetOrigin.free < assetValue) || (assetValueTouched && !assetValue);
     return (
       <Modal
