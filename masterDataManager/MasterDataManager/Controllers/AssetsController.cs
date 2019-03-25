@@ -23,15 +23,18 @@ namespace MasterDataManager.Controllers
     {
         private IAssetRepository _assetRepository;
         private IExchangeSecretRepository _exchangeSecretRepository;
+        private IExchangeObjectFactory _exchangeFactory;
         private IMapper _mapper;
 
         public AssetsController(
             IAssetRepository assetRepository,
             IExchangeSecretRepository exchangeSecretRepository,
+            IExchangeObjectFactory exchangeFactory,
             IMapper mapper)
         {
             _assetRepository = assetRepository;
             _exchangeSecretRepository = exchangeSecretRepository;
+            _exchangeFactory = exchangeFactory;
             _mapper = mapper;
         }
 
@@ -46,12 +49,13 @@ namespace MasterDataManager.Controllers
         }
 
         [HttpPost("real/{exchangeId}")]
-        public IActionResult UpdateRealAssets(string exchnageId)
+        public async Task<IActionResult> UpdateRealAssets(string exchangeId)
         {
             var userId = HttpContext.User.GetUserId();
             if (string.IsNullOrEmpty(userId)) return BadRequest("User not found");
 
-            var secret = _
+            var userAssets = await _exchangeFactory.GetExchange(exchangeId).GetRealBalances(userId);
+
             return Ok();
         }
 
