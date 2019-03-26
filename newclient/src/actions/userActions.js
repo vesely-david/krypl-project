@@ -23,6 +23,7 @@ function login(credentials) {
       dispatch(marketDataActions.getMarketData());
       dispatch(assetActions.getAssets());
       dispatch(marketDataActions.getCurrencyValues());
+      dispatch(getApiKeys())
       return response;
     }
   }).catch(err => {

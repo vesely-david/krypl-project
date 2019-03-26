@@ -32,7 +32,7 @@ namespace MasterDataManager.Services
 
         public async Task<List<Asset> > GetRealBalances(string userId)
         {
-            var assets = new List<Asset>(); // IResult implementation???
+            var assets = new List<Asset>(); // TODO: IResult implementation???
             var userSecret = _exchangeSecretRepository.GetByUserAndExchange(userId, _exchangeName);
             if (userSecret == null) return assets;
         
@@ -48,7 +48,11 @@ namespace MasterDataManager.Services
                     assets.Add(new Asset
                     {
                         Currency = translations[balance.asset],
-                        Amount = Decimal.Parse(balance.free) + Decimal.Parse(balance.locked)
+                        Amount = Decimal.Parse(balance.free) + Decimal.Parse(balance.locked),
+                        UserId = userId,
+                        Exchange = _exchangeName,
+                        TradingMode = TradingMode.Real,
+                        IsActive = true,
                     });
                 }
             }

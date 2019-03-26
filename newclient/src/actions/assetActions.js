@@ -13,7 +13,7 @@ function getAssets() {
     type: GET_ASSETS,
     payload: assetService.getAssets()
   }).catch(err => {
-    console.error('getPaperAssets');
+    console.error('getAssets');
     // dispatch(alertActions.error(err.message));
   })
 }

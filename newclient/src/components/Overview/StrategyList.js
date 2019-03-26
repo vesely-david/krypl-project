@@ -16,11 +16,11 @@ const StrategyList = ({
         <Table.Header>
           <Table.Row>
             <Table.HeaderCell rowSpan='2'>Name</Table.HeaderCell>
+            {/* <Table.HeaderCell rowSpan='2'>New trades</Table.HeaderCell> */}
             <Table.HeaderCell rowSpan='2'>Trades: Opened/All</Table.HeaderCell>
             <Table.HeaderCell colSpan='2'>Value</Table.HeaderCell>
             <Table.HeaderCell colSpan='2'>Profit (%)</Table.HeaderCell>
             {/* <Table.HeaderCell colSpan='2'>24h profit  (%)</Table.HeaderCell> */}
-            <Table.HeaderCell rowSpan='2'>New trades</Table.HeaderCell>
             <Table.HeaderCell rowSpan='2'>Info</Table.HeaderCell>
           </Table.Row>
           <Table.Row>

@@ -20,6 +20,9 @@ class StrategyContainer extends React.Component {
     const id = this.props.match.params.strategyId;
     if(!this.props.strategies[id]) this.props.strategyActions.getStrategy(id, this.props.match.params.tradingMode)
     this.props.strategyActions.getStrategyData(id)
+    if(this.props.strategies[id] &&  this.props.strategies[id].newTradesCount > 0){
+      this.props.strategyActions.resetTradesCount(id)
+    };
   }
 
   render () {

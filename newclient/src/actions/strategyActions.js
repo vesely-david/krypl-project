@@ -1,5 +1,6 @@
 import {
   GET_PAPER_STRATEGY,
+  GET_REAL_STRATEGY,
   GET_STRATEGY_TRADES,
   GET_STRATEGY_VALUE_HISTORY,
   STOP_STRATEGY,
@@ -10,6 +11,7 @@ import { assetActions } from '../actions/assetActions';
 
 const actionTranslator = {
   'papertesting': GET_PAPER_STRATEGY,
+  'real': GET_REAL_STRATEGY,
 }
 
 function getStrategyData(strategyId){

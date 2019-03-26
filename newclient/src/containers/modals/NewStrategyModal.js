@@ -1,5 +1,6 @@
 import React from 'react'
 import { Button, Header, Icon, Modal, Form, Message, Label } from 'semantic-ui-react'
+import styles from '../styles/modals.module.scss';
 
 class NewStrategyModal extends React.Component {
   constructor (props) {
@@ -139,7 +140,7 @@ class NewStrategyModal extends React.Component {
         onClose={() => this.cleanForm(true)}
         onOpen={this.onModalOpen}>
         <Header icon='plug' content='New Strategy' />
-        <Modal.Content className='newStrategyModalContent'>
+        <Modal.Content>
           <Form loading={this.props.registrationPending}>
             <Form.Group>
               <Form.Input
@@ -189,15 +190,16 @@ class NewStrategyModal extends React.Component {
                 disabled={assetValue === '' || assetValueError}
                 onClick={() => this.onAssetAdd(assetOrigin.currency)}
                 color='green'
-                className='modalButton'>
+                className={styles.form_button}
+              >
                 <Icon name='checkmark' size='large' />
               </Form.Button>
             </Form.Group>
           </Form>
-          <div style={{ minHeight: '30px' }}>
+          <div className={styles.assets_wrapper}>
             {strategyAssets.map(curr => {
                 return (
-                  <Label className='currencyLabel' key={curr.currency} onClick={() => this.onCurrencySelect(null, {value: curr.id})}>
+                  <Label key={curr.currency} onClick={() => this.onCurrencySelect(null, {value: curr.id})}>
                     {`${curr.currency} ${curr.amount}`}
                     <Icon name='close' onClick={(e) => {
                       e.stopPropagation();

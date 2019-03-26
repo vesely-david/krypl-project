@@ -2,6 +2,7 @@ import { createSelector } from 'reselect'
 import { getEvaluatedAssets } from './assetSelectors';
 
 export const getRawPaperStrategies = state => state.paper.strategies;
+export const getRawRealStrategies = state => state.real.strategies;
 
 
 export const getStrategyCurrentValues = createSelector([getEvaluatedAssets], (assets) => {
@@ -19,14 +20,20 @@ export const getPaperStrategies = createSelector([getRawPaperStrategies, getStra
     ({...o, currentValue: strategyValues[o.id] ? strategyValues[o.id] : {timestamp: Date.now(), usdValue: 0, btcValue: 0}}));
 })
 
-export const getAllStrategies = createSelector([getPaperStrategies], (papeStrategies) => {
+export const getRealStrategies = createSelector([getRawRealStrategies, getStrategyCurrentValues], (strategies, strategyValues) => {
+  return strategies.map(o => 
+    ({...o, currentValue: strategyValues[o.id] ? strategyValues[o.id] : {timestamp: Date.now(), usdValue: 0, btcValue: 0}}));
+})
+
+export const getAllStrategies = createSelector([getPaperStrategies, getRealStrategies], (papeStrategies, realStrategies) => {
   let paper = papeStrategies.reduce((res, val) => {
     res[val.id] = val;
     return res;
   }, {})
+  let real = realStrategies.reduce((res, val) => {
+    res[val.id] = val;
+    return res;
+  }, paper);
 
-  // let real = realStrategies.reduce((res, val) => {
-
-  // }, paper);
-  return paper;
+  return real;
 })

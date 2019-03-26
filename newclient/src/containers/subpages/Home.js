@@ -55,7 +55,7 @@ class Home extends React.Component{
               exchanges={exchanges}
             />
           </div>
-          {groupedRealAssets.length > 0 && <div className='divider' />}
+          {groupedRealAssets.length > 0 && (<div className='divider' />)}
           {groupedRealAssets.map(o => (
             <ExchangeBlock exchange={o.exchange} currencies={o.assets} key={o.exchange} />
           ))}
@@ -71,7 +71,7 @@ class Home extends React.Component{
               marketData={marketData}
             />
           </div>
-          {groupedPaperAssets.length > 0 && <div className='divider' />}
+          {groupedPaperAssets.length > 0 && (<div className='divider' />)}
           {groupedPaperAssets.map(o => (
             <ExchangeBlock exchange={o.exchange} currencies={o.assets} key={o.exchange} />
           ))}

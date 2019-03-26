@@ -12,9 +12,9 @@ namespace MasterDataManager.Services
     public class MarketDataService : IMarketDataService
     {
         private HttpClient _client;
-        private string _baseUrl = "http://marketdataprovider/business/"; //Use docker network instead
+        //private string _baseUrl = "http://marketdataprovider/business/"; //Use docker network instead
         //private string _baseUrl = "https://marketdata.kryplproject.cz/business/"; //Use docker network instead
-        //private string _baseUrl = "http://localhost:9999/business/"; //Use docker network instead
+        private string _baseUrl = "http://localhost:9999/"; //Use docker network instead
 
         public MarketDataService()
         {
@@ -42,7 +42,7 @@ namespace MasterDataManager.Services
         {
             try
             {
-                var exchangeInfo = await _client.GetStringAsync(_baseUrl + "price/" + exchange);
+                var exchangeInfo = await _client.GetStringAsync(_baseUrl + "business/price/" + exchange);
                 var template = new[] { new { currency = "", btcValue= 0m, usdValue = 0m } };
                 var currencies = JsonConvert.DeserializeAnonymousType(exchangeInfo, template);
                 return currencies.ToDictionary(o => o.currency, o => (BtcValue: o.btcValue, UsdValue: o.usdValue));
@@ -58,7 +58,7 @@ namespace MasterDataManager.Services
         {
             try
             {
-                var exchangeInfo = await _client.GetStringAsync(_baseUrl + "rate/" + exchange);
+                var exchangeInfo = await _client.GetStringAsync(_baseUrl + "business/rate/" + exchange);
                 var template = new[] { new { symbol = "", rate = 0m } };
                 var currencies = JsonConvert.DeserializeAnonymousType(exchangeInfo, template);
                 return currencies.ToDictionary(o => o.symbol, o => o.rate);

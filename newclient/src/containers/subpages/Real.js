@@ -2,32 +2,51 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { overviewActions } from '../../actions/overviewActions'
-// import StrategyPage from '../../../components/StrategyPage'
+import OverviewContainer from '../../components/Overview/OverviewContainer'
+import NewStrategyModal from '../modals/NewStrategyModal';
+import { getGroupedAssets } from '../../selectors/assetSelectors';
+import styles from '../styles/subpages.module.scss';
+import { getRealStrategies } from '../../selectors/strategySelector';
+import { getRealOverview } from '../../selectors/overviewSelectors';
 
 class RealContainer extends React.Component {
   componentDidMount () {
-    this.props.overviewActions.getPaperOverview()
-    this.props.overviewActions.getPaperStrategies()
+    this.props.overviewActions.getRealOverview();
+    this.props.overviewActions.getRealStrategies();
   }
 
   render () {
     const {
-      overviewActions:{forgetAllPaperNews, forgetPaperNews, registerPaper },
-      paper
-    } = this.props
-    return null;
-    // return (
-    //   <StrategyPage
-    //     data={paper}
-    //     actions={{
-    //       fetchStrategies: fetchPaperStrategies,
-    //       fetchOverview: fetchPaperOverview,
-    //       forgetAllNews: forgetAllPaperNews,
-    //       forgetNews: forgetPaperNews,
-    //       registerStrategy: registerPaper
-    //     }}
-    //   />
-    // )
+      overviewActions:{ registerRealStrategy },
+      registrationPending,
+      strategiesFetching,
+      overviewFetching,
+      realOverview,
+      realStrategies,
+      groupedAssets:{
+        groupedRealAssets
+      },
+    } = this.props;
+
+    return (
+      <div className={styles.app}>
+        <OverviewContainer
+          overview={realOverview}
+          registrationPending={registrationPending}
+          strategiesFetching={strategiesFetching}
+          overviewFetching={overviewFetching}
+          strategies={realStrategies}
+          forgetAllNews={() => alert('forget')}
+          addStrategyModal={(
+            <NewStrategyModal
+              registrationPending={registrationPending}
+              registerStrategy={registerRealStrategy}
+              allAssets={groupedRealAssets}
+            />
+          )}
+        />
+      </div>
+    )
   }
 }
 
@@ -38,7 +57,12 @@ const mapDispatchToProps = (dispatch) => {
 }
 
 const mapStateToProps = (state) => ({
-  paper: state.paper,
+  registrationPending: state.real.registrationPending,
+  strategiesFetching: state.real.strategiesFetching,
+  overviewFetching: state.real.overviewFetching,
+  realOverview: getRealOverview(state),
+  realStrategies: getRealStrategies(state),
+  groupedAssets: getGroupedAssets(state),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(RealContainer)

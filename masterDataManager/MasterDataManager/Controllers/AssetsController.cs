@@ -44,7 +44,7 @@ namespace MasterDataManager.Controllers
             var userId = HttpContext.User.GetUserId();
             if (string.IsNullOrEmpty(userId)) return BadRequest("User not found");
 
-            var assets = _assetRepository.GetByUserId(userId);
+            var assets = _assetRepository.GetAllByUserId(userId);
             return Ok(assets.Select(_mapper.Map<JsonAssetModel>));
         }
 
@@ -55,7 +55,28 @@ namespace MasterDataManager.Controllers
             if (string.IsNullOrEmpty(userId)) return BadRequest("User not found");
 
             var userAssets = await _exchangeFactory.GetExchange(exchangeId).GetRealBalances(userId);
+            var originalAssets = _assetRepository.GetByUserAndExchange(userId, exchangeId).Where(o => o.TradingMode == TradingMode.Real);
 
+            foreach(var asset in userAssets)
+            {
+                var reservedFromAsset = originalAssets.Where(o => o.Currency == asset.Currency && o.StrategyId != null).Sum(o => o.Amount);
+                var originalFreeAsset = originalAssets.FirstOrDefault(o => o.Currency == asset.Currency && o.StrategyId == null);
+
+                if(originalFreeAsset == null)
+                {
+                    if(asset.Amount != reservedFromAsset) // In order to NOT create empty asset
+                    {
+                        asset.Amount = asset.Amount - reservedFromAsset;
+                        _assetRepository.AddNotSave(asset);
+                    }
+                }
+                else
+                {
+                    originalFreeAsset.Amount = asset.Amount - reservedFromAsset;
+                    _assetRepository.EditNotSave(originalFreeAsset);
+                }
+            }
+            _assetRepository.Save();
             return Ok();
         }
 

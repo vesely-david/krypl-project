@@ -1,6 +1,6 @@
 import React from 'react'
 import { Button, Header, Modal, Message, Form, Icon, Label } from 'semantic-ui-react'
-
+import styles from '../styles/modals.module.scss';
 
 class FakeAssetManagerModal extends React.Component {
   constructor (props) {
@@ -134,10 +134,6 @@ class FakeAssetManagerModal extends React.Component {
         .map(o => ({ key: o.id, text: o.id, value: o.id }))
       : [];
 
-    // const origin = toSubmit.find(o => o.exchange === selectedExchange && o.currency === selectedCurrency); 
-    // const assetValueMin = origin ? origin.amount - origin.free : 0
-    // const assetValueError = assetValueMin > assetValue;
-
     return (
       <Modal
         trigger={
@@ -158,7 +154,7 @@ class FakeAssetManagerModal extends React.Component {
         >
         <Header icon='money' content='Asset Management' />
         <Modal.Content>
-          <div className='newStrategyModalContent'>
+          <div>
             <Form widths='equal' loading={isSubmitting}>
               <Form.Group>
                 <Form.Dropdown
@@ -188,7 +184,6 @@ class FakeAssetManagerModal extends React.Component {
                   type='number'
                   disabled={selectedCurrency === null}
                   fluid
-                  // error={assetValueError}
                   label={`Value`}
                   value={assetValue || ''}
                   name='assetValue'
@@ -199,15 +194,16 @@ class FakeAssetManagerModal extends React.Component {
                   onClick={this.onAssetAdd}
                   color='green'
                   width={2}
-                  className='modalButton'>
+                  className={styles.form_button}>
                   <Icon name='checkmark' size='large' />
                 </Form.Button>
               </Form.Group>
             </Form>
-            <div style={{ minHeight: '30px' }}>
+            { selectedExchange && (<h5 classNam={styles.no_margin}>Free assets</h5>)}
+            <div className={styles.assets_wrapper}>
               {toSubmit.filter(o => o.exchange === selectedExchange)
                 .map(o => (
-                  <Label className='currencyLabel' color={color} key={o.id} onClick={(e) => this.onCurrencySelect(null, {value: o.currency})}>
+                  <Label color={color} key={o.id} onClick={(e) => this.onCurrencySelect(null, {value: o.currency})}>
                     {`${o.currency} ${o.amount}`}
                     { o.free > 0 &&
                       <Icon name='close' onClick={(e) => {
@@ -219,19 +215,13 @@ class FakeAssetManagerModal extends React.Component {
                 ))}
             </div>
           </div>
-          {/* <Message
-            success={showMessage && !error}
-            error={showMessage && error}
-            hidden={!showMessage}
-            header={error ? `Insufficient funds for:\n ${error}` : 'Success'}
-          /> */}
         </Modal.Content>
         <Modal.Actions>
           <Button
             disabled={!exchangeChanges}
             onClick={this.onSubmit}
             color={color}
-            className='modalButton'>
+          >
             Submit Assets
           </Button>
         </Modal.Actions>

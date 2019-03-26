@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { Button, Header, Modal, Message, Form } from 'semantic-ui-react'
+import styles from '../styles/modals.module.scss';
 
 export default ({
   color,
@@ -43,7 +44,7 @@ export default ({
     >
       <Header icon='money' content='Asset Management' />
       <Modal.Content>
-        <div className='newStrategyModalContent'>
+        <div>
           <Form widths='equal' loading={isSubmitting}>
             <Form.Group>
               <Form.Select
@@ -59,7 +60,8 @@ export default ({
                 onClick={onMirrorClick}
                 loading={isSubmitting}
                 color='green'
-                className='modalButton'>
+                className={styles.form_button}
+              >
                 Mirror Assets
               </Form.Button>
             </Form.Group>

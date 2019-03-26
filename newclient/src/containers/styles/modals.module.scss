@@ -1,0 +1,19 @@
+@import '../../common/common.module.scss';
+
+
+.assets_wrapper{
+  min-height: 30px;
+
+  & > div{
+    margin: 2px 2px !important;
+  }
+}
+
+
+.form_button{
+  height: 38px;
+  align-self: flex-end;
+  & > button{
+    height: inherit;
+  }
+}

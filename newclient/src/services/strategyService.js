@@ -46,6 +46,7 @@ async function stopStrategy(strategyId){
   return response.data;
 }
 
+
 export const strategyService = {
   getStrategy,
   getStrategyTrades,

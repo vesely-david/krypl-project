@@ -5,6 +5,7 @@ import {
 } from '../common/tradingModes';
 
 export const getRawPaperOvervieew = state => state.paper.overview;
+export const getRawRealOvervieew = state => state.real.overview;
 
 
 export const getCurrentOverviewValues = createSelector([getEvaluatedAssets], (assets) => {
@@ -31,4 +32,8 @@ export const getCurrentOverviewValues = createSelector([getEvaluatedAssets], (as
 
 export const getPaperOverview = createSelector([getRawPaperOvervieew, getCurrentOverviewValues], (overview, currentValues) => {
   return {...overview, currentValue: currentValues.paper, reserved: currentValues.paperReserved};
+})
+
+export const getRealOverview = createSelector([getRawRealOvervieew, getCurrentOverviewValues], (overview, currentValues) => {
+  return {...overview, currentValue: currentValues.real, reserved: currentValues.realReserved};
 })
