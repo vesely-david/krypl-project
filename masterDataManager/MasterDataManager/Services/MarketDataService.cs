@@ -12,9 +12,9 @@ namespace MasterDataManager.Services
     public class MarketDataService : IMarketDataService
     {
         private HttpClient _client;
-        //private string _baseUrl = "http://marketdataprovider/"; //Use docker network instead
+        private string _baseUrl = "http://marketdataprovider/"; //Use docker network instead
         //private string _baseUrl = "https://marketdata.kryplproject.cz/"; //Use docker network instead
-        private string _baseUrl = "http://localhost:9999/"; //Use docker network instead
+        //private string _baseUrl = "http://localhost:9999/"; //Use docker network instead
 
         public MarketDataService()
         {

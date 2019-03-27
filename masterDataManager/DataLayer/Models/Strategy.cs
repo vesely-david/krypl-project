@@ -31,7 +31,7 @@ namespace DataLayer.Models
 
         public EvaluationTick GetYesterdayValue()
         {
-            return Evaluations.ElementAt(Math.Max(0, Evaluations.Count - 24));
+            return Evaluations.Any() ? Evaluations.ElementAt(Math.Max(0, Evaluations.Count - 24)) : new EvaluationTick();
         }
     }
 }
