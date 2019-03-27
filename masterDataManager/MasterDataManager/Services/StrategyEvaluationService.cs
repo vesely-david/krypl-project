@@ -35,43 +35,50 @@ namespace MasterDataManager.Services
             {
                 //https://www.stevejgordon.co.uk/asp-net-core-2-ihostedservice
                 //https://docs.microsoft.com/en-us/aspnet/core/fundamentals/hosted-services
-                using (var scope = ScopeFactory.CreateScope())
+                try
                 {
-                    var marketDataService = scope.ServiceProvider
-                        .GetRequiredService<IMarketDataService>();
-                    var currentPrices = await marketDataService.GetCurrentPrices("binance");
-
-                    var strategyRepository = scope.ServiceProvider
-                        .GetRequiredService<IStrategyRepository>();
-
-                    var assetRepository = scope.ServiceProvider
-                        .GetRequiredService<IAssetRepository>();
-
-                    var strategies = strategyRepository.GetAllForEvaluation()
-                        .Where(o => o.StrategyState != StrategyState.Stopped);
-
-                    var timeStamp = DateTime.Now;
-
-                    foreach (var strategy in strategies.Where(o => !o.IsOverview)) // Strategies
+                    using (var scope = ScopeFactory.CreateScope())
                     {
-                        var valueSum = strategy.Assets.Aggregate((btcSum: 0m, usdSum: 0m), (res, val) =>
+                        var marketDataService = scope.ServiceProvider
+                            .GetRequiredService<IMarketDataService>();
+                        var currentPrices = await marketDataService.GetCurrentPrices("binance");
+
+                        var strategyRepository = scope.ServiceProvider
+                            .GetRequiredService<IStrategyRepository>();
+
+                        var assetRepository = scope.ServiceProvider
+                            .GetRequiredService<IAssetRepository>();
+
+                        var strategies = strategyRepository.GetAllForEvaluation()
+                            .Where(o => o.StrategyState != StrategyState.Stopped);
+
+                        var timeStamp = DateTime.Now;
+
+                        foreach (var strategy in strategies.Where(o => !o.IsOverview)) // Strategies
                         {
-                            if (currentPrices.ContainsKey(val.Currency))
+                            var valueSum = strategy.Assets.Aggregate((btcSum: 0m, usdSum: 0m), (res, val) =>
                             {
-                                res.btcSum += val.Amount * currentPrices[val.Currency].BtcValue;
-                                res.usdSum += val.Amount * currentPrices[val.Currency].UsdValue;
-                            }
-                            return res;
-                        });
-                        strategy.Evaluations.Add(new EvaluationTick
-                        {
-                            TimeStamp = timeStamp,
-                            BtcValue = valueSum.btcSum,
-                            UsdValue = valueSum.usdSum
-                        });
-                        strategyRepository.EditNotSave(strategy);
+                                if (currentPrices.ContainsKey(val.Currency))
+                                {
+                                    res.btcSum += val.Amount * currentPrices[val.Currency].BtcValue;
+                                    res.usdSum += val.Amount * currentPrices[val.Currency].UsdValue;
+                                }
+                                return res;
+                            });
+                            strategy.Evaluations.Add(new EvaluationTick
+                            {
+                                TimeStamp = timeStamp,
+                                BtcValue = valueSum.btcSum,
+                                UsdValue = valueSum.usdSum
+                            });
+                            strategyRepository.EditNotSave(strategy);
+                        }
+                        strategyRepository.Save();
                     }
-                    strategyRepository.Save();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
                 }
 
                 await Task.Delay(TimeSpan.FromMinutes(5), cancellationToken);

@@ -50,9 +50,11 @@ namespace MasterDataManager
             services.AddScoped<IExchangeObjectFactory, ExchangeObjectFactory>();
             services.AddScoped<IExchangeSecretRepository, ExchangeSecretRepository>();
             services.AddScoped<IMarketDataService, MarketDataService>();
+            services.AddScoped<ITradeExecutionService, TradeExecutionService>();
             services.AddScoped<BinanceService>();
 
             services.AddSingleton<IHostedService, StrategyEvaluationService>();
+            services.AddSingleton<IHostedService, PaperTradeCheckerService>();
             services.AddSingleton<IMailingService, MailingService>();
 
             services.AddSingleton(Configuration);

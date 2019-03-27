@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DataLayer.Migrations
 {
     [DbContext(typeof(MasterDataContext))]
-    [Migration("20190323203949_InitialCreate")]
+    [Migration("20190327162342_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -29,6 +29,8 @@ namespace DataLayer.Migrations
                     b.Property<string>("Exchange");
 
                     b.Property<bool>("IsActive");
+
+                    b.Property<bool>("IsReserved");
 
                     b.Property<string>("StrategyId");
 
@@ -72,9 +74,11 @@ namespace DataLayer.Migrations
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("ApiKey");
+                    b.Property<string>("ApiKey")
+                        .IsRequired();
 
-                    b.Property<string>("ApiSecret");
+                    b.Property<string>("ApiSecret")
+                        .IsRequired();
 
                     b.Property<string>("ExchangeId")
                         .IsRequired();
@@ -142,6 +146,8 @@ namespace DataLayer.Migrations
 
                     b.Property<decimal>("QuantityRemaining");
 
+                    b.Property<string>("ReservedAssetId");
+
                     b.Property<string>("StrategyId");
 
                     b.Property<decimal>("Total");
@@ -149,6 +155,8 @@ namespace DataLayer.Migrations
                     b.Property<int>("TradeState");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ReservedAssetId");
 
                     b.HasIndex("StrategyId");
 
@@ -347,6 +355,10 @@ namespace DataLayer.Migrations
 
             modelBuilder.Entity("DataLayer.Models.Trade", b =>
                 {
+                    b.HasOne("DataLayer.Models.Asset", "ReservedAsset")
+                        .WithMany()
+                        .HasForeignKey("ReservedAssetId");
+
                     b.HasOne("DataLayer.Models.Strategy", "Strategy")
                         .WithMany("Trades")
                         .HasForeignKey("StrategyId");

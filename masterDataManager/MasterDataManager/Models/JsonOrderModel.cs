@@ -8,7 +8,6 @@ namespace MasterDataManager.Models
         public string exchange { get; set; }
         public string symbol { get; set; }
         public decimal amount { get; set; }
-        public OrderType type { get; set; }
         public decimal? rate { get; set; }
     }
 }

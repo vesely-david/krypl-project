@@ -108,8 +108,9 @@ namespace MasterDataManager.Controllers
             foreach(var asset in strategyAssets)
             {
                 var assetOrigin = userAssets.FirstOrDefault(o =>
+                    !o.IsReserved && o.IsActive &&
                     o.Currency == asset.Currency && o.TradingMode == asset.TradingMode &&
-                    o.IsActive && string.IsNullOrEmpty(o.StrategyId) && o.Exchange == asset.Exchange);
+                    string.IsNullOrEmpty(o.StrategyId) && o.Exchange == asset.Exchange);
 
                 if(assetOrigin != null)
                 {

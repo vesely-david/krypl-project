@@ -20,7 +20,11 @@ namespace MarketDataProvider.Services
             while (!cancellationToken.IsCancellationRequested)
             {
                 //LATER Cancellation token aftex 15sec or so?
-                await _priceProvider.UpdatePrices(cancellationToken);
+                try
+                {
+                    await _priceProvider.UpdatePrices(cancellationToken);
+                } catch(Exception e) { Console.WriteLine(e.InnerException); }
+
                 await Task.Delay(TimeSpan.FromMinutes(1), cancellationToken);
             }
         }

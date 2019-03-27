@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using DataLayer.Enums;
 
 namespace DataLayer.Infrastructure
 {
@@ -21,6 +22,12 @@ namespace DataLayer.Infrastructure
         public IEnumerable<Trade> GetByStrategyId(string strategyId)
         {
             return _dbContext.Trades.Where(o => o.StrategyId == strategyId);
+        }
+
+        public IEnumerable<Trade> GetOpenedPaperTrades()
+        {
+            return _dbContext.Trades.Include(o => o.Strategy).Include(o => o.ReservedAsset)
+                .Where(o => o.Strategy.TradingMode == TradingMode.PaperTesting && o.TradeState == TradeState.New);
         }
     }
 }

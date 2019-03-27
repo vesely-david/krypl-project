@@ -13,6 +13,7 @@ namespace DataLayer.Models
         public string UserId { get; set; }
         public string StrategyId { get; set; }
         public bool IsActive { get; set; } //Asset is inactivate after strategy is stopped
+        public bool IsReserved { get; set; } //Asset is reserved while waiting for trade to be fulfilled
 
         public virtual User User { get; set; }
         public virtual Strategy Strategy { get; set; }
@@ -25,6 +26,7 @@ namespace DataLayer.Models
             Exchange = asset.Exchange;
             UserId = asset.UserId;
             IsActive = true;
+            IsReserved = asset.IsReserved;
         }
         public Asset()
         {

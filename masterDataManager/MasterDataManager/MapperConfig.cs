@@ -20,6 +20,8 @@ namespace MasterDataManager
 
             CreateMap<JsonExchangeSecretModel, ExchangeSecret>();
 
+            CreateMap<TradeOrder, JsonTradeModel>().ReverseMap();
+
             CreateMap<Trade, JsonTradeModel>()
                 .ForMember(dest => dest.type,
                     opts => opts.MapFrom(src => src.OrderType))

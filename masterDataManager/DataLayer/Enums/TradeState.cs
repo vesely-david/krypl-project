@@ -7,10 +7,8 @@ namespace DataLayer.Enums
     public enum TradeState
     {
         New,
-        NewCancelPending,
         NewCanceled,
         PartialyFulfilled,
-        PartialyFulfilledCancelPending,
         PartialyFulfilledCanceled,
         Fulfilled
     }

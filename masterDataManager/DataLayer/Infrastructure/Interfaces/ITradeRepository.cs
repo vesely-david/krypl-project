@@ -9,5 +9,6 @@ namespace DataLayer.Infrastructure.Interfaces
     {
         Trade GetByUuid(string uuid);
         IEnumerable<Trade> GetByStrategyId(string strategyId);
+        IEnumerable<Trade> GetOpenedPaperTrades();
     }
 }

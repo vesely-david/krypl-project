@@ -157,8 +157,8 @@ namespace DataLayer.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(nullable: false),
-                    ApiKey = table.Column<string>(nullable: true),
-                    ApiSecret = table.Column<string>(nullable: true),
+                    ApiKey = table.Column<string>(nullable: false),
+                    ApiSecret = table.Column<string>(nullable: false),
                     ExchangeId = table.Column<string>(nullable: false),
                     UserId = table.Column<string>(nullable: false)
                 },
@@ -211,7 +211,8 @@ namespace DataLayer.Migrations
                     Exchange = table.Column<string>(nullable: true),
                     UserId = table.Column<string>(nullable: true),
                     StrategyId = table.Column<string>(nullable: true),
-                    IsActive = table.Column<bool>(nullable: false)
+                    IsActive = table.Column<bool>(nullable: false),
+                    IsReserved = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -266,12 +267,19 @@ namespace DataLayer.Migrations
                     Price = table.Column<decimal>(nullable: false),
                     Total = table.Column<decimal>(nullable: false),
                     OrderType = table.Column<int>(nullable: false),
+                    ReservedAssetId = table.Column<string>(nullable: true),
                     MarketId = table.Column<string>(nullable: true),
                     StrategyId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Trades", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Trades_Assets_ReservedAssetId",
+                        column: x => x.ReservedAssetId,
+                        principalTable: "Assets",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Trades_Strategies_StrategyId",
                         column: x => x.StrategyId,
@@ -343,6 +351,11 @@ namespace DataLayer.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Trades_ReservedAssetId",
+                table: "Trades",
+                column: "ReservedAssetId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Trades_StrategyId",
                 table: "Trades",
                 column: "StrategyId");
@@ -366,9 +379,6 @@ namespace DataLayer.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Assets");
-
-            migrationBuilder.DropTable(
                 name: "Evaluations");
 
             migrationBuilder.DropTable(
@@ -379,6 +389,9 @@ namespace DataLayer.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "Assets");
 
             migrationBuilder.DropTable(
                 name: "Strategies");
