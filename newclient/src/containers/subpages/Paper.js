@@ -26,8 +26,11 @@ class PaperContainer extends React.Component {
       groupedAssets:{
         groupedPaperAssets
       },
+      historyFetching,
+      history,
     } = this.props;
-
+    console.log(historyFetching);
+    console.log(history);
     return (
       <div className={styles.app}>
         <OverviewContainer
@@ -36,6 +39,8 @@ class PaperContainer extends React.Component {
           strategiesFetching={strategiesFetching}
           overviewFetching={overviewFetching}
           strategies={paperStrategies}
+          history={history}
+          historyFetching={historyFetching}
           forgetAllNews={() => alert('forget')}
           addStrategyModal={(
             <NewStrategyModal
@@ -60,6 +65,8 @@ const mapStateToProps = (state) => ({
   registrationPending: state.paper.registrationPending,
   strategiesFetching: state.paper.strategiesFetching,
   overviewFetching: state.paper.overviewFetching,
+  historyFetching: state.paper.historyFetching,
+  history: state.paper.history,
   paperOverview: getPaperOverview(state),
   paperStrategies: getPaperStrategies(state),
   groupedAssets: getGroupedAssets(state),

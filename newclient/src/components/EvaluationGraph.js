@@ -23,7 +23,7 @@ const yScaleF = data => scaleLinear({
   nice: true
 });
 
-export default function Theshold({ width, height, margin= {top: 25, left: 75, right:25, bottom:25}, history, hovered }) {
+export default function Theshold({ width, height, margin= {top: 25, left: 55, right:25, bottom:25}, history, hovered }) {
   const xMax = width - margin.left - margin.right;
   const yMax = height - margin.top - margin.bottom;
 
@@ -38,7 +38,7 @@ export default function Theshold({ width, height, margin= {top: 25, left: 75, ri
           <GridColumns scale={xScale} width={xMax} height={yMax} stroke="#e0e0e0" />
           <line x1={xMax} x2={xMax} y1={0} y2={yMax} stroke="#e0e0e0" />
           <AxisBottom top={yMax} scale={xScale} numTicks={width > 520 ? 10 : 5} />
-          <AxisLeft scale={yScale} />
+          {height > 100 ? (<AxisLeft scale={yScale}/>) : (<AxisLeft scale={yScale} numTicks={3}/>)}
           <LinePath
             data={history}
             curve={curveBasis}

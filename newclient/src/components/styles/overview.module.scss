@@ -4,3 +4,10 @@
   position: absolute;
   left: 6px;
 }
+
+.overview_info_row{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 1rem 0;
+}

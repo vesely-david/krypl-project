@@ -14,5 +14,6 @@ namespace MasterDataManager.Models
         public string strategyId { get; set; }
         public string tradingMode { get; set; }
         public bool isActive { get; set; }
+        public bool isReserved { get; set; }
     }
 }

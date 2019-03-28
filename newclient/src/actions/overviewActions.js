@@ -5,15 +5,22 @@ import {
   GET_REAL_OVERVIEW,
   GET_REAL_STRATEGIES,
   REGISTER_REAL_STRATEGY,
+  GET_PAPER_VALUE_HISTORY,
+  GET_REAL_VALUE_HISTORY,
 } from './types';
 
 import { overviewService } from '../services/overviewService';
 import { assetActions } from './assetActions';
+import { strategyService } from '../services/strategyService';
 
 function getPaperOverview(){
   return dispatch => dispatch({
     type: GET_PAPER_OVERVIEW,
-    payload: overviewService.getPaperOverview()
+    payload: async () => {
+      const result = await overviewService.getPaperOverview();
+      const overviewStrategyId = result.overviewStrategyId;
+      dispatch(getOverviewHistory(GET_PAPER_VALUE_HISTORY, overviewStrategyId))
+    }
   }).catch(err => {
     // dispatch(alertActions.error(err));
   })
@@ -57,7 +64,11 @@ function registerPaperStrategy(name, exchange, description, assets){
 function getRealOverview(){
   return dispatch => dispatch({
     type: GET_REAL_OVERVIEW,
-    payload: overviewService.getRealOverview()
+    payload: async () => {
+      const result = await overviewService.getRealOverview();
+      const overviewStrategyId = result.overviewStrategyId;
+      dispatch(getOverviewHistory(GET_REAL_VALUE_HISTORY, overviewStrategyId))
+    }
   }).catch(err => {
     // dispatch(alertActions.error(err));
   })
@@ -92,6 +103,15 @@ function registerRealStrategy(name, exchange, description, assets){
       dispatch(assetActions.getAssets());
       return res;
     }
+  }).catch(err => {
+    // dispatch(alertActions.error(err));
+  })
+}
+
+function getOverviewHistory(type, strategyId){
+  return dispatch => dispatch({
+    type: type,
+    payload: strategyService.getStrategyHistory(strategyId)
   }).catch(err => {
     // dispatch(alertActions.error(err));
   })

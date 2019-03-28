@@ -9,16 +9,20 @@ const OverviewContainer = ({
   overviewFetching,
   strategies,
   forgetAllNews,
+  history,
+  historyFetching,
   addStrategyModal,
 }) => {
   return (
-    <div className='strategyPage'>
+    <div>
       <SmallOverview
         isFetching={overviewFetching}
         registrationPending={registrationPending}
         overview={overview}
         forgetAllNews={forgetAllNews}
         addStrategyModal={addStrategyModal}
+        history={history}
+        historyFetching={historyFetching}
       />
       <StrategyList
         strategies={strategies}

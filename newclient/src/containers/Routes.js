@@ -8,6 +8,7 @@ import Back from './subpages/Back';
 import Login from './subpages/Login';
 import Strategy from './subpages/Strategy';
 import Account from './subpages/Account';
+import ApiInfo from './subpages/ApiInfo';
 
 
 const PublicRoute = ({ component: Component, authenticated, ...rest }) => {
@@ -35,6 +36,7 @@ class Routes extends Component {
         <PrivateRoute path="/backtesting" exact authenticated={isAuthenticated} component={Back}/>
         <PrivateRoute path="/:tradingMode/:strategyId" exact authenticated={isAuthenticated} component={Strategy}/>
         <PrivateRoute path="/account" exact authenticated={isAuthenticated} component={Account}/>
+        <PrivateRoute path="/documentation" exact authenticated={isAuthenticated} component={ApiInfo}/>
         {/* <PublicRoute path='/login' authenticated={isAuthenticated} component={Login} /> */}
       </Switch>
     );

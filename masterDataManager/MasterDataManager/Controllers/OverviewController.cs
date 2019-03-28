@@ -67,6 +67,7 @@ namespace MasterDataManager.Controllers
                 allCount = strategies.Count(),
                 //currentValue = _mapper.Map<JsonEvaluationModel>(currentValue),
                 yesterdayValue = _mapper.Map<JsonEvaluationModel>(overview.GetYesterdayValue()),
+                overviewStrategyId = overview.Id,
                 //reserved = _mapper.Map<JsonEvaluationModel>(reserved),
             });
         }

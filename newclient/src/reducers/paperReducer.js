@@ -2,6 +2,7 @@ import {
   GET_PAPER_OVERVIEW,
   GET_PAPER_STRATEGIES,
   GET_PAPER_STRATEGY,
+  GET_PAPER_VALUE_HISTORY,
 } from '../actions/types';
 
 
@@ -64,7 +65,24 @@ const ACTION_HANDLERS = {
     ...state, 
     overviewFetching: false
   }),
+//====================================================       
+  [`${GET_PAPER_VALUE_HISTORY}_PENDING`] : (state, action) => {
+    return {...state, historyFetching: true}
+  },
+  [`${GET_PAPER_VALUE_HISTORY}_FULFILLED`] : (state, action) => {
+    return {
+      ...state,
+      history: action.payload,
+      historyFetching: false
+    }
+  },
+  [`${GET_PAPER_VALUE_HISTORY}_REJECTED`] : (state, action) => ({
+    ...state, 
+    historyFetching: false
+  }),  
 }
+
+
 
 const initialState = {
   strategies: [],
@@ -73,6 +91,8 @@ const initialState = {
   registrationPending: false,
   strategiesFetching: false,
   overviewFetching: false,
+  historyFetching: false,
+  history: [],
 }
 
 export default function paperReducer (state = initialState, action) {

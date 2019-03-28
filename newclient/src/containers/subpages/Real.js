@@ -26,6 +26,8 @@ class RealContainer extends React.Component {
       groupedAssets:{
         groupedRealAssets
       },
+      history,
+      historyFetching
     } = this.props;
 
     return (
@@ -37,6 +39,8 @@ class RealContainer extends React.Component {
           overviewFetching={overviewFetching}
           strategies={realStrategies}
           forgetAllNews={() => alert('forget')}
+          history={history}
+          historyFetching={historyFetching}          
           addStrategyModal={(
             <NewStrategyModal
               registrationPending={registrationPending}
@@ -60,6 +64,8 @@ const mapStateToProps = (state) => ({
   registrationPending: state.real.registrationPending,
   strategiesFetching: state.real.strategiesFetching,
   overviewFetching: state.real.overviewFetching,
+  historyFetching: state.real.historyFetching,
+  history: state.real.history,  
   realOverview: getRealOverview(state),
   realStrategies: getRealStrategies(state),
   groupedAssets: getGroupedAssets(state),

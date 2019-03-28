@@ -7,6 +7,20 @@ import { getCurrencyValues } from './marketDataSelectors';
 
 export const getRawAssets = state => state.assets.assets;
 
+export const mergedRawAssets = createSelector([getRawAssets], assets => {
+  const regular = assets.filter(o => !o.isReserved);
+  assets.filter(o => o.isReserved).forEach(o => {
+    const origin = regular.find(p => 
+      p.exchange === o.exchange && p.currency === o.currency && 
+      o.tradingMode === p.tradingMode && o.strategyId === p.strategyId &&
+      o.isActive === p.isActive
+    );
+    if(origin) origin.amount += o.amount;
+    else regular.push(o);
+  })
+  return regular;
+})
+
 export const getAllActiveAssets = createSelector([getRawAssets], (rawAssets) => {
   return rawAssets.filter(o => o.isActive);
 })
@@ -65,7 +79,10 @@ export const getAssets = createSelector([getAllActiveAssets], (assets) => {
   return result;
 })
 
-export const getAllAssets = createSelector([getRawAssets], (assets) => {
+
+
+export const getAllAssets = createSelector([mergedRawAssets], (assets) => {
+
   const result =  assets.map(val => {
     // if(val.tradingMode === PAPER_TESTING){
       return {...val}

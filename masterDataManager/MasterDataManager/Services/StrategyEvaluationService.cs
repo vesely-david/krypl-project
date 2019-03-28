@@ -49,6 +49,8 @@ namespace MasterDataManager.Services
                         var assetRepository = scope.ServiceProvider
                             .GetRequiredService<IAssetRepository>();
 
+                        var allAssets = assetRepository.List();
+
                         var strategies = strategyRepository.GetAllForEvaluation()
                             .Where(o => o.StrategyState != StrategyState.Stopped);
 
@@ -57,6 +59,28 @@ namespace MasterDataManager.Services
                         foreach (var strategy in strategies.Where(o => !o.IsOverview)) // Strategies
                         {
                             var valueSum = strategy.Assets.Aggregate((btcSum: 0m, usdSum: 0m), (res, val) =>
+                            {
+                                if (currentPrices.ContainsKey(val.Currency))
+                                {
+                                    res.btcSum += val.Amount * currentPrices[val.Currency].BtcValue;
+                                    res.usdSum += val.Amount * currentPrices[val.Currency].UsdValue;
+                                }
+                                return res;
+                            });
+                            strategy.Evaluations.Add(new EvaluationTick
+                            {
+                                TimeStamp = timeStamp,
+                                BtcValue = valueSum.btcSum,
+                                UsdValue = valueSum.usdSum
+                            });
+                            strategyRepository.EditNotSave(strategy);
+                        }
+                        foreach (var strategy in strategies.Where(o => o.IsOverview)) // Strategies
+                        {
+
+                            var valueSum = allAssets.Where(o => 
+                                o.TradingMode == strategy.TradingMode && o.UserId == strategy.UserId && o.IsActive)
+                                .Aggregate((btcSum: 0m, usdSum: 0m), (res, val) =>
                             {
                                 if (currentPrices.ContainsKey(val.Currency))
                                 {
