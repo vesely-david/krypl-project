@@ -92,7 +92,7 @@ namespace MasterDataManager.Controllers
 
 
         [HttpPost("{strategyId}/stop")]
-        public async Task<IActionResult> StopStrategy(string strategyId) //TODO: Release deposits;
+        public async Task<IActionResult> StopStrategy(string strategyId)
         {
             var userId = HttpContext.User.GetUserId();
             if (string.IsNullOrEmpty(userId)) return BadRequest("User not found");

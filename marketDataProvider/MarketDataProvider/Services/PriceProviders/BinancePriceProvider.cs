@@ -16,7 +16,7 @@ namespace MarketDataProvider.Services.PriceProviders
 
 
         private IMarketDataMemCacheService _marketDataMemCacheService;
-        private Dictionary<string, decimal> _marketRates;
+        private Dictionary<string, decimal> _marketRates = new Dictionary<string, decimal>();
         //private ExchangeMemCache _exchangeInfo;
 
         public BinancePriceProvider(IMarketDataMemCacheService marketDataMemCacheService)
