@@ -1,7 +1,8 @@
-import sys
-paths = ["D:\\GitProjects\\krypl-project", "D:\\GitProjects\\krypl-project\\notebooks"]
-for p in paths:
-    sys.path.append(p)
+import imp
+import os
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+util = imp.load_source('addToPath', os.path.join(current_dir, 'addToPath.py'))
 
 from trading.exchange import BackTestExchange
 from trading.dataManager import CurrencyDataManager

@@ -1,3 +1,9 @@
+import imp
+import os
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+util = imp.load_source('addToPath', os.path.join(current_dir, 'addToPath.py'))
+
 # Basics
 import numpy as np
 import pandas as pd
