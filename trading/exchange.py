@@ -1,5 +1,6 @@
 from trading.money.transaction import Transaction
 from trading.money.contract import Contract
+from copy import deepcopy
 
 
 class Exchange:
@@ -19,6 +20,7 @@ class BackTestExchange(Exchange):
         self.transactions = []
         self.fee = fee
         self.time_server = time_server
+        self.wallet_history = {}
 
     def buy(self, pair, amount, price):
         transaction = Transaction.buy(pair, self.time_server.time, amount, price, self._absolute_fee(amount, price))
@@ -28,6 +30,7 @@ class BackTestExchange(Exchange):
         self.transactions.append(transaction)
         self._add(Transaction.gained_contract(transaction))
         self._subtract(subtracted)
+        self.wallet_history[transaction['timestamp']] = deepcopy(self.wallet)
 
     def sell(self, pair, amount, price):
         transaction = Transaction.sell(pair, self.time_server.time, amount, price, self._absolute_fee(amount, price))
@@ -38,6 +41,7 @@ class BackTestExchange(Exchange):
         gained = Contract.sub(Transaction.gained_contract(transaction), transaction['fee'])
         self._add(gained)
         self._subtract(subtracted)
+        self.wallet_history[transaction['timestamp']] = deepcopy(self.wallet)
 
     def balance(self, contract_name):
         return self.wallet.get(contract_name, 0.)
