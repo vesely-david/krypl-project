@@ -32,7 +32,7 @@ def read_table(table, db=None, conn=None):
 
 
 def load_trading_data(db, table, from_date=None, to_date=None, period=None):
-    data = read_table(table, db).sort_values('timestamp')
+    data = read_table(table, db)
     data = reset_index_hard(data)
     if from_date is not None:
         data = data.query(f"date >= '{from_date}'")
@@ -41,7 +41,7 @@ def load_trading_data(db, table, from_date=None, to_date=None, period=None):
     if period is not None:
         data = data.query(f"period == '{period}'")
 
-    return reset_index_hard(data)
+    return reset_index_hard(data.sort_values('timestamp'))
 
 
 def divide_train_and_test(data, train_ratio=0.7):

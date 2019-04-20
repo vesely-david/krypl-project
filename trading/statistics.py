@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from trading.money.transaction import Transaction
 
 
@@ -6,11 +7,14 @@ class Statistics:
     def __init__(self, contract_name, start_amount):
         self.contract_name = contract_name
         self.transactions = []
+        self.open_transactions = []
+        self.close_transactions = []
         self.start_amount = start_amount
 
         self.current_amount = start_amount
         self.last_amount = start_amount
         self.max_amount = start_amount
+
         self.num_of_trades = 0
         self.num_of_wins = 0
         self.total_won = 0
@@ -20,7 +24,7 @@ class Statistics:
 
     def report(self):
         cols = ['startAmount', 'numberOfTrades', 'totalProfit', 'avgProfit', 'winPercentage', 'avgWinTrade',
-                'avgLossTrade', 'profitFactor', 'maxDrawdown']
+                'avgLossTrade', 'profitFactor', 'maxDrawdown', 'avgTimeToClose', 'minTimeToClose', 'maxTimeToClose']
         stats = pd.DataFrame({
             'startAmount': [self.start_amount],
             'numberOfTrades': [self.number_of_trades()],
@@ -30,7 +34,10 @@ class Statistics:
             'avgWinTrade': [self.avg_win_trade()],
             'avgLossTrade': [self.avg_loss_trade()],
             'profitFactor': [self.profit_factor()],
-            'maxDrawdown': [self.max_drawdown()]
+            'maxDrawdown': [self.max_drawdown()],
+            'avgTimeToClose': [self.avg_time_to_close()],
+            'minTimeToClose': [self.min_time_to_close()],
+            'maxTimeToClose': [self.max_time_to_close()]
         })[cols].transpose()
         stats.columns = [self.contract_name]
         return stats
@@ -48,11 +55,13 @@ class Statistics:
 
     def open_trade(self, transaction):
         self.transactions.append(transaction)
+        self.open_transactions.append(transaction)
         self.last_amount = self.current_amount
         self.current_amount += self._contract_amount(transaction) - self._fee(transaction)
 
     def close_trade(self, transaction):
         self.transactions.append(transaction)
+        self.close_transactions.append(transaction)
         self.current_amount += self._contract_amount(transaction) - self._fee(transaction)
         self.num_of_trades += 1
         self._update_max_amount()
@@ -84,7 +93,30 @@ class Statistics:
     def max_drawdown(self):
         return self.max_drawdown_var
 
+    def min_time_to_close(self):
+        if self.number_of_trades() == 0:
+            return np.nan
+        diffs = self._get_time_diffs()
+        return min(diffs)
+
+    def max_time_to_close(self):
+        if self.number_of_trades() == 0:
+            return np.nan
+        diffs = self._get_time_diffs()
+        return max(diffs)
+
+    def avg_time_to_close(self):
+        if self.number_of_trades() == 0:
+            return np.nan
+        diffs = self._get_time_diffs()
+        return np.mean(diffs)
+
     # ------------ Private --------------------------
+    def _get_time_diffs(self):
+        open_times = np.array([t['timestamp'] for t in  self.open_transactions])
+        close_times = np.array([t['timestamp'] for t in  self.close_transactions])
+        return close_times - open_times
+
     def _fee(self, transaction):
         pair = transaction['pair']
         if pair['priceContract'] == self.contract_name:

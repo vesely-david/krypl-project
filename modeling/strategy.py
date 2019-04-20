@@ -115,3 +115,4 @@ class MLStrategy(Strategy):
 
         if self.opened:
             self.sell_all(price)
+

@@ -49,3 +49,56 @@ def supres(ltp, n):
             support.append([k, ltp[k]])
 
     return np.array(support), np.array(resistance)
+
+
+from modeling.strategy import Strategy
+
+
+class BaseStrategy(Strategy):
+    def __init__(self, exchange, data_manager, contract_pair, willing_loss, target_profit, target_return):
+        super().__init__(exchange, data_manager, contract_pair, 0, willing_loss, target_profit)
+        self.history_len = 2
+        self.target_return = target_return
+        
+    
+    def target_price(self, price_bought):
+        fee_part = (1 - self.exchange.fee) ** 2
+        price_part = (self.target_profit + 1) * price_bought
+        return price_part / fee_part
+    
+    
+    def trade(self):
+        hold = 0
+        last_return = 0
+        price_contract = self.contract_pair['priceContract']
+        while self.data_manager.has_tick():
+            history, price = self.data_manager.tick(self.history_len)
+
+            if history.shape[0] < 2:
+                continue
+            
+            sup_f, sup_s = history[:, 0]
+            _return = (sup_s / sup_f) - 1
+            if not self.opened and _return != last_return and _return <= self.target_return:
+                try:
+                    self.trade_size = self.exchange.balance(price_contract) * 0.98
+                    self.buy(price)
+                    price_bought = price
+                    hold = 0
+                    last_return =_return
+                except ValueError:
+                    break
+                    
+            elif self.opened and self.is_risky(price_bought, price):
+                self.sell_all(price)
+                hold = 0
+            elif self.opened and self.is_target_satisfied(price_bought, price):
+                self.sell_all(self.target_price(price_bought))
+                hold = 0
+
+            if self.opened:
+                hold += 1
+            
+
+        if self.opened:
+            self.sell_all(price)      

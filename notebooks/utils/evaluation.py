@@ -97,7 +97,7 @@ def clf_report(clf, data_root):
 def hold_strategy_stats(data_manager_p, contract_pair, wallet):
     data_manager = deepcopy(data_manager_p)
     exchange = BackTestExchange(data_manager, deepcopy(wallet), 0.0025)
-    strategy = HoldStrategy(exchange, data_manager, contract_pair, 100)
+    strategy = HoldStrategy(exchange, data_manager, contract_pair, 10)
     strategy.trade()
     return strategy.stats(contract_pair['priceContract']).report()
 

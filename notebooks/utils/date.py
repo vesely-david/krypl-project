@@ -26,3 +26,5 @@ def str_time_to_timestamp(*str_times):
     def f(x):
         return str_time_to_datetime(x).timestamp()
     return resolve_multiple(str_times, f)
+
+
