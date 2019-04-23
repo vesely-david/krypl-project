@@ -20,7 +20,7 @@ class BackTestExchange(Exchange):
         self.transactions = []
         self.fee = fee
         self.time_server = time_server
-        self.wallet_history = {}
+        self.wallet_history = {0: deepcopy(wallet)}
 
     def buy(self, pair, amount, price):
         transaction = Transaction.buy(pair, self.time_server.time, amount, price, self._absolute_fee(amount, price))
