@@ -1,4 +1,5 @@
 import numpy as np
+from modeling.strategy import Strategy
 
 
 def supres(ltp, n):
@@ -51,54 +52,59 @@ def supres(ltp, n):
     return np.array(support), np.array(resistance)
 
 
-from modeling.strategy import Strategy
-
-
 class BaseStrategy(Strategy):
-    def __init__(self, exchange, data_manager, contract_pair, willing_loss, target_profit, target_return):
-        super().__init__(exchange, data_manager, contract_pair, 0, willing_loss, target_profit)
+    def __init__(self, exchange, data_manager, contract_pair, willing_loss, target_return, profit_targets):
+        super().__init__(exchange, data_manager, contract_pair, 0, willing_loss, 0)
         self.history_len = 2
         self.target_return = target_return
-        
-    
-    def target_price(self, price_bought):
+        self.origin_willing_loss = willing_loss
+        self.profit_targets = profit_targets
+        self.number_of_targets = len(profit_targets)
+        self.start_trade_size = self.exchange.balance(self.contract_pair['priceContract']) * 0.9
+        self.trade_size = self.start_trade_size
+
+    def target_price(self, target, price_bought):
         fee_part = (1 - self.exchange.fee) ** 2
-        price_part = (self.target_profit + 1) * price_bought
+        price_part = (target + 1) * price_bought
         return price_part / fee_part
-    
-    
+
     def trade(self):
-        hold = 0
+        target_i = 0
         last_return = 0
         price_contract = self.contract_pair['priceContract']
         while self.data_manager.has_tick():
             history, price = self.data_manager.tick(self.history_len)
 
-            if history.shape[0] < 2:
+            if history.shape[0] < self.history_len:
                 continue
-            
+
             sup_f, sup_s = history[:, 0]
             _return = (sup_s / sup_f) - 1
             if not self.opened and _return != last_return and _return <= self.target_return:
-                try:
-                    self.trade_size = self.exchange.balance(price_contract) * 0.98
-                    self.buy(price)
-                    price_bought = price
-                    hold = 0
-                    last_return =_return
-                except ValueError:
-                    break
-                    
-            elif self.opened and self.is_risky(price_bought, price):
-                self.sell_all(price)
-                hold = 0
-            elif self.opened and self.is_target_satisfied(price_bought, price):
-                self.sell_all(self.target_price(price_bought))
-                hold = 0
+                self.trade_size = self.start_trade_size
+                target_i = 0
+                self.willing_loss = self.origin_willing_loss
+                self.target_profit = self.profit_targets[target_i]
+                for i in range(2):
+                    try:
+                        self.buy(price)
+                        break
+                    except ValueError:
+                        self.trade_size = self.exchange.balance(price_contract) * 0.9
+                price_bought = price
+                last_return = _return
 
-            if self.opened:
-                hold += 1
-            
+            elif self.opened and self.is_risky(price_bought, price):
+                t_price = self.target_price(-self.willing_loss, price_bought)
+                self.sell_all(t_price)
+            elif self.opened and self.is_target_satisfied(price_bought, price):
+                target_i += 1
+                if target_i < self.number_of_targets:
+                    self.target_profit = self.profit_targets[target_i]
+                    self.willing_loss = -self.profit_targets[target_i - 1]
+                else:
+                    t_price = self.target_price(self.target_profit, price_bought)
+                    self.sell_all(t_price)
 
         if self.opened:
-            self.sell_all(price)      
+            self.sell_all(price)
