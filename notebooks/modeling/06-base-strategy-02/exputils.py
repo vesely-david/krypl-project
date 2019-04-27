@@ -19,6 +19,10 @@ def read_test(pair, _dir):
     return read_data(pair, _dir, '2018-01-01', '2019-04-01')
 
 
+def read_all(pair, _dir):
+    return read_data(pair, _dir, '2016-01-01', '2019-04-01')
+
+
 def run_parallel(f, args, n_process=10):
     results = []
     with Pool(processes=n_process) as p:
