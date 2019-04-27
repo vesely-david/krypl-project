@@ -17,7 +17,8 @@ namespace MarketDataProvider.Services
         {
             _marketDataDict = new Dictionary<string, PriceProvider>
             {
-                { "binance", new BinancePriceProvider(marketDataMemCacheService) }
+                { "binance", new BinancePriceProvider(marketDataMemCacheService) },
+                { "poloniex", new PoloniexPriceProvider(marketDataMemCacheService) },
             };
         }
 

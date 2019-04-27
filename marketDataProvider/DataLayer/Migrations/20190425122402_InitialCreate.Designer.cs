@@ -10,7 +10,7 @@ using System;
 namespace DataLayer.Migrations
 {
     [DbContext(typeof(MarketDataContext))]
-    [Migration("20190216185933_InitialCreate")]
+    [Migration("20190425122402_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

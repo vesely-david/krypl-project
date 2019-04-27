@@ -47,7 +47,7 @@ namespace MasterDataManager.Services
             };
             soldAsset.Amount -= order.Amount;
             _assetRepository.AddNotSave(reserverAsset);
-            if (soldAsset.Amount == 0) _assetRepository.DeleteNotSave(soldAsset);
+            if (soldAsset.Amount < 0.00000001m) _assetRepository.DeleteNotSave(soldAsset);
             else _assetRepository.EditNotSave(soldAsset);
             var quantity = orderType == OrderType.Buy ? order.Amount / order.Rate.Value : order.Amount;
             var trade = new Trade
@@ -93,7 +93,7 @@ namespace MasterDataManager.Services
             }
             else
             {
-                boughtCoinAsset.Amount += trade.Quantity;
+                boughtCoinAsset.Amount += trade.OrderType == OrderType.Buy ? trade.Quantity : trade.Total;
                 _assetRepository.EditNotSave(boughtCoinAsset);
             }
             trade.Closed = DateTime.Now;
@@ -112,12 +112,33 @@ namespace MasterDataManager.Services
         {
             var trade = _tradeRepository.GetById(tradeId);
             if (trade == null) return new Result(false, "Trade not found");
+            var reservedAsset = _assetRepository.GetById(trade.ReservedAssetId);
+            var strategyAssets = _assetRepository.GetByStrategyId(trade.StrategyId);
             if(trade.TradeState == TradeState.New || trade.TradeState == TradeState.PartialyFulfilled)
             {
                 trade.TradeState = trade.TradeState == TradeState.New ? TradeState.NewCanceled : TradeState.PartialyFulfilledCanceled;
+                trade.Closed = DateTime.Now;
+                var originAsset = strategyAssets.FirstOrDefault(o =>
+                    !o.IsReserved && o.Exchange == reservedAsset.Exchange &&
+                    o.Currency == reservedAsset.Currency);
+                if(originAsset == null)
+                {
+                    reservedAsset.IsReserved = false;
+                    _assetRepository.EditNotSave(reservedAsset);
+                }
+                else
+                {
+                    originAsset.Amount += reservedAsset.Amount;
+                    _assetRepository.EditNotSave(originAsset);
+                    _assetRepository.DeleteNotSave(reservedAsset);
+                }
+
                 _tradeRepository.Edit(trade);
+                _assetRepository.Save();
+                return new Result(true, trade.Id);
             }
-            return new Result(true, trade.Id);
+            return new Result(false, "Fulfilled or canceled already");
+
         }
     }
 }

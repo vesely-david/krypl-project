@@ -35,7 +35,7 @@ class AccountContainer extends React.Component {
           </div>
           {exchanges.map(o => (
             <ApiKey 
-              key={o.id} 
+              key={o.exchangeId} 
               {...o}
               onDelete={userActions.deleteApiKey}
               onEdit={userActions.editApiKey}

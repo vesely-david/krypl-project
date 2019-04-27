@@ -127,7 +127,6 @@ class NewStrategyModal extends React.Component {
     } = this.props;
 
     const originAssets = selectedExchange ? allAssets.find(o => o.exchange === selectedExchange).assets : null;
-
     const possibleExchanges = allAssets.map(o => ({ key: o.exchange, text: o.exchange, value: o.exchange }));
     const possibleCurrencies = originAssets ? originAssets.filter(o => o.freeAssetId && o.free > 0)
       .map(o => ({ key: o.currency, text: o.currency, value: o.freeAssetId })) : [];

@@ -127,5 +127,14 @@ namespace MasterDataManager.Controllers
         //{
         //    return Ok();
         //}
+
+
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("{strategyId}")]
+        public IActionResult GetAssets(string strategyId)
+        {
+            return Ok(_assetRepository.GetByStrategyId(strategyId));
+        }
     }
 }

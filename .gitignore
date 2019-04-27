@@ -108,3 +108,7 @@ calculator/static
 
 database/Database.db
 masterDataManager/MasterDataManager/Database/Database.db
+
+strategies/*/node_modules
+
+utils/importers/*/node_modules

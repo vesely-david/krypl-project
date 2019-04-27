@@ -106,7 +106,7 @@ const StrategyOverview = ({
       <h3>{`Strategy assets${strategyState === RUNNING ? '' : ' at the end'}`}</h3>
       <div>
         {strategyAssets.map(curr => (
-          <Label className='currencyLabel' key={curr.id}>
+          <Label className={styles.currencyLabel} key={curr.id}>
             {`${curr.currency} ${curr.amount}`}
           </Label>
         ))}

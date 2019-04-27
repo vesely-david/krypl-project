@@ -68,6 +68,13 @@ namespace MasterDataManager.Controllers
             return Ok(_tradeRepository.GetById(id));
         }
 
+        [HttpGet]
+        [Route("{strategyId}/trades")]
+        public IActionResult GetTrades(string strategyId)
+        {
+            return Ok(_tradeRepository.GetByStrategyId(strategyId));
+        }
+
         [HttpDelete]
         [Route("{id}")]
         public IActionResult CancelTrade(string id)

@@ -29,8 +29,6 @@ class PaperContainer extends React.Component {
       historyFetching,
       history,
     } = this.props;
-    console.log(historyFetching);
-    console.log(history);
     return (
       <div className={styles.app}>
         <OverviewContainer

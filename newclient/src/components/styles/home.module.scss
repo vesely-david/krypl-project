@@ -3,9 +3,14 @@
 .exchange_block{
   .asset_wrapper{
     display: flex;
+    flex-wrap: wrap;
     justify-content: flex-start;
     // grid-auto-flow: column;
     // grid-auto-columns: 100px;
+
+    & > div {
+      margin-bottom: 10px;
+    }
 
     & > div:not(:last-child){
       padding-right: 1rem;

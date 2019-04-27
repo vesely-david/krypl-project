@@ -9,6 +9,7 @@ using DataLayer.Models;
 using Newtonsoft.Json;
 using MarketDataProvider.Services.Models;
 using System.Net.Http;
+using Newtonsoft.Json.Linq;
 
 namespace MarketDataProvider.Controllers
 {
@@ -120,6 +121,111 @@ namespace MarketDataProvider.Controllers
                 });
             }
             _exchangeMarketRepository.Save();
+
+            return Ok(errors);
+        }
+
+
+        [HttpPost]
+        [Route("seedPoloniex")]
+        public async Task<IActionResult> SeedPoloniex()
+        {
+            var coinMarketCapData = _httpClient.GetStringAsync("https://api.coinmarketcap.com/v2/listings/");
+            var poloniexInfo = _httpClient.GetStringAsync("https://poloniex.com/public?command=returnTicker");
+            var poloniexCurrencies = _httpClient.GetStringAsync("https://poloniex.com/public?command=returnCurrencies");
+
+
+            await Task.WhenAll(poloniexInfo, coinMarketCapData, poloniexCurrencies);
+
+            var pCurrencies = JObject.Parse(poloniexCurrencies.Result);
+            var dbCurrencies= _currencyRepository.List();
+
+            //var poloniex = new Exchange
+            //{
+            //    Id = "poloniex",
+            //    Web = "www.poloniex.com",
+            //    Name = "Poloniex",
+            //    ProvidesFullHistoryData = true,
+            //};
+
+            var pol = _repo.List().FirstOrDefault(o => o.Id == "poloniex");
+
+            //_repo.Add(poloniex);
+
+            var cmcTemplate = new { data = new[] { new { name = "", symbol = "" } } };
+            var cmcData = JsonConvert.DeserializeAnonymousType(coinMarketCapData.Result, cmcTemplate).data;
+
+            foreach (var p in pCurrencies){
+
+                var x = (bool)p.Value["disabled"];
+
+
+                var propertyName = p.Key;
+                if ((bool)p.Value["disabled"] == true || (bool)p.Value["delisted"] == true) continue;
+                var originalCurrency = dbCurrencies.FirstOrDefault(o => o.Id == propertyName);
+                if(originalCurrency == null)
+                {
+                    var cmcMatch = cmcData.FirstOrDefault(o => o.symbol == propertyName);
+
+                    _currencyRepository.Add(new Currency
+                    {
+                        Id = propertyName,
+                        Name = cmcMatch == null ? propertyName : cmcMatch.name,
+                    });
+                }
+                //_exchangeCurrencyRepository.Add(new ExchangeCurrency
+                //{
+                //    Id = "poloniex_" + propertyName,
+                //    CurrencyId = propertyName,
+                //    ExchangeId = "poloniex",
+                //    CurrencyExchangeId = propertyName,
+                //});
+            }
+
+            var poloniexData = JObject.Parse(poloniexInfo.Result);
+            var dbSymbols = _marketRepository.List();
+            var errors = new List<string>();
+            var exchangeMarkets = _exchangeMarketRepository.List();
+            var asf = 0;
+            foreach (var symbol in poloniexData)
+            {
+
+                var marketName = symbol.Key;
+                var coins = marketName.Split('_');
+                var originalMarket = dbSymbols.FirstOrDefault(o => o.Id == marketName);
+
+                if (exchangeMarkets.FirstOrDefault(o => o.Id == "poloniex_" + marketName) == null)
+                {
+                    try
+                    {
+                        pol.ExchangeMarkets.Add(new ExchangeMarket
+                        {
+                            Exchange = pol,
+                            Id = pol.Id + "_" + marketName,
+                            MarketExchangeId = marketName,
+                            Market = originalMarket ?? new Market
+                            {
+                                Id = marketName,
+                                MarketCurrencyId = coins[0].Trim().ToUpper(),
+                                CurrencyId = coins[1].Trim().ToUpper(),
+                            }
+                        });
+                        _repo.Edit(pol);
+                    }
+                    catch { }
+                    errors.Add(marketName);
+
+
+                    //_exchangeMarketRepository.Add(new ExchangeMarket
+                    //{
+                    //    Id = pol.Id + "_" + originalMarket.Id,
+                    //    MarketExchangeId = originalMarket.Id,
+                    //    ExchangeId = pol.Id,
+                    //    MarketId = originalMarket.Id
+                    //});
+                }
+
+            }
 
             return Ok(errors);
         }

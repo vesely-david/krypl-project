@@ -17,6 +17,9 @@ if(env === 'development'){
   document.marketApi = 'http://marketData.kryplproject.cz';
 }
 
+document.marketApi = 'http://marketData.kryplproject.cz';
+
+
 console.log(process.env.NODE_ENV);
 
 ReactDOM.render(
