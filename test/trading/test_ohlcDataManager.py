@@ -1,6 +1,5 @@
 from unittest import TestCase
 import pandas as pd
-import numpy as np
 from trading.dataManager import OhlcDataManager
 
 
@@ -30,9 +29,10 @@ class TestOhlcDataManager(TestCase):
                 expected_histories.append(x)
         expected_histories
 
+        expected_times = [round(i*0.25, 2) for i in range(len(vals) * 4)]
         for i in range(len(vals) * 4):
+            self.assertEqual(expected_times[i], manager.time)
             h0, p0 = manager.tick(2)
-            print(manager.time)
             self.assertEqual(expected_prices[i], p0)
             self.assertEqual(expected_histories[i], h0.tolist())
 

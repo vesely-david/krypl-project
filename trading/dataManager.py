@@ -30,24 +30,21 @@ class OhlcDataManager(DataManager):
     def __init__(self, prices, data):
         price_cols = ['open', 'low', 'high', 'close']
         self.prices = prices[price_cols].values
-        self.maxTime = self.prices.shape[0]
+        self.maxTime = len(self.prices)
         self.data = data.values
         self.time = 0
         self.inner_time = 0
 
     def tick(self, history_len):
-        if not self.has_tick():
-            return None, None
         time_i = int(self.time)
-        price = self.prices[time_i, self.inner_time]
+        price = self.prices[time_i][self.inner_time]
         first = time_i - history_len if time_i - history_len > 0 else 0
-        history = self.data[first:time_i, :]
+        history = self.data[first:time_i]
         self.inner_time += 1
         if self.inner_time == 4:
             self.inner_time = 0
-            self.time = round(self.time + 0.6, 1)
 
-        self.time = round(self.time + 0.1, 1)
+        self.time = self.time + 0.25
         return history, price
 
     def has_tick(self):
