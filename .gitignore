@@ -108,3 +108,5 @@ calculator/static
 
 # data
 *.tsv
+*.pkl
+
