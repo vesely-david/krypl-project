@@ -75,7 +75,8 @@ namespace MasterDataManager.Controllers
 
             //await _mailingService.SendEmailVerification("h.kirchner@seznam.cz", "test");
 
-            return Ok();
+            if (result.Succeeded) return Ok();
+            return BadRequest(result.Errors);
         }
 
         //[AllowAnonymous]

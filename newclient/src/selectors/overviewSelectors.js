@@ -4,8 +4,9 @@ import {
   PAPER_TESTING
 } from '../common/tradingModes';
 
-export const getRawPaperOvervieew = state => state.paper.overview;
-export const getRawRealOvervieew = state => state.real.overview;
+export const getRawPaperOverview = state => state.paper.overview;
+export const getRawRealOverview = state => state.real.overview;
+export const getRawBackOverview = state => state.back.overview;
 
 
 export const getCurrentOverviewValues = createSelector([getEvaluatedAssets], (assets) => {
@@ -30,10 +31,11 @@ export const getCurrentOverviewValues = createSelector([getEvaluatedAssets], (as
   })
 })
 
-export const getPaperOverview = createSelector([getRawPaperOvervieew, getCurrentOverviewValues], (overview, currentValues) => {
+export const getPaperOverview = createSelector([getRawPaperOverview, getCurrentOverviewValues], (overview, currentValues) => {
   return {...overview, currentValue: currentValues.paper, reserved: currentValues.paperReserved};
 })
 
-export const getRealOverview = createSelector([getRawRealOvervieew, getCurrentOverviewValues], (overview, currentValues) => {
+export const getRealOverview = createSelector([getRawRealOverview, getCurrentOverviewValues], (overview, currentValues) => {
   return {...overview, currentValue: currentValues.real, reserved: currentValues.realReserved};
 })
+

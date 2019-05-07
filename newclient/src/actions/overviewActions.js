@@ -5,6 +5,9 @@ import {
   GET_REAL_OVERVIEW,
   GET_REAL_STRATEGIES,
   REGISTER_REAL_STRATEGY,
+  GET_BACK_OVERVIEW,
+  GET_BACK_STRATEGIES,
+  REGISTER_BACK_STRATEGY,  
   GET_PAPER_VALUE_HISTORY,
   GET_REAL_VALUE_HISTORY,
 } from './types';
@@ -20,6 +23,7 @@ function getPaperOverview(){
       const result = await overviewService.getPaperOverview();
       const overviewStrategyId = result.overviewStrategyId;
       dispatch(getOverviewHistory(GET_PAPER_VALUE_HISTORY, overviewStrategyId))
+      return result;
     }
   }).catch(err => {
     // dispatch(alertActions.error(err));
@@ -60,7 +64,6 @@ function registerPaperStrategy(name, exchange, description, assets){
   })
 }
 
-
 function getRealOverview(){
   return dispatch => dispatch({
     type: GET_REAL_OVERVIEW,
@@ -68,6 +71,7 @@ function getRealOverview(){
       const result = await overviewService.getRealOverview();
       const overviewStrategyId = result.overviewStrategyId;
       dispatch(getOverviewHistory(GET_REAL_VALUE_HISTORY, overviewStrategyId))
+      return result;
     }
   }).catch(err => {
     // dispatch(alertActions.error(err));
@@ -117,11 +121,61 @@ function getOverviewHistory(type, strategyId){
   })
 }
 
+function getBacktestOverview(){
+  return dispatch => dispatch({
+    type: GET_BACK_OVERVIEW,
+    payload: async () => {
+       const result = await overviewService.getBacktestOverview();
+       return result;
+    }
+  }).catch(err => {
+    // dispatch(alertActions.error(err));
+  })
+}
+
+function getBacktestStrategies(){
+  return dispatch => dispatch({
+    type: GET_BACK_STRATEGIES,
+    payload: async () =>{
+      const res = await overviewService.getBacktestStrategies();
+      return{
+        strategies: res.strategies,
+        pagination:{
+          page: res.page,
+          perPage: res.perPage,
+          total: res.count,
+        },
+      }
+    }
+  }).catch(err => {
+    // dispatch(alertActions.error(err));
+  })
+}
+
+function registerBacktestStrategy(name, exchange, description, assets){
+  return dispatch => dispatch({
+    type: REGISTER_BACK_STRATEGY,
+    payload: async () => {
+      const res = await overviewService.registerBacktestStrategy(name, exchange, description, assets);
+      dispatch(getBacktestOverview());
+      dispatch(getBacktestStrategies());
+      return res;
+    }
+  }).catch(err => {
+    // dispatch(alertActions.error(err));
+  })
+}
+
 export const overviewActions = {
   getPaperOverview,
-  getPaperStrategies,
-  registerPaperStrategy,
   getRealOverview,
-  getRealStrategies,
+  getBacktestOverview,
+
+  registerPaperStrategy,
   registerRealStrategy,
+  registerBacktestStrategy,
+
+  getRealStrategies,
+  getPaperStrategies,  
+  getBacktestStrategies,
 }

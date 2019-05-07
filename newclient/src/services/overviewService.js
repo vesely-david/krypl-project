@@ -1,16 +1,19 @@
 import axios from 'axios';
 import{
   PAPER_TESTING,
-  REAL
+  REAL,
+  BACK_TESTING,
 } from '../common/tradingModes';
 
 
 const getPaperOverview = () => get(`${document.masterApi}/strategies/papertesting/overview`);
 const getRealOverview = () => get(`${document.masterApi}/strategies/real/overview`);
+const getBacktestOverview = () => get(`${document.masterApi}/strategies/backtesting/overview`);
 
 
 const getPaperStrategies = () => get(`${document.masterApi}/strategies/papertesting`);
 const getRealStrategies = () => get(`${document.masterApi}/strategies/real`);
+const getBacktestStrategies = () => get(`${document.masterApi}/strategies/backtesting`);
 
 
 const registerPaperStrategy = (name, exchange, description, assets) => 
@@ -26,9 +29,18 @@ const registerRealStrategy = (name, exchange, description, assets) =>
     name,
     exchange,
     description,
-    tradingMode: REAL,
+    tradingMode: BACK_TESTING,
     assets,
   })  
+
+const registerBacktestStrategy = (name, exchange, description, assets) => 
+  post(`${document.masterApi}/strategies`, {
+    name,
+    exchange,
+    description,
+    tradingMode: REAL,
+    assets,
+  })    
 
 async function get(url){
   const response = await axios.get(url, {
@@ -58,4 +70,8 @@ export const overviewService = {
   getRealOverview,
   getRealStrategies,
   registerRealStrategy,
+
+  getBacktestStrategies,
+  registerBacktestStrategy,
+  getBacktestOverview,
 }

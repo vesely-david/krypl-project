@@ -1,11 +1,13 @@
 import React from 'react'
 import StrategyRow from './StrategyRow'
+import StrategyBacktestRow from './StrategyBacktestRow';
 import { Table, Icon, Dimmer, Loader, Segment } from 'semantic-ui-react'
 
 const StrategyList = ({
   strategies,
   forgetNews,
   isFetching,
+  isBacktesting,
 }) => {
   return (
     <Segment className='strategyList'>
@@ -34,7 +36,11 @@ const StrategyList = ({
         </Table.Header>
         <Table.Body>
           {(!isFetching && strategies && strategies.length > 0) &&
-            strategies.map(o => <StrategyRow key={o.id} {...o} forgetNews={forgetNews} />)}
+            strategies.map(o => isBacktesting ? (
+              <StrategyBacktestRow key={o.id} {...o} forgetNews={forgetNews} />
+            ) : (
+              <StrategyRow key={o.id} {...o} forgetNews={forgetNews} />
+            ))}
         </Table.Body>
       </Table>
     </Segment>

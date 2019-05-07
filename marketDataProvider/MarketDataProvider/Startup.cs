@@ -39,6 +39,8 @@ namespace MarketDataProvider
             services.AddScoped<IExchangeMarketRepository, ExchangeMarketRepository>();
             services.AddSingleton<IMarketDataMemCacheService, MarketDataMemCacheService>();
             services.AddSingleton<PriceService>();
+            services.AddSingleton<HistoryPriceService>();
+            services.AddSingleton<MarketDataService>();
             services.AddSingleton<IHostedService, DataRefreshService>();
 
             services.AddCors();

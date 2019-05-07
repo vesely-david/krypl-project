@@ -8,6 +8,8 @@
   <ItemGroup>
     <Folder Include="wwwroot\" />
     <Folder Include="Database\" />
+    <Folder Include="Services\MarketDataProviders\" />
+    <Folder Include="Services\HistoryPriceProviders\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -30,6 +32,9 @@
     <Compile Remove="Migrations\20180513093146_InitialCreate.Designer.cs" />
     <Compile Remove="Migrations\20180513093146_InitialCreate.cs" />
     <Compile Remove="Migrations\MarketDataContextModelSnapshot.cs" />
+    <Compile Remove="Services\MarketDataProviders\marketCalTitle.cs" />
+    <Compile Remove="Services\MarketDataProviders\MarketCalTitle.cs" />
+    <Compile Remove="Services\HistoryDataMemCache.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Database\MarketsDatabase.db" />

@@ -5,6 +5,7 @@ import marketDataReducer from './marketDataReducer';
 import paperReducer from './paperReducer';
 import realReducer from './realReducer';
 import strategyReducer from './strategyReducer';
+import backReducer from './backReducer';
 
 
 export default combineReducers({
@@ -14,4 +15,5 @@ export default combineReducers({
   marketData: marketDataReducer,
   paper: paperReducer,
   real: realReducer,
+  back: backReducer,
 });

@@ -19,6 +19,7 @@ namespace MarketDataProvider.Services.PriceProviders
         public abstract decimal? GetRate(string market, string currency);
         public abstract IEnumerable<object> GetValues();
         public abstract IEnumerable<object> GetRates();
+        public abstract Task<Models.OrderBook> GetOrderBook(string market);
         public abstract string GetUrl(OrderType orderType, string market, string currency, decimal amount);
     }
 }

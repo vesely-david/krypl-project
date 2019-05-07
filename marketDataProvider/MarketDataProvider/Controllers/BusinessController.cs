@@ -19,13 +19,16 @@ namespace MarketDataProvider.Controllers
     {
         private IMarketDataMemCacheService _marketDataService;
         private PriceService _priceService;
+        private HistoryPriceService _historyPriceService;
 
         public BusinessController(
             IMarketDataMemCacheService memCacheService,
-            PriceService priceService)
+            PriceService priceService,
+            HistoryPriceService historyPriceService)
         {
             _marketDataService = memCacheService;
             _priceService = priceService;
+            _historyPriceService = historyPriceService;
         }
 
         [HttpGet]
@@ -42,9 +45,9 @@ namespace MarketDataProvider.Controllers
         [Route("price")]
         public IActionResult GetAllPrices()
         {
-            var prices = _priceService.GetExchange("binance")?.GetValues(); //TODO: All exchanges
-            if (prices == null) return BadRequest("Not found");
-            return Ok(new { binance = prices });
+            var binancePrices = _priceService.GetExchange("binance")?.GetValues();
+            var poloniexPrices = _priceService.GetExchange("poloniex")?.GetValues();
+            return Ok(new { binance = binancePrices, poloniex = poloniexPrices });
         }
 
 
@@ -55,6 +58,32 @@ namespace MarketDataProvider.Controllers
             var prices = _priceService.GetExchange(exchange)?.GetRates();
             if (prices == null) return BadRequest("Not found");
             return Ok(prices);
+        }
+
+        [HttpGet]
+        [Route("orderbook/{exchange}/{market}")]
+        public async Task<IActionResult> GetOrderBook(string exchange, string market)
+        {
+            var exchangeObj = _priceService.GetExchange(exchange);
+            if(exchangeObj == null) return BadRequest("Exchange Not found");
+            var orderBook = await exchangeObj.GetOrderBook(market);
+            if (orderBook == null) return BadRequest("Not found");
+            return Ok(orderBook);
+        }
+
+
+        [HttpGet]
+        [Route("rate/{exchange}/{market}_{currency}/{timestamp}")]
+        public async Task<IActionResult> GetHistoryRate(string exchange, string market, string currency, long timestamp)
+        {
+            var exchangeObj = _historyPriceService.GetExchange(exchange);
+            if(exchangeObj != null)
+            {
+                var result = await exchangeObj.GetHistoryRate(market, currency, timestamp);
+                if (result == null) return BadRequest();
+                return Ok(result);
+            }
+            return BadRequest("Not found");
         }
 
         [HttpGet]

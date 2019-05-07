@@ -104,5 +104,10 @@ namespace MarketDataProvider.Services.PriceProviders
             return result;
 
         }
+
+        public override Task<OrderBook> GetOrderBook(string market)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

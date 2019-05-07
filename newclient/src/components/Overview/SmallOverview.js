@@ -10,7 +10,7 @@ import {
 
 import styles from '../styles/overview.module.scss';
 
-const StrategyList = ({
+const SmallOverview = ({
   overview: {
     allCount = 0,
     runningCount = 0,
@@ -89,7 +89,7 @@ const StrategyList = ({
     )
 }
 
-StrategyList.propTypes = {
+SmallOverview.propTypes = {
   overviewObject: PropTypes.object,
   forgetAllNews: PropTypes.func,
   isFetching: PropTypes.bool,
@@ -97,4 +97,4 @@ StrategyList.propTypes = {
   registerStrategy: PropTypes.func,
 }
 
-export default StrategyList
+export default SmallOverview

@@ -33,7 +33,7 @@ class Header extends React.Component{
             <React.Fragment>
               <Menu.Item as={NavLink} to='/real' key='realLink' activeClassName={styles.active_navlink} name='real'/>
               <Menu.Item as={NavLink} to='/papertesting' key='paperLink' activeClassName={styles.active_navlink} name='paper'/>
-              {/* <Menu.Item as={NavLink} to='/backtesting' key='backtestLink' activeClassName={styles.active_navlink} name='backtest'/> */}
+              <Menu.Item as={NavLink} to='/backtesting' key='backtestLink' activeClassName={styles.active_navlink} name='backtest'/>
               <Menu.Menu key='righSection' position='right'>
               <Menu.Item as={NavLink} to='/documentation' key='documentation' activeClassName={styles.active_navlink} name='documentation'/>
                 <Menu.Item as={NavLink} to='/account' key='account' activeClassName={styles.active_navlink} name='account'/>

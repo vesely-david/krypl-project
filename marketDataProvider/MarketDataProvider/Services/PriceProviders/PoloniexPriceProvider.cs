@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using DataLayer.Services.Interfaces;
 using MarketDataProvider.Enums;
-using MarketDataProvider.Services.Models;
 using Microsoft.AspNetCore.WebUtilities;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -13,12 +12,11 @@ namespace MarketDataProvider.Services.PriceProviders
 {
     public class PoloniexPriceProvider : PriceProvider
     {
-        private string _exchangeName = "binance";
+        private string _exchangeName = "poloniex";
 
 
         private IMarketDataMemCacheService _marketDataMemCacheService;
         private Dictionary<string, decimal> _marketRates = new Dictionary<string, decimal>();
-        //private ExchangeMemCache _exchangeInfo;
 
         public PoloniexPriceProvider(IMarketDataMemCacheService marketDataMemCacheService)
            : base()
@@ -43,9 +41,9 @@ namespace MarketDataProvider.Services.PriceProviders
 
         public override async Task UpdatePrices()
         {
-            var binancePrices = await _client.GetStringAsync("https://poloniex.com/public?command=returnTicker");
+            var poloniexPrices = await _client.GetStringAsync("https://poloniex.com/public?command=returnTicker");
 
-            var ticks  = JObject.Parse(binancePrices);
+            var ticks  = JObject.Parse(poloniexPrices);
             foreach(var pair in ticks)
             {
                 try
@@ -111,7 +109,23 @@ namespace MarketDataProvider.Services.PriceProviders
                     }
                 }).Select(o => new { o.currency, o.Item2.btcValue, o.Item2.usdValue });
             return result;
+        }
 
+        public override async Task<Models.OrderBook> GetOrderBook(string market)
+        {
+            var url = "https://poloniex.com/public?command=returnOrderBook&currencyPair={0}";
+
+            var rawOrderBook = await _client.GetStringAsync(String.Format(url, market));
+            //var test2 = JsonConvert.DeserializeObject<List<BinanceTick>>(binancePrices);
+            var orderBook = JObject.Parse(rawOrderBook);
+            var asks = orderBook.SelectToken("asks").ToObject(typeof(List<List<decimal>>));
+            var bids = orderBook.SelectToken("bids").ToObject(typeof(List<List<decimal>>));
+
+            return new Models.OrderBook
+            {
+                Asks = ((List<List<decimal>>)asks).Select(o => new Models.OrderBookTuple(o.ElementAt(0), o.ElementAt(1))).ToList(),
+                Bids = ((List<List<decimal>>)bids).Select(o => new Models.OrderBookTuple(o.ElementAt(0), o.ElementAt(1))).ToList()
+            };
         }
     }
 }

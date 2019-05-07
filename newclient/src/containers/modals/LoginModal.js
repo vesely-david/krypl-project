@@ -12,6 +12,7 @@ const LoginModal = ({loginAction}) => {
     setLoginFetching(true);
     const result = await loginAction(credentials);
     setLoginFetching(false);
+    debugger;
     if(result) setModalOpen(false); 
     else setLoginError(true);
   }
