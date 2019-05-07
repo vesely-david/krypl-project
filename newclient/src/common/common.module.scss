@@ -27,3 +27,17 @@ $light-grey:          rgba(0,0,0,0.1);
 .evaluation_graph{
   position: relative;
 }
+
+
+.paddingLeft{
+  padding-left: 10px;
+}
+
+.notRequired{
+  padding-left: 10px;
+  color: rgba(37, 37, 37, 0.712);
+  &::before{
+    content: "*";
+    color: rgba(255, 0, 0, 0.712)
+  }
+}
