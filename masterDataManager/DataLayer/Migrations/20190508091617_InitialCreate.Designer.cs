@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DataLayer.Migrations
 {
     [DbContext(typeof(MasterDataContext))]
-    [Migration("20190327162342_InitialCreate")]
+    [Migration("20190508091617_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

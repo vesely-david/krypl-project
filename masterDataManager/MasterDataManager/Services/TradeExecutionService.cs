@@ -27,9 +27,27 @@ namespace MasterDataManager.Services
             _marketDataService = marketDataService;
         }
 
-        //public Result PutTradeForCurrentPrice()
-
         public Result PutOrder(TradeOrder order, string strategyId, OrderType orderType)
+        {
+            var strategy = _strategyRepository.GetById(strategyId);
+            if(strategy.TradingMode == TradingMode.Real)
+            {
+
+            }
+            else if( strategy.TradingMode == TradingMode.BackTesting)
+            {
+
+            }
+            else
+            {
+
+            }
+
+            var result = PutOrderCommon(order, strategyId, orderType);
+            return result;
+        }
+
+        public Result PutOrderCommon(TradeOrder order, string strategyId, OrderType orderType)
         {
             var strategyAssets = _assetRepository.GetByStrategyId(strategyId);
             var coins = order.Symbol.Split('_');
@@ -108,7 +126,7 @@ namespace MasterDataManager.Services
             return new Result(true, "");
         }
 
-        public Result Cancel(string tradeId) //TODO Execute right away
+        public Result Cancel(string tradeId)
         {
             var trade = _tradeRepository.GetById(tradeId);
             if (trade == null) return new Result(false, "Trade not found");
@@ -138,7 +156,6 @@ namespace MasterDataManager.Services
                 return new Result(true, trade.Id);
             }
             return new Result(false, "Fulfilled or canceled already");
-
         }
     }
 }

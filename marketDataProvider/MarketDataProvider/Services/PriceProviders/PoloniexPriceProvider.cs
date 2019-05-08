@@ -57,17 +57,6 @@ namespace MarketDataProvider.Services.PriceProviders
         }
 
 
-        public override string GetUrl(OrderType orderType, string market, string currency, decimal amount)
-        {
-            var url = QueryHelpers.AddQueryString(string.Empty, new Dictionary<string, string>
-            {
-                { "side", orderType.ToString() },
-                { "amount", amount.ToString() },
-                //......
-            });
-            return url;
-        }
-
         public override IEnumerable<object> GetRates()
         {
             return _marketRates.Select(o => new { symbol = o.Key, rate = o.Value });
@@ -102,9 +91,11 @@ namespace MarketDataProvider.Services.PriceProviders
                     }
                     else //stronger coins
                     {
+                        var x = _marketRates.ContainsKey(o.Id + "_BTC");
+                        var y = _marketRates.ContainsKey("USDT_" + o.Id);
                         return (currency: o.Id, (
                             btcValue: 1 / _marketRates[o.Id + "_BTC"],
-                            usdValue: o.Id == "USDT" ? 1 : _marketRates["USDT_" + o.Id]
+                            usdValue: o.Id == "USDT" ? 1 : o.Id == "USDC" ? 1 / _marketRates["USDC_USDT"] : _marketRates["USDT_" + o.Id]
                         ));
                     }
                 }).Select(o => new { o.currency, o.Item2.btcValue, o.Item2.usdValue });

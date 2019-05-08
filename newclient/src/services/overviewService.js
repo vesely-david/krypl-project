@@ -29,7 +29,7 @@ const registerRealStrategy = (name, exchange, description, assets) =>
     name,
     exchange,
     description,
-    tradingMode: BACK_TESTING,
+    tradingMode: REAL,
     assets,
   })  
 
@@ -38,7 +38,7 @@ const registerBacktestStrategy = (name, exchange, description, assets) =>
     name,
     exchange,
     description,
-    tradingMode: REAL,
+    tradingMode: BACK_TESTING,
     assets,
   })    
 

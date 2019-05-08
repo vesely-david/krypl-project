@@ -16,6 +16,7 @@ namespace MasterDataManager.Services
         public ExchangeObjectFactory(IServiceProvider services)
         {
             _serviceDictionary.Add("binance", services.GetService<BinanceService>());
+            _serviceDictionary.Add("poloniex", services.GetService<PoloniexService>());
         }
 
         public IExchangeService GetExchange(string exchangeName)

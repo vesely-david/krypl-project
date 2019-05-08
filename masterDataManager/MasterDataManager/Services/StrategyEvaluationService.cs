@@ -75,9 +75,8 @@ namespace MasterDataManager.Services
                             });
                             strategyRepository.EditNotSave(strategy);
                         }
-                        foreach (var strategy in strategies.Where(o => o.IsOverview)) // Strategies
+                        foreach (var strategy in strategies.Where(o => o.IsOverview && o.TradingMode != TradingMode.BackTesting)) // Strategies
                         {
-
                             var valueSum = allAssets.Where(o => 
                                 o.TradingMode == strategy.TradingMode && o.UserId == strategy.UserId && o.IsActive)
                                 .Aggregate((btcSum: 0m, usdSum: 0m), (res, val) =>

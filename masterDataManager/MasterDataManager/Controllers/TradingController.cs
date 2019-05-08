@@ -56,6 +56,7 @@ namespace MasterDataManager.Controllers
             var currentRates = await _marketDataService.GetCurrentRates(orderModel.exchange);
             if (!currentRates.ContainsKey(orderModel.symbol)) return BadRequest("Cannot get current rate");
             if (!orderModel.rate.HasValue) orderModel.rate = currentRates[orderModel.symbol];
+
             var result = _tradeService.PutOrder(_mapper.Map<TradeOrder>(orderModel), strategyId, OrderType.Sell);
             if (result.Success) return Ok(result.Data);
             return BadRequest(result.Data);

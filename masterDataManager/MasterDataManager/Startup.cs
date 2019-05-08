@@ -52,6 +52,7 @@ namespace MasterDataManager
             services.AddScoped<IMarketDataService, MarketDataService>();
             services.AddScoped<ITradeExecutionService, TradeExecutionService>();
             services.AddScoped<BinanceService>();
+            services.AddScoped<PoloniexService>();
 
             services.AddSingleton<IHostedService, StrategyEvaluationService>();
             services.AddSingleton<IHostedService, PaperTradeCheckerService>();

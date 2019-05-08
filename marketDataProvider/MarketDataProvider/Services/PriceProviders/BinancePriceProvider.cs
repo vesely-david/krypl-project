@@ -50,17 +50,6 @@ namespace MarketDataProvider.Services.PriceProviders
         }
 
 
-        public override string GetUrl(OrderType orderType, string market, string currency, decimal amount)
-        {
-            var url = QueryHelpers.AddQueryString(string.Empty, new Dictionary<string, string>
-            {
-                { "side", orderType.ToString() },
-                { "amount", amount.ToString() },
-                //......
-            });
-            return url;
-        }
-
         public override IEnumerable<object> GetRates()
         {
             return _marketRates.Select(o => new { symbol= o.Key, rate = o.Value });

@@ -94,15 +94,5 @@ namespace MarketDataProvider.Controllers
             if (price == null) return BadRequest("Not found");
             return Ok(price);
         }
-
-        [HttpGet]
-        [Route("url/{exchange}/{market}_{currency}")] //Add API key and secret???
-        public IActionResult GetOrderUrl(string exchange, string market, string currency, OrderType? orderType, decimal? amount)
-        {
-            if (!orderType.HasValue || !amount.HasValue || amount.Value <= 0) return BadRequest("Incorrect parameters");
-            var url = _priceService.GetExchange(exchange)?.GetUrl(orderType.Value, market, currency, amount.Value);
-            if (url != null) return Ok(url);
-            else return BadRequest("Not found");
-        }
     }
 }

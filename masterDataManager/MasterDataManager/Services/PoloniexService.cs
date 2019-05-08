@@ -13,7 +13,7 @@ namespace MasterDataManager.Services
 {
     public class PoloniexService : IExchangeService
     {
-        private BinanceWrapper _binanceWrapper;
+        private PoloniexWrapper _poloniexWrapper;
         private UserManager<User> _userManager;
         private IMarketDataService _marketDataService;
         private IExchangeSecretRepository _exchangeSecretRepository;
@@ -24,7 +24,7 @@ namespace MasterDataManager.Services
             IMarketDataService marketDataService,
             IExchangeSecretRepository exchangeSecretRepository)
         {
-            _binanceWrapper = new BinanceWrapper();
+            _poloniexWrapper = new PoloniexWrapper();
             _userManager = userManager;
             _marketDataService = marketDataService;
             _exchangeSecretRepository = exchangeSecretRepository;
@@ -36,11 +36,10 @@ namespace MasterDataManager.Services
             var userSecret = _exchangeSecretRepository.GetByUserAndExchange(userId, _exchangeName);
             if (userSecret == null) return assets;
         
-            var binanceBalances = await _binanceWrapper.GetBalances(userSecret.ApiKey, userSecret.ApiSecret);
-            var notNullBalances = binanceBalances.Where(o => Decimal.Parse(o.free) != 0 || Decimal.Parse(o.locked) != 0);
+            var binanceBalances = await _poloniexWrapper.GetBalances(userSecret.ApiKey, userSecret.ApiSecret);
 
             var translations = await _marketDataService.GetCurrencyTranslationsAsync(_exchangeName);
-            foreach (var balance in notNullBalances)
+            foreach (var balance in binanceBalances)
             {
               
                 if(translations.ContainsKey(balance.asset))
@@ -48,7 +47,7 @@ namespace MasterDataManager.Services
                     assets.Add(new Asset
                     {
                         Currency = translations[balance.asset],
-                        Amount = Decimal.Parse(balance.free) + Decimal.Parse(balance.locked),
+                        Amount = balance.amount,
                         UserId = userId,
                         Exchange = _exchangeName,
                         TradingMode = TradingMode.Real,
