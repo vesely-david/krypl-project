@@ -102,13 +102,38 @@ export default () => (
               </div>
             <div className={styles.paddingLeft}>{'],'}</div>
           <div>{'}'}</div>
-        </Segment>                   
+        </Segment>
+        <Segment>
+          <h4>Coin Market Cal</h4>
+          <h5>{'Request: GET marketdata/marketcal'}</h5>
+          <h5>Response: </h5>
+          <div>{'['}</div>
+          <div className={styles.paddingLeft}>
+            <div className={styles.paddingLeft}>{'{'}</div>
+              <div className={styles.paddingLeft}>
+                <div className={styles.paddingLeft}>{'"title": "AXPR Monthly Burn",'}</div>
+                <div className={styles.paddingLeft}>{'"date": "2019-05-10T00:00:00Z",'}</div>
+                <div className={styles.paddingLeft}>{'"coins": ['}</div>
+                  <div className={styles.paddingLeft}>
+                    <div className={styles.paddingLeft}>{'"AXPR"'}</div>
+                  </div>
+                <div className={styles.paddingLeft}>{'],'}</div>
+                <div className={styles.paddingLeft}>{'"categories": ['}</div>
+                  <div className={styles.paddingLeft}>
+                    <div className={styles.paddingLeft}>{'"burn"'}</div>
+                  </div>
+                <div className={styles.paddingLeft}>{']'}</div>                
+              </div>
+            <div className={styles.paddingLeft}>{'},'}</div>
+            <div className={styles.paddingLeft}>{'{...}'}</div>
+          </div>
+          <div>{']'}</div>          
+        </Segment>              
       </Segment>
       <Segment>
         <h4>History</h4>
         <Segment>
           <h4>Historical Rate</h4>
-          <h4>Orderbook</h4>
           <h5>{'Request: GET business/rate/{exchangeId}/{marketId}/{unixTimestamp}'}</h5>
           <h5>Response: Rate</h5>
         </Segment>

@@ -21,6 +21,7 @@ namespace DataLayer.Models
 
         public string MarketId { get; set; }
         public string StrategyId { get; set; }
+        public string Exchange { get; set; }
         public Strategy Strategy { get; set; }
         public Asset ReservedAsset { get; set; }
     }

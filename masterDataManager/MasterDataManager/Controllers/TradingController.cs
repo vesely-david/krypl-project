@@ -22,17 +22,20 @@ namespace MasterDataManager.Controllers
         private ITradeRepository _tradeRepository;
         private ITradeExecutionService _tradeService;
         private IMarketDataService _marketDataService;
+        private IStrategyRepository _strategyRepository;
         private IMapper _mapper;
 
         public TradingController(
             ITradeRepository tradeRepository,
             ITradeExecutionService tradeExecutionService,
             IMarketDataService marketDataService,
+            IStrategyRepository strategyRepository,
             IMapper mapper)
         {
             _tradeRepository = tradeRepository;
             _tradeService = tradeExecutionService;
             _marketDataService = marketDataService;
+            _strategyRepository = strategyRepository;
             _mapper = mapper;
         }
 
@@ -44,7 +47,7 @@ namespace MasterDataManager.Controllers
             var currentRates = await _marketDataService.GetCurrentRates(orderModel.exchange);
             if (!currentRates.ContainsKey(orderModel.symbol)) return BadRequest("Cannot get current rate");
             if (!orderModel.rate.HasValue) orderModel.rate = currentRates[orderModel.symbol];
-            var result = _tradeService.PutOrder(_mapper.Map<TradeOrder>(orderModel), strategyId, OrderType.Buy);
+            var result = await _tradeService.PutOrder(_mapper.Map<TradeOrder>(orderModel), strategyId, OrderType.Buy);
             if (result.Success) return Ok(result.Data);
             return BadRequest(result.Data);
         }
@@ -57,7 +60,7 @@ namespace MasterDataManager.Controllers
             if (!currentRates.ContainsKey(orderModel.symbol)) return BadRequest("Cannot get current rate");
             if (!orderModel.rate.HasValue) orderModel.rate = currentRates[orderModel.symbol];
 
-            var result = _tradeService.PutOrder(_mapper.Map<TradeOrder>(orderModel), strategyId, OrderType.Sell);
+            var result = await _tradeService.PutOrder(_mapper.Map<TradeOrder>(orderModel), strategyId, OrderType.Sell);
             if (result.Success) return Ok(result.Data);
             return BadRequest(result.Data);
         }
@@ -73,14 +76,20 @@ namespace MasterDataManager.Controllers
         [Route("{strategyId}/trades")]
         public IActionResult GetTrades(string strategyId)
         {
+            var strategy = _strategyRepository.GetById(strategyId);
+            if (strategy == null) return BadRequest("Strategy not found");
+            if(strategy.TradingMode == TradingMode.Real)
+            {
+                _tradeService.MirrorRealTrades(strategy);
+            }
             return Ok(_tradeRepository.GetByStrategyId(strategyId));
         }
 
         [HttpDelete]
         [Route("{id}")]
-        public IActionResult CancelTrade(string id)
+        public async Task<IActionResult> CancelTrade(string id)
         {
-            var result = _tradeService.Cancel(id);
+            var result = await _tradeService.Cancel(id);
             if (result.Success) return Ok(result.Data);
             return BadRequest(result.Data);
         }

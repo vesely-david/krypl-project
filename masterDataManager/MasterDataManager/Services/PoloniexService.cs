@@ -32,7 +32,7 @@ namespace MasterDataManager.Services
 
         public async Task<List<Asset> > GetRealBalances(string userId)
         {
-            var assets = new List<Asset>(); // TODO: IResult implementation???
+            var assets = new List<Asset>();
             var userSecret = _exchangeSecretRepository.GetByUserAndExchange(userId, _exchangeName);
             if (userSecret == null) return assets;
         
@@ -56,6 +56,43 @@ namespace MasterDataManager.Services
                 }
             }
             return assets;
+        }
+
+        public async Task<string> PutOrder(TradeOrder order, OrderType orderType, string userId)
+        {
+            var userSecret = _exchangeSecretRepository.GetByUserAndExchange(userId, _exchangeName);
+            try
+            {
+                return await _poloniexWrapper.PutOrder(userSecret.ApiKey, userSecret.ApiSecret, order, orderType);
+            }
+            catch { return null; }
+        }
+
+        public async Task<bool> CancelOrder(string tradeId, string userId)
+        {
+            var userSecret = _exchangeSecretRepository.GetByUserAndExchange(userId, _exchangeName);
+            try
+            {
+                await _poloniexWrapper.CancelOrder(userSecret.ApiKey, userSecret.ApiSecret, tradeId);
+                return true;
+            }
+            catch { return false; }
+        }
+
+        public async Task<List<(Trade trade, bool close)>> GetOrders(string userId, IEnumerable<Trade> openedTrades)
+        {
+            var userSecret = _exchangeSecretRepository.GetByUserAndExchange(userId, _exchangeName);
+            var result = new List<(Trade trade, bool close)>();
+            try
+            {
+                foreach (var trade in openedTrades)
+                {
+                    var response = await _poloniexWrapper.GetTrade(userSecret.ApiKey, userSecret.ApiSecret, trade.ExchangeUuid);
+                    result.Add((trade, response.status != "open"));
+                }
+                return result;
+            }
+            catch { return null; }
         }
     }
 }

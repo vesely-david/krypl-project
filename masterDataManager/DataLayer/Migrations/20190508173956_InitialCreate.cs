@@ -269,7 +269,8 @@ namespace DataLayer.Migrations
                     OrderType = table.Column<int>(nullable: false),
                     ReservedAssetId = table.Column<string>(nullable: true),
                     MarketId = table.Column<string>(nullable: true),
-                    StrategyId = table.Column<string>(nullable: true)
+                    StrategyId = table.Column<string>(nullable: true),
+                    Exchange = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {

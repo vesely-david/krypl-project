@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DataLayer.Migrations
 {
     [DbContext(typeof(MasterDataContext))]
-    [Migration("20190508091617_InitialCreate")]
+    [Migration("20190508173956_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -131,6 +131,8 @@ namespace DataLayer.Migrations
                         .ValueGeneratedOnAdd();
 
                     b.Property<DateTime?>("Closed");
+
+                    b.Property<string>("Exchange");
 
                     b.Property<string>("ExchangeUuid");
 

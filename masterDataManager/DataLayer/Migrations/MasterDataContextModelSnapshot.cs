@@ -130,6 +130,8 @@ namespace DataLayer.Migrations
 
                     b.Property<DateTime?>("Closed");
 
+                    b.Property<string>("Exchange");
+
                     b.Property<string>("ExchangeUuid");
 
                     b.Property<string>("MarketId");

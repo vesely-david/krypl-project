@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using DataLayer.Enums;
 using DataLayer.Infrastructure.Interfaces;
 using DataLayer.Models;
@@ -14,54 +16,66 @@ namespace MasterDataManager.Services
         private IAssetRepository _assetRepository;
         private ITradeRepository _tradeRepository;
         private IMarketDataService _marketDataService;
+        private ITradeFinalizationService _tradeFinalizationService;
+        private IExchangeObjectFactory _exchangeFactory;
 
         public TradeExecutionService(
             IStrategyRepository strategyRepository,
             IAssetRepository assetRepository,
             ITradeRepository tradeRepository,
-            IMarketDataService marketDataService)
+            IMarketDataService marketDataService,
+            ITradeFinalizationService tradeFinalizationService,
+            IExchangeObjectFactory exchangeObjectFactory)
         {
             _strategyRepository = strategyRepository;
             _assetRepository = assetRepository;
             _tradeRepository = tradeRepository;
             _marketDataService = marketDataService;
+            _tradeFinalizationService = tradeFinalizationService;
+            _exchangeFactory = exchangeObjectFactory;
         }
 
-        public Result PutOrder(TradeOrder order, string strategyId, OrderType orderType)
-        {
-            var strategy = _strategyRepository.GetById(strategyId);
-            if(strategy.TradingMode == TradingMode.Real)
-            {
-
-            }
-            else if( strategy.TradingMode == TradingMode.BackTesting)
-            {
-
-            }
-            else
-            {
-
-            }
-
-            var result = PutOrderCommon(order, strategyId, orderType);
-            return result;
-        }
-
-        public Result PutOrderCommon(TradeOrder order, string strategyId, OrderType orderType)
+        private Asset GetSoldAsset(TradeOrder order, string strategyId, OrderType orderType)
         {
             var strategyAssets = _assetRepository.GetByStrategyId(strategyId);
             var coins = order.Symbol.Split('_');
-            var soldAsset = strategyAssets.FirstOrDefault(o => 
-                !o.IsReserved &&  o.Exchange == order.Exchange && 
+            return strategyAssets.FirstOrDefault(o =>
+                !o.IsReserved && o.Exchange == order.Exchange &&
                 o.Currency == coins[orderType == OrderType.Buy ? 0 : 1]);
-            if (soldAsset == null) return new Result(false, "Asset not found");
-            if (soldAsset.Amount < order.Amount) return new Result(false, "Insufficient funds for" + soldAsset.Currency);
+        }
 
+        public async Task<Result> PutOrder(TradeOrder order, string strategyId, OrderType orderType)
+        {
+            var strategy = _strategyRepository.GetById(strategyId);
+            if (strategy.TradingMode == TradingMode.Real)
+            {
+                var soldAsset = GetSoldAsset(order, strategyId, orderType);
+                if (soldAsset == null || soldAsset.Amount < order.Amount) return new Result(false, "Insufficient funds for" + soldAsset.Currency);
+                var exchange = _exchangeFactory.GetExchange(order.Exchange);
+                if (exchange == null) return new Result(false, "Exchange not found");
+                var uuid = await exchange.PutOrder(order, orderType, strategy.UserId);
+                if(uuid == null) return new Result(false, "Exchange unable to create order");
+                return new Result(true, ManageAssets(soldAsset, order, orderType, uuid));
+            }
+            else if( strategy.TradingMode == TradingMode.BackTesting)
+            {
+                return new Result(true, ManageAssets(null, order, orderType, ""));
+            }
+            else
+            {
+                var soldAsset = GetSoldAsset(order, strategyId, orderType);
+                if (soldAsset == null || soldAsset.Amount < order.Amount) return new Result(false, "Insufficient funds for" + soldAsset.Currency);
+                return new Result(true, ManageAssets(soldAsset, order, orderType, ""));
+            }
+        }
+
+        private string ManageAssets(Asset soldAsset, TradeOrder order, OrderType orderType, string uuid)
+        {
             var reserverAsset = new Asset(soldAsset)
             {
                 Amount = order.Amount,
                 IsReserved = true,
-                StrategyId = strategyId,
+                StrategyId = soldAsset.StrategyId,
             };
             soldAsset.Amount -= order.Amount;
             _assetRepository.AddNotSave(reserverAsset);
@@ -74,88 +88,54 @@ namespace MasterDataManager.Services
                 Opened = DateTime.Now,
                 Quantity = quantity,
                 OrderType = orderType,
-                StrategyId = strategyId,
+                StrategyId = soldAsset.StrategyId,
                 TradeState = TradeState.New,
                 Price = order.Rate.Value,
                 QuantityRemaining = quantity,
                 ReservedAsset = reserverAsset,
                 Total = orderType == OrderType.Buy ? order.Amount : order.Amount * order.Rate.Value,
+                ExchangeUuid = uuid,
+                Exchange = order.Exchange,
             };
             _tradeRepository.Add(trade);
             _assetRepository.Save();
-            return new Result(true, trade.Id);
+            return trade.Id;
         }
 
-        public Result ExecutePaperTrade(Trade trade, decimal rate)
-        {
-            var strategyAssets = _assetRepository.GetByStrategyId(trade.StrategyId);
-            var coins = trade.MarketId.Split('_');
-            var boughtCoin = coins[trade.OrderType == OrderType.Buy ? 1 : 0];
 
-            var boughtCoinAsset = strategyAssets.FirstOrDefault(o =>
-                !o.IsReserved && o.Exchange == trade.ReservedAsset.Exchange &&
-                o.Currency == boughtCoin);
-            if(boughtCoinAsset == null)
-            {
-                _assetRepository.AddNotSave(new Asset
-                {
-                    Amount = trade.OrderType == OrderType.Buy ? trade.Quantity : trade.Total,
-                    Currency = boughtCoin,
-                    IsActive = true,
-                    IsReserved = false,
-                    StrategyId = trade.ReservedAsset.StrategyId,
-                    TradingMode = TradingMode.PaperTesting,
-                    UserId = trade.ReservedAsset.UserId,
-                    Exchange = trade.ReservedAsset.Exchange,
-                });
-            }
-            else
-            {
-                boughtCoinAsset.Amount += trade.OrderType == OrderType.Buy ? trade.Quantity : trade.Total;
-                _assetRepository.EditNotSave(boughtCoinAsset);
-            }
-            trade.Closed = DateTime.Now;
-            trade.TradeState = TradeState.Fulfilled;
-            _assetRepository.DeleteNotSave(trade.ReservedAsset);
-            trade.ReservedAsset = null;
-            _tradeRepository.EditNotSave(trade);
-
-            _tradeRepository.Save();
-            _assetRepository.Save();
-
-            return new Result(true, "");
-        }
-
-        public Result Cancel(string tradeId)
+        public async Task<Result> Cancel(string tradeId)
         {
             var trade = _tradeRepository.GetById(tradeId);
             if (trade == null) return new Result(false, "Trade not found");
-            var reservedAsset = _assetRepository.GetById(trade.ReservedAssetId);
-            var strategyAssets = _assetRepository.GetByStrategyId(trade.StrategyId);
-            if(trade.TradeState == TradeState.New || trade.TradeState == TradeState.PartialyFulfilled)
+            var strategy = _strategyRepository.GetById(trade.StrategyId);
+            if(strategy.TradingMode == TradingMode.Real)
             {
-                trade.TradeState = trade.TradeState == TradeState.New ? TradeState.NewCanceled : TradeState.PartialyFulfilledCanceled;
-                trade.Closed = DateTime.Now;
-                var originAsset = strategyAssets.FirstOrDefault(o =>
-                    !o.IsReserved && o.Exchange == reservedAsset.Exchange &&
-                    o.Currency == reservedAsset.Currency);
-                if(originAsset == null)
+                var exchange = _exchangeFactory.GetExchange(trade.Exchange);
+                if (exchange == null) return new Result(false, "Exchange not found");
+                var cancelResult = await exchange.CancelOrder(trade.ExchangeUuid, strategy.UserId);
+                if (!cancelResult)
                 {
-                    reservedAsset.IsReserved = false;
-                    _assetRepository.EditNotSave(reservedAsset);
+                    return new Result(false, "Exchange refused to cancel");
                 }
-                else
-                {
-                    originAsset.Amount += reservedAsset.Amount;
-                    _assetRepository.EditNotSave(originAsset);
-                    _assetRepository.DeleteNotSave(reservedAsset);
-                }
-
-                _tradeRepository.Edit(trade);
-                _assetRepository.Save();
-                return new Result(true, trade.Id);
             }
-            return new Result(false, "Fulfilled or canceled already");
+            return _tradeFinalizationService.CancelTrade(trade);
+        }
+
+
+        public async Task<Result> MirrorRealTrades(Strategy strategy)
+        {
+            var openedTrades = _tradeRepository.GetByStrategyId(strategy.Id)
+                .Where(o => o.TradeState == TradeState.New || o.TradeState == TradeState.PartialyFulfilled)
+                .GroupBy(o => o.Exchange);
+            foreach(var exchange in openedTrades)
+            {
+                var orders = await _exchangeFactory.GetExchange(exchange.Key).GetOrders(strategy.UserId, exchange);
+                foreach(var orderToClose in orders.Where(o => o.close))
+                {
+                    _tradeFinalizationService.ExecuteTrade(orderToClose.trade, orderToClose.trade.Price);
+                }
+            }
+            return new Result(true, "");
         }
     }
 }

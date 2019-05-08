@@ -1,10 +1,11 @@
 var axios = require('axios');
 var program = require('commander');
 
-const marketUrl = 'http://marketData.kryplproject.cz';
+const marketUrl = 'http://localhost:9999';
+// const marketUrl = 'http://marketData.kryplproject.cz';
 // const masterUrl = 'http://api.kryplproject.cz';
 const masterUrl = 'http://localhost:54850';
-const exchange = 'binance';
+const exchange = 'poloniex';
 
 function getRandom(min, max) {
   return Math.random() * (max - min) + min;
@@ -49,12 +50,13 @@ const trade = async (strategyId) => {
   const rates = await getRates();
   const markets = rates.filter(o => o.symbol.startsWith(item.currency + '_' ) || o.symbol.endsWith( '_' + item.currency))
   const market = markets[Math.floor(Math.random() * markets.length)];
+
+  const obj = {
+    exchange: 'poloniex',
+    symbol: market.symbol,
+    amount: Math.random() > 0.75 ? getRandom(item.amount / 2, item.amount) : item.amount,
+  };
   try{
-    const obj = {
-      exchange,
-      symbol: market.symbol,
-      amount: Math.random() > 0.75 ? getRandom(item.amount / 2, item.amount) : item.amount,
-    };
     var res = await axios.post(`${masterUrl}/trade/${strategyId}/${market.symbol.startsWith(item.currency + '_') ? 'buy' : 'sell'}`, 
     JSON.stringify(obj), {headers: {'Content-Type' : 'application/json'}})
     console.log(`New trade: ${res.data}`);

@@ -43,7 +43,7 @@ class StrategyContainer extends React.Component {
       <div className={styles.app}>
         <StrategyOverview 
           overview={strategies[id]} 
-          isFetching={false} //TODO 
+          isFetching={false}
           history={histories[id]}
           isHistoryFetching={historyFetching}
           strategyAssets={strategyAssets}

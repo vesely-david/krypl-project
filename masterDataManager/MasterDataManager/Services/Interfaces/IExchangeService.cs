@@ -11,10 +11,8 @@ namespace MasterDataManager.Services
     public interface IExchangeService
     {
         Task<List<Asset>> GetRealBalances(string userId);
-        //UserAsset GetBalance(Currency currency);
-        //string SellOrder(Market market, double quantity, double rate);
-        //string BuyOrder(Market market, double quantity, double rate);
-        //bool CancelOrder(Trade trade);
-        //Trade GetOrder(Trade trade);
+        Task<string> PutOrder(TradeOrder order, OrderType orderType, string userId);
+        Task<bool> CancelOrder(string tradeId, string userId);
+        Task<List<(Trade trade, bool close)>> GetOrders(string userId, IEnumerable<Trade> openedTrades);
     }
 }

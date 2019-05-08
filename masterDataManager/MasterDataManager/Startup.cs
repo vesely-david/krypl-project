@@ -51,6 +51,8 @@ namespace MasterDataManager
             services.AddScoped<IExchangeSecretRepository, ExchangeSecretRepository>();
             services.AddScoped<IMarketDataService, MarketDataService>();
             services.AddScoped<ITradeExecutionService, TradeExecutionService>();
+            services.AddScoped<ITradeFinalizationService, TradeFinalizationService>();
+
             services.AddScoped<BinanceService>();
             services.AddScoped<PoloniexService>();
 

@@ -21,6 +21,15 @@ namespace MarketDataProvider.Services
             };
         }
 
+        public DataProvider GetProvider(string exchange)
+        {
+            if (_marketDataDict.ContainsKey(exchange))
+            {
+                return _marketDataDict[exchange];
+            }
+            return null;
+        }
+
         public async Task UpdateInfo(CancellationToken cancellationToken)
         {
             var tasks = new List<Task>();

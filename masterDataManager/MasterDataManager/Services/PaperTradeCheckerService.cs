@@ -39,8 +39,7 @@ namespace MasterDataManager.Services
                     var marketDataService = scope.ServiceProvider.GetRequiredService<IMarketDataService>();
                     var currentRates = await marketDataService.GetCurrentRates("binance");
 
-                    var tradeExecutor = scope.ServiceProvider.GetRequiredService<ITradeExecutionService>();
-                    var x = openedTrades.Count();
+                    var tradeExecutor = scope.ServiceProvider.GetRequiredService<ITradeFinalizationService>();
 
                     foreach(var trade in openedTrades)
                     {
@@ -48,7 +47,7 @@ namespace MasterDataManager.Services
                         if((trade.OrderType == OrderType.Buy && currentRates[trade.MarketId] <= trade.Price) ||
                             (trade.OrderType == OrderType.Sell && currentRates[trade.MarketId] >= trade.Price))
                         {
-                            tradeExecutor.ExecutePaperTrade(trade, currentRates[trade.MarketId]);
+                            tradeExecutor.ExecuteTrade(trade, currentRates[trade.MarketId]);
                         }
                     }
                 }

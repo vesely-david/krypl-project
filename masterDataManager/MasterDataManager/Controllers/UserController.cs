@@ -63,9 +63,6 @@ namespace MasterDataManager.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] JsonLoginModel userModel)
         {
-            //var user = await _userManager.FindByNameAsync(userModel.username);
-            //if (user != null) return BadRequest("User already registered");
-
             var user = new User
             {
                 UserName = userModel.username,
@@ -73,20 +70,9 @@ namespace MasterDataManager.Controllers
             };
             var result = await _userManager.CreateAsync(user, userModel.password);
 
-            //await _mailingService.SendEmailVerification("h.kirchner@seznam.cz", "test");
-
             if (result.Succeeded) return Ok();
             return BadRequest(result.Errors);
         }
-
-        //[AllowAnonymous]
-        //[HttpPost("verify")]
-        //public async Task<IActionResult> Verify(string token)
-        //{
-        //    _mailingService.SendEmailVerification(user.UserName, "test");
-
-        //    return BadRequest("Incorrect combination of username and password");
-        //}
 
         [HttpGet("apikeys")]
         public IActionResult GetApiKeys()

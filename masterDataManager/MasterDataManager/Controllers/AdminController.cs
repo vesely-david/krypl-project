@@ -130,7 +130,6 @@ namespace MasterDataManager.Controllers
         {
             var user = await _userManager.FindByNameAsync(username);
 
-            //Don't bother to try... It's from Binance API documentation ;)
             _exchangeSecretRepository.Add(new ExchangeSecret
             {
                 ApiKey = "vmPUZE6mv9SD5VNHk4HlWFsOr6aKE2zvsw0MuIgwCIPy6utIco14y7Ju91duEh8A",

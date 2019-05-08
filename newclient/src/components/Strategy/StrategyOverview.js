@@ -34,6 +34,9 @@ const StrategyOverview = ({
     currentValue={},
     finalValue={},
   } = overview;
+
+  const profitBtc = (strategyState === RUNNING ? currentValue.btcValue : finalValue.btcValue) - initialValue.btcValue;
+  const profitUsd = (strategyState === RUNNING ? currentValue.usdValue : finalValue.usdValue) - initialValue.usdValue;
   
   const duration = moment.duration((strategyState === RUNNING ? moment() : moment(stop)).diff(start));
   const [opened, setOpened] = useState(false);
@@ -92,6 +95,19 @@ const StrategyOverview = ({
             </div>            
           </span>
         </div>
+        <div>
+          <span>Profit</span>
+          <span>
+            <div>
+              <Icon name='bitcoin' />
+              <span>{formatBtc(profitBtc)}</span>
+            </div>
+            <div>
+              <Icon name='dollar' />
+              <span>{formatUsd(profitUsd)}</span>
+            </div>            
+          </span>
+        </div>        
       </div>          
       <ParentSize>
         {parent => (

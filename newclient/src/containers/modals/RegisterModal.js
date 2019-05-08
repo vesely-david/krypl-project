@@ -25,7 +25,8 @@ const RegisterModal = ({registerAction}) => {
           Register
         </Button>
       } 
-      closeIcon 
+      closeIcon
+      closeOnDimmerClick={false}
       onClose={() => setModalOpen(false)} 
       size='small'
       open={modalOpened}

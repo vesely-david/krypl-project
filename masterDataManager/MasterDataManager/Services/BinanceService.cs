@@ -58,5 +58,25 @@ namespace MasterDataManager.Services
             }
             return assets;
         }
+
+        public Task<string> PutOrder(TradeOrder order, OrderType orderType, string userId)
+        {
+            throw new NotImplementedException();
+        } 
+
+        public Task<bool> CancelOrder(string tradeId, string userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<List<Trade>> GetOrders(string userId, IEnumerable<Trade> openedtrades)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<List<(Trade trade, bool close)>> IExchangeService.GetOrders(string userId, IEnumerable<Trade> openedTrades)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

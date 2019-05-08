@@ -12,7 +12,6 @@ const LoginModal = ({loginAction}) => {
     setLoginFetching(true);
     const result = await loginAction(credentials);
     setLoginFetching(false);
-    debugger;
     if(result) setModalOpen(false); 
     else setLoginError(true);
   }
@@ -28,7 +27,8 @@ const LoginModal = ({loginAction}) => {
           Login
         </Button>
       } 
-      closeIcon 
+      closeIcon
+      closeOnDimmerClick={false}
       onClose={() => setModalOpen(false)} 
       size='small'
       open={modalOpened}

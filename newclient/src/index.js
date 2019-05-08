@@ -8,7 +8,7 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 
-const env = process.env.NODE_ENV; //TODO: Create env. files
+const env = process.env.NODE_ENV;
 if(env === 'development'){
   document.masterApi = 'http://localhost:54850';
   document.marketApi = 'http://localhost:9999';
@@ -16,9 +16,6 @@ if(env === 'development'){
   document.masterApi = 'https://api.kryplproject.cz';
   document.marketApi = 'https://marketData.kryplproject.cz';
 }
-
-document.marketApi = 'https://marketData.kryplproject.cz';
-
 
 console.log(process.env.NODE_ENV);
 

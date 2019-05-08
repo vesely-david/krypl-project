@@ -8,8 +8,8 @@ namespace MasterDataManager.Services.Interfaces
 {
     public interface ITradeExecutionService
     {
-        Result PutOrder(TradeOrder order, string strategyId, OrderType orderType);
-        Result Cancel(string tradeId);
-        Result ExecutePaperTrade(Trade trade, decimal rate);
+        Task<Result> PutOrder(TradeOrder order, string strategyId, OrderType orderType);
+        Task<Result> Cancel(string tradeId);
+        Task<Result> MirrorRealTrades(Strategy strategy);
     }
 }

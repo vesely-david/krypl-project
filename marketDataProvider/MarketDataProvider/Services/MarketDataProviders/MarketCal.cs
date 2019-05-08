@@ -19,7 +19,6 @@ namespace MarketDataProvider.Services.MarketDataProviders
 
         public override async Task UpdateData()
         {
-
             var httpRequestMessage = new HttpRequestMessage
             {
                 Method = HttpMethod.Get,
@@ -41,8 +40,8 @@ namespace MarketDataProvider.Services.MarketDataProviders
                 {
                     title = o.title.en,
                     date = o.date_event,
-                    coins = o.coins,
-                    categories = o.categories,
+                    coins = o.coins.Select(p => p.symbol),
+                    categories = o.categories.Select(p => p.name),
 
                 });
                 _calEvents = calEvents;
