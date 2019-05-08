@@ -133,7 +133,7 @@ class Statistics:
             self.num_of_wins += 1
             self.total_won += self.current_amount - self.last_amount
 
-    def _update_drawdown(self, ):
+    def _update_drawdown(self):
         drawdown = 100. * (self.max_amount - self.current_amount) / self.max_amount
         if drawdown > self.max_drawdown_var:
             self.max_drawdown_var = drawdown
