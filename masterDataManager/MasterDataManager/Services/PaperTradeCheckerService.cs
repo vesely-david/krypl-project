@@ -37,18 +37,32 @@ namespace MasterDataManager.Services
                     var openedTrades = tradeRepo.GetOpenedPaperTrades();
 
                     var marketDataService = scope.ServiceProvider.GetRequiredService<IMarketDataService>();
-                    var currentRates = await marketDataService.GetCurrentRates("binance");
+                    var binanceRates = await marketDataService.GetCurrentRates("binance");
+                    var poloniexRates = await marketDataService.GetCurrentRates("poloniex");
 
                     var tradeExecutor = scope.ServiceProvider.GetRequiredService<ITradeFinalizationService>();
 
                     foreach(var trade in openedTrades)
                     {
-                        if (!currentRates.ContainsKey(trade.MarketId)) continue;
-                        if((trade.OrderType == OrderType.Buy && currentRates[trade.MarketId] <= trade.Price) ||
-                            (trade.OrderType == OrderType.Sell && currentRates[trade.MarketId] >= trade.Price))
+                        if(trade.Exchange == "binance")
                         {
-                            tradeExecutor.ExecuteTrade(trade, currentRates[trade.MarketId]);
+                            if (!binanceRates.ContainsKey(trade.MarketId)) continue;
+                            if ((trade.OrderType == OrderType.Buy && binanceRates[trade.MarketId] <= trade.Price) ||
+                                (trade.OrderType == OrderType.Sell && binanceRates[trade.MarketId] >= trade.Price))
+                            {
+                                tradeExecutor.ExecuteTrade(trade, binanceRates[trade.MarketId]);
+                            }
                         }
+                        else
+                        {
+                            if (!poloniexRates.ContainsKey(trade.MarketId)) continue;
+                            if ((trade.OrderType == OrderType.Buy && poloniexRates[trade.MarketId] <= trade.Price) ||
+                                (trade.OrderType == OrderType.Sell && poloniexRates[trade.MarketId] >= trade.Price))
+                            {
+                                tradeExecutor.ExecuteTrade(trade, poloniexRates[trade.MarketId]);
+                            }
+                        }
+
                     }
                 }
 

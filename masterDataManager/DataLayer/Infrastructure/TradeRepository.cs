@@ -29,5 +29,17 @@ namespace DataLayer.Infrastructure
             return _dbContext.Trades.Include(o => o.Strategy).Include(o => o.ReservedAsset)
                 .Where(o => o.Strategy.TradingMode == TradingMode.PaperTesting && o.TradeState == TradeState.New);
         }
+
+        public IEnumerable<Trade> GetOpenedRealTrades()
+        {
+            return _dbContext.Trades.Include(o => o.Strategy).Include(o => o.ReservedAsset)
+                .Where(o => o.Strategy.TradingMode == TradingMode.Real && (o.TradeState == TradeState.New || o.TradeState == TradeState.PartialyFulfilled)) ;
+        }
+
+        public IEnumerable<Trade> GetByUserId(string userId)
+        {
+            return _dbContext.Trades.Include(o => o.Strategy).Include(o => o.ReservedAsset)
+                .Where(o => o.Strategy.UserId == userId);
+        }
     }
 }

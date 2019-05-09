@@ -65,6 +65,36 @@ namespace MasterDataManager.Controllers
             return BadRequest(result.Data);
         }
 
+        [HttpPost]
+        [Route("{strategyId}/buy/{timestamp}")]
+        public async Task<IActionResult> PutHistoryBuyOrder(string strategyId, [FromBody] JsonOrderModel orderModel, long timestamp)
+        {
+            if (!orderModel.rate.HasValue)
+            {
+                var rate = await _marketDataService.GetHistoryRate(orderModel.exchange, orderModel.symbol, timestamp);
+                if (rate == null) return BadRequest("Cannot get rate");
+                orderModel.rate = rate;
+            }
+            var result = await _tradeService.PutOrder(_mapper.Map<TradeOrder>(orderModel), strategyId, OrderType.Buy);
+            if (result.Success) return Ok(result.Data);
+            return BadRequest(result.Data);
+        }
+
+        [HttpPost]
+        [Route("{strategyId}/sell/{timestamp}")]
+        public async Task<IActionResult> PutHistorySellOrder(string strategyId, [FromBody] JsonOrderModel orderModel, long timestamp)
+        {
+            if (!orderModel.rate.HasValue)
+            {
+                var rate = await _marketDataService.GetHistoryRate(orderModel.exchange, orderModel.symbol, timestamp);
+                if (rate == null) return BadRequest("Cannot get rate");
+                orderModel.rate = rate;
+            }
+            var result = await _tradeService.PutOrder(_mapper.Map<TradeOrder>(orderModel), strategyId, OrderType.Sell);
+            if (result.Success) return Ok(result.Data);
+            return BadRequest(result.Data);
+        }
+
         [HttpGet]
         [Route("{id}")]
         public IActionResult GetTrade(string id)

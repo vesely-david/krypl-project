@@ -129,11 +129,7 @@ namespace MasterDataManager.Services
                 .GroupBy(o => o.Exchange);
             foreach(var exchange in openedTrades)
             {
-                var orders = await _exchangeFactory.GetExchange(exchange.Key).GetOrders(strategy.UserId, exchange);
-                foreach(var orderToClose in orders.Where(o => o.close))
-                {
-                    _tradeFinalizationService.ExecuteTrade(orderToClose.trade, orderToClose.trade.Price);
-                }
+                var orders = await _exchangeFactory.GetExchange(exchange.Key).MirrorTrades(strategy.UserId);
             }
             return new Result(true, "");
         }

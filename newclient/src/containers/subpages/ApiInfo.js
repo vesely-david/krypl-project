@@ -221,12 +221,45 @@ export default () => (
           <div className={styles.paddingLeft}>{'"rate": 0.01'}<span className={styles.notRequired}>Current price if not present</span></div>
           <div>{'}'}</div>      
           <h5>Response: TradeId</h5>
-        </Segment>
+        </Segment>  
         <Segment>
           <h4>Cancel Order</h4>
           <h5>{'Request: DELETE /trade/{tradeId}'}</h5>
           <h5>Response: TradeId</h5>
-        </Segment>        
+        </Segment>
+        <Segment>
+          <h4>Backtesting</h4>
+          <Segment>
+            <h4>Post Historical Buy Order </h4>
+            <h5></h5>
+            <h5>{'Request: POST /trade/{strategyId}/buy/{timestamp}'}</h5>
+            <h5>Body:</h5>
+            <div>{'{'}</div>
+            <div className={styles.paddingLeft}>{'"exchange": "poloniex",'}</div>
+            <div className={styles.paddingLeft}>{'"symbol": "BTC_LTC",'}</div>
+            <div className={styles.paddingLeft}>{'"amount": 1,'}</div>
+            <div className={styles.paddingLeft}>{'"rate": 0.01'}<span className={styles.notRequired}>Historical price if not present</span></div>
+            <div>{'}'}</div>
+            <h5>Response: TradeId</h5>
+          </Segment>
+          <Segment>
+            <h4>Post Historical Sell Order</h4>
+            <h5>{'Request: POST /trade/{strategyId}/sell/{timestamp}'}</h5>
+            <h5>Body:</h5>
+            <div>{'{'}</div>
+            <div className={styles.paddingLeft}>{'"exchange": "poloniex",'}</div>
+            <div className={styles.paddingLeft}>{'"symbol": "BTC_LTC",'}</div>
+            <div className={styles.paddingLeft}>{'"amount": 1,'}</div>
+            <div className={styles.paddingLeft}>{'"rate": 0.01'}<span className={styles.notRequired}>Historical price if not present</span></div>
+            <div>{'}'}</div>      
+            <h5>Response: TradeId</h5>
+          </Segment>      
+          <Segment>
+            <h4>Cancel Historical Order</h4>
+            <h5>{'Request: DELETE /trade/{tradeId}/{timestamp}'}</h5>
+            <h5>Response: TradeId</h5>
+          </Segment>          
+        </Segment>          
       </div>      
     </Segment>    
   </div>

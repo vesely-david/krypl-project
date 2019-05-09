@@ -89,7 +89,7 @@ class NewStrategyModal extends React.Component {
       selectedExchange, 
       description,
       strategyAssets.filter(o => o.exchange === selectedExchange)
-        .map(o => ({id: o.id, amount: Number.parseFloat(o.amount)}))
+        .map(o => ({...o, amount: Number.parseFloat(o.amount)}))
     )
     if(!res){
       alert('Error');

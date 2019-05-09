@@ -41,5 +41,15 @@ namespace MasterDataManager.Services
             }, apiKey, apiSecret);
             return response.orderId;
         }
+
+        public async Task<string> CancelOrder(string apiKey, string apiSecret, string tradeId, string symbol)
+        {
+            var url = _baseEndpoint + "/api/v3/order";
+            var response = await _client.BinanceSignedRequest<BinanceOrderResult>(url, HttpMethod.Delete, new Dictionary<string, string> {
+                {"symbol", symbol},
+                {"orderId", tradeId},
+            }, apiKey, apiSecret);
+            return response.orderId;
+        }
     }
 }

@@ -16,18 +16,25 @@ namespace MasterDataManager.Services
         private PoloniexWrapper _poloniexWrapper;
         private UserManager<User> _userManager;
         private IMarketDataService _marketDataService;
+        private ITradeRepository _tradeRepository;
+        private ITradeFinalizationService _tradeFinalizationService;
         private IExchangeSecretRepository _exchangeSecretRepository;
         private readonly string _exchangeName  = "poloniex";
 
         public PoloniexService(
             UserManager<User> userManager,
             IMarketDataService marketDataService,
-            IExchangeSecretRepository exchangeSecretRepository)
+            ITradeRepository tradeRepository,
+            ITradeFinalizationService tradeFinalizationService,
+            IExchangeSecretRepository exchangeSecretRepository
+            )
         {
             _poloniexWrapper = new PoloniexWrapper();
             _userManager = userManager;
             _marketDataService = marketDataService;
             _exchangeSecretRepository = exchangeSecretRepository;
+            _tradeRepository = tradeRepository;
+            _tradeFinalizationService = tradeFinalizationService;
         }
 
         public async Task<List<Asset> > GetRealBalances(string userId)
@@ -79,20 +86,18 @@ namespace MasterDataManager.Services
             catch { return false; }
         }
 
-        public async Task<List<(Trade trade, bool close)>> GetOrders(string userId, IEnumerable<Trade> openedTrades)
+        public async Task<bool> MirrorTrades(string userId)
         {
             var userSecret = _exchangeSecretRepository.GetByUserAndExchange(userId, _exchangeName);
-            var result = new List<(Trade trade, bool close)>();
-            try
+            var opened = await _poloniexWrapper.GetOpenedTrades(userSecret.ApiKey, userSecret.ApiSecret);
+            var openedTrades = _tradeRepository.GetByUserId(userId).Where(o => o.Strategy.TradingMode == TradingMode.Real && (
+            o.TradeState == TradeState.New || o.TradeState == TradeState.PartialyFulfilled) && o.Exchange == _exchangeName);
+
+            foreach (var t in openedTrades.Where(o => !opened.Any(p => o.ExchangeUuid == p)))
             {
-                foreach (var trade in openedTrades)
-                {
-                    var response = await _poloniexWrapper.GetTrade(userSecret.ApiKey, userSecret.ApiSecret, trade.ExchangeUuid);
-                    result.Add((trade, response.status != "open"));
-                }
-                return result;
+                _tradeFinalizationService.ExecuteTrade(t, t.Price);
             }
-            catch { return null; }
+            return true;
         }
     }
 }

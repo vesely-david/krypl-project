@@ -26,7 +26,7 @@ export const getRealStrategies = createSelector([getRawRealStrategies, getStrate
     ({...o, currentValue: strategyValues[o.id] ? strategyValues[o.id] : {timestamp: Date.now(), usdValue: 0, btcValue: 0}}));
 })
 
-export const getAllStrategies = createSelector([getPaperStrategies, getRealStrategies], (papeStrategies, realStrategies) => {
+export const getAllStrategies = createSelector([getPaperStrategies, getRealStrategies, getRawBacktestStrategies], (papeStrategies, realStrategies, backtestStrategies) => {
   let paper = papeStrategies.reduce((res, val) => {
     res[val.id] = val;
     return res;
@@ -36,5 +36,10 @@ export const getAllStrategies = createSelector([getPaperStrategies, getRealStrat
     return res;
   }, paper);
 
-  return real;
+  let back = backtestStrategies.reduce((res, val) => {
+    res[val.id] = val;
+    return res;
+  }, real);
+
+  return back;
 })

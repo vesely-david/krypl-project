@@ -17,17 +17,20 @@ namespace MasterDataManager.Services
         private UserManager<User> _userManager;
         private IMarketDataService _marketDataService;
         private IExchangeSecretRepository _exchangeSecretRepository;
+        private ITradeRepository _tradeRepository;
         private readonly string _exchangeName  = "binance";
 
         public BinanceService(
             UserManager<User> userManager,
             IMarketDataService marketDataService,
-            IExchangeSecretRepository exchangeSecretRepository)
+            IExchangeSecretRepository exchangeSecretRepository,
+            ITradeRepository tradeRepository)
         {
             _binanceWrapper = new BinanceWrapper();
             _userManager = userManager;
             _marketDataService = marketDataService;
             _exchangeSecretRepository = exchangeSecretRepository;
+            _tradeRepository = tradeRepository;
         }
 
         public async Task<List<Asset> > GetRealBalances(string userId)
@@ -74,15 +77,19 @@ namespace MasterDataManager.Services
 
         public async Task<bool> CancelOrder(string tradeId, string userId)
         {
-            throw new NotImplementedException();
+            var userSecret = _exchangeSecretRepository.GetByUserAndExchange(userId, _exchangeName);
+            var translations = await _marketDataService.GetMarketTranslationsAsync(_exchangeName);
+            var trade = _tradeRepository.GetById(tradeId);
+
+            try
+            {
+                await _binanceWrapper.CancelOrder(userSecret.ApiKey, userSecret.ApiSecret, tradeId, translations[trade.MarketId]);
+                return true;
+            }
+            catch { return false;}
         }
 
-        public async Task<List<Trade>> GetOrders(string userId, IEnumerable<Trade> openedtrades)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<List<(Trade trade, bool close)>> IExchangeService.GetOrders(string userId, IEnumerable<Trade> openedTrades)
+        public Task<bool> MirrorTrades(string userId)
         {
             throw new NotImplementedException();
         }

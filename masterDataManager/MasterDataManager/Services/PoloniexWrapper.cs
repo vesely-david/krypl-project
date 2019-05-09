@@ -51,17 +51,24 @@ namespace MasterDataManager.Services
             }, apiKey, apiSecret);
         }
 
-
-        public async Task<PoloniexTrade> GetTrade(string apiKey, string apiSecret, string tradeId)
+        public async Task<List<string>> GetOpenedTrades(string apiKey, string apiSecret)
         {
             var response = await _client.PoloniexSignedRequest(_baseEndpoint, HttpMethod.Post, new Dictionary<string, string> {
-                {"command", "returnOrderStatus"},
-                {"orderNumber", tradeId},
+                {"command", "returnOpenOrders"},
+                {"currencyPair", "all"},
             }, apiKey, apiSecret);
 
-            var trade = response.SelectToken("result." + tradeId).ToObject(typeof(PoloniexTrade));
 
-            return (PoloniexTrade)trade;
+            var res = response.ToObject(typeof(Dictionary<string, IEnumerable<PoloniexTrade>>));
+            var toReturn = new List<string>();
+
+            foreach (var entry in (Dictionary<string, IEnumerable<PoloniexTrade>>)res)
+            {
+                if (entry.Value.Any()) toReturn.AddRange(entry.Value.Select(o => o.orderNumber));
+            }
+            return toReturn;
         }
     }
 }
+
+

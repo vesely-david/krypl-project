@@ -13,6 +13,6 @@ namespace MasterDataManager.Services
         Task<List<Asset>> GetRealBalances(string userId);
         Task<string> PutOrder(TradeOrder order, OrderType orderType, string userId);
         Task<bool> CancelOrder(string tradeId, string userId);
-        Task<List<(Trade trade, bool close)>> GetOrders(string userId, IEnumerable<Trade> openedTrades);
+        Task<bool> MirrorTrades(string userId);
     }
 }

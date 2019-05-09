@@ -58,6 +58,7 @@ namespace MasterDataManager
 
             services.AddSingleton<IHostedService, StrategyEvaluationService>();
             services.AddSingleton<IHostedService, PaperTradeCheckerService>();
+            services.AddSingleton<IHostedService, RealTradeSyncServise>();
             services.AddSingleton<IMailingService, MailingService>();
 
             services.AddSingleton(Configuration);

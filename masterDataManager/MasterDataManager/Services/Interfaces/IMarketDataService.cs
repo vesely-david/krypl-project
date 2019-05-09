@@ -13,6 +13,7 @@ namespace MasterDataManager.Services.Interfaces
         //Task<Dictionary<string, string>> GetReverseMarketTranslationsAsync(string exchange);
         Task<Dictionary<string, (decimal BtcValue, decimal UsdValue)>> GetCurrentPrices(string exchange);
         Task<Dictionary<string, decimal>> GetCurrentRates(string exchange);
+        Task<decimal?> GetHistoryRate(string exchange, string market, long timestamp);
         Task<EvaluationTick> EvaluateAssetSet(IEnumerable<(string currency, decimal amount)> assets, string exchange);
     }
 }

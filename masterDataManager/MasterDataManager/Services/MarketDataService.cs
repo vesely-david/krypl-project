@@ -1,6 +1,7 @@
 ﻿using DataLayer.Models;
 using MasterDataManager.Services.Interfaces;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -82,6 +83,22 @@ namespace MasterDataManager.Services
             {
                 //TODO: Logger
                 return new Dictionary<string, decimal>();
+            }
+        }
+
+        public async Task<decimal?> GetHistoryRate(string exchange, string market, long timestamp)
+        {
+            try
+            {
+                var rate = await _client.GetStringAsync(_baseUrl + "business/rate/" + exchange + "/" + market + "/" + timestamp.ToString());
+
+
+                return decimal.Parse(rate);
+            }
+            catch (Exception ex)
+            {
+                //TODO: Logger
+                return null;
             }
         }
 

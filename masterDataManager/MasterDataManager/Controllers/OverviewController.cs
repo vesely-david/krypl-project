@@ -120,24 +120,41 @@ namespace MasterDataManager.Controllers
 
             foreach (var modelAsset in model.assets)
             {
-                var asset = assets.FirstOrDefault(o => o.Id.Equals(modelAsset.id));
-                if (asset == null || (asset.Amount < modelAsset.amount))
+                if(model.tradingMode == TradingMode.BackTesting)
                 {
-                    return BadRequest("Insufficient funds");
+                    strategyAssets.Add(new Asset
+                    {
+                        Amount = modelAsset.amount,
+                        Currency = modelAsset.currency,
+                        Exchange = modelAsset.exchange,
+                        TradingMode = model.tradingMode,
+                        UserId = userId,
+                    });
+                    if (!currentPrices.ContainsKey(modelAsset.currency)) return BadRequest("Cannot estimate initial value");
+                    firstEvaluation.BtcValue += currentPrices[modelAsset.currency].BtcValue * modelAsset.amount;
+                    firstEvaluation.UsdValue += currentPrices[modelAsset.currency].UsdValue * modelAsset.amount;
                 }
-                asset.Amount -= modelAsset.amount;
-                strategyAssets.Add(new Asset
+                else
                 {
-                    Amount = modelAsset.amount,
-                    Currency = asset.Currency,
-                    Exchange = asset.Exchange,
-                    TradingMode = model.tradingMode,
-                    UserId = userId,
-                });
-                if(!currentPrices.ContainsKey(asset.Currency)) return BadRequest("Cannot estimate initial value");
-                firstEvaluation.BtcValue += currentPrices[asset.Currency].BtcValue * modelAsset.amount;
-                firstEvaluation.UsdValue += currentPrices[asset.Currency].UsdValue * modelAsset.amount;
-                if (asset.Amount == 0) _assetRepository.DeleteNotSave(asset);
+                    var asset = assets.FirstOrDefault(o => o.Id.Equals(modelAsset.id));
+                    if (asset == null || (asset.Amount < modelAsset.amount))
+                    {
+                        return BadRequest("Insufficient funds");
+                    }
+                    asset.Amount -= modelAsset.amount;
+                    strategyAssets.Add(new Asset
+                    {
+                        Amount = modelAsset.amount,
+                        Currency = asset.Currency,
+                        Exchange = asset.Exchange,
+                        TradingMode = model.tradingMode,
+                        UserId = userId,
+                    });
+                    if (!currentPrices.ContainsKey(asset.Currency)) return BadRequest("Cannot estimate initial value");
+                    firstEvaluation.BtcValue += currentPrices[asset.Currency].BtcValue * modelAsset.amount;
+                    firstEvaluation.UsdValue += currentPrices[asset.Currency].UsdValue * modelAsset.amount;
+                    if (asset.Amount == 0) _assetRepository.DeleteNotSave(asset);
+                }
             }
 
             var strategy = new Strategy
