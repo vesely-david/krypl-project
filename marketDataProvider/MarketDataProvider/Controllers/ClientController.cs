@@ -33,6 +33,7 @@ namespace MarketDataProvider.Controllers
                 name = o.Name,
                 history = o.ProvidesFullHistoryData,
                 currencies = o.Currencies,
+                markets = o.Markets,
             });
 
             return Ok(exchangeInfo);

@@ -79,7 +79,7 @@ namespace MasterDataManager.Controllers
             var userId = HttpContext.User.GetUserId();
             if (userId == null) return BadRequest("User not found");
 
-            var allStrategies = _strategyRepository.GetUserStrategiesByMode(userId, mode).OrderBy(o => o.Start);
+            var allStrategies = _strategyRepository.GetUserStrategiesByMode(userId, mode).OrderBy(o => o.StrategyState).ThenBy(o => o.Start);
             var strategies = allStrategies.Skip(page * perPage).Take(perPage);
 
             return Ok(new

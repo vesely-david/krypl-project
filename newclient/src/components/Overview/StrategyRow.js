@@ -35,6 +35,7 @@ const StrategyRow = ({
   // const dayChangeUsd = (currentValue.usdValue - yesterdayValue.usdValue) / currentValue.usdValue;
   return (
     <Table.Row
+      className={strategyState !== RUNNING ? styles.stopped_trategy : ''}
       textAlign='center'
       onClick={() => history.push(`/${tradingMode.toLowerCase()}/${id}`)}
     >

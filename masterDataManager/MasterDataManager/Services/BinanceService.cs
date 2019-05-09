@@ -59,12 +59,20 @@ namespace MasterDataManager.Services
             return assets;
         }
 
-        public Task<string> PutOrder(TradeOrder order, OrderType orderType, string userId)
+        public async Task<string> PutOrder(TradeOrder order, OrderType orderType, string userId)
         {
-            throw new NotImplementedException();
+            var userSecret = _exchangeSecretRepository.GetByUserAndExchange(userId, _exchangeName);
+            var translations = await _marketDataService.GetMarketTranslationsAsync(_exchangeName);
+
+            try
+            {
+                order.Symbol = translations[order.Symbol];
+                return await _binanceWrapper.PutOrder(userSecret.ApiKey, userSecret.ApiSecret, order, orderType);
+            }
+            catch { return null; }
         } 
 
-        public Task<bool> CancelOrder(string tradeId, string userId)
+        public async Task<bool> CancelOrder(string tradeId, string userId)
         {
             throw new NotImplementedException();
         }

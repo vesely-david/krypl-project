@@ -76,7 +76,7 @@ strategiesFetching: false,
 overviewFetching: false,
 }
 
-export default function paperReducer (state = initialState, action) {
+export default function backReducer (state = initialState, action) {
   const handler = ACTION_HANDLERS[action.type]
   return handler ? handler(state, action) : state
 }

@@ -50,7 +50,7 @@ namespace MasterDataManager.Services
             if (strategy.TradingMode == TradingMode.Real)
             {
                 var soldAsset = GetSoldAsset(order, strategyId, orderType);
-                if (soldAsset == null || soldAsset.Amount < order.Amount) return new Result(false, "Insufficient funds for" + soldAsset.Currency);
+                if (soldAsset == null || soldAsset.Amount < order.Amount) return new Result(false, "Insufficient funds for " + soldAsset.Currency);
                 var exchange = _exchangeFactory.GetExchange(order.Exchange);
                 if (exchange == null) return new Result(false, "Exchange not found");
                 var uuid = await exchange.PutOrder(order, orderType, strategy.UserId);

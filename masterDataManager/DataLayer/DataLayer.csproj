@@ -32,5 +32,6 @@
     <Compile Remove="Migrations\20190323190001_InitialCreate.cs" />
     <Compile Remove="Migrations\20190323190001_InitialCreate.Designer.cs" />
     <Compile Remove="Migrations\MasterDataContextModelSnapshot.cs" />
+    <Compile Remove="Migrations\20190508173956_InitialCreate.cs" />
   </ItemGroup>
 </Project>

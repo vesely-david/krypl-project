@@ -14,7 +14,7 @@ namespace MasterDataManager.Services
         private HttpClient _client;
         private string _baseUrl = "https://marketdataprovider/"; //Use docker network instead
         //private string _baseUrl = "https://marketdata.kryplproject.cz/"; //Use docker network instead
-        //private string _baseUrl = "http://localhost:9999/"; //Use docker network instead
+        // private string _baseUrl = "http://localhost:9999/"; //Use docker network instead
 
         public MarketDataService()
         {
@@ -32,10 +32,25 @@ namespace MasterDataManager.Services
 
             } catch (Exception ex)
             {
-                //TODO: Logger
                 return new Dictionary<string, string>();
             }
 
+        }
+
+        public async Task<Dictionary<string, string>> GetMarketTranslationsAsync(string exchange)
+        {
+            try
+            {
+                var exchangeInfo = await _client.GetStringAsync(_baseUrl + "exchanges/" + exchange);
+                var template = new { markets = new[] { new { id = "", marketExchangeId = "" } } };
+                var markets = JsonConvert.DeserializeAnonymousType(exchangeInfo, template).markets;
+                return markets.ToDictionary(o => o.id, o => o.marketExchangeId);
+
+            }
+            catch (Exception ex)
+            {
+                return new Dictionary<string, string>();
+            }
         }
 
         public async Task<Dictionary<string, (decimal BtcValue, decimal UsdValue )>> GetCurrentPrices(string exchange)

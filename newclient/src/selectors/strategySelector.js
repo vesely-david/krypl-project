@@ -3,7 +3,7 @@ import { getEvaluatedAssets } from './assetSelectors';
 
 export const getRawPaperStrategies = state => state.paper.strategies;
 export const getRawRealStrategies = state => state.real.strategies;
-export const getRawBacktestStrategies = state => state.real.strategies;
+export const getRawBacktestStrategies = state => state.back.strategies;
 
 
 export const getStrategyCurrentValues = createSelector([getEvaluatedAssets], (assets) => {
