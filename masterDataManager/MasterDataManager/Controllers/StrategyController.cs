@@ -50,7 +50,7 @@ namespace MasterDataManager.Controllers
 
             var strategy = _strategyRepository.GetByIdForEvaluations(strategyId);
             if (strategy == null) return BadRequest("Strategy not found");
-
+            if (strategy.IsOverview) return Ok(strategy.Evaluations.Skip(1).Select(_mapper.Map<JsonEvaluationModel>));
             return Ok(strategy.Evaluations.Select(_mapper.Map<JsonEvaluationModel>));
         }
 

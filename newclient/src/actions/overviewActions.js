@@ -159,6 +159,7 @@ function registerBacktestStrategy(name, exchange, description, assets){
       const res = await overviewService.registerBacktestStrategy(name, exchange, description, assets);
       dispatch(getBacktestOverview());
       dispatch(getBacktestStrategies());
+      dispatch(assetActions.getAssets());
       return res;
     }
   }).catch(err => {

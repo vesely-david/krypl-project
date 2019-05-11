@@ -47,17 +47,6 @@ namespace MasterDataManager.Controllers
         [HttpPost]
         public async Task<StatusCodeResult> SeedUsersAsync()
         {
-            var user1 = await _userManager.FindByNameAsync("veselda7");
-            if (user1 == null)
-            {
-                var david = new User
-                {
-                    Email = "veselda7@gmail.com",
-                    EmailConfirmed = true,
-                    UserName = "veselda7"
-                };
-                var a = await _userManager.CreateAsync(david, "veselda7!Hesl0");
-            }
             var user2 = await _userManager.FindByNameAsync("kirchjan");
             if (user2 == null)
             {
