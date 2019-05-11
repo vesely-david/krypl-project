@@ -8,7 +8,7 @@ export default () => (
     <h2>API info</h2>        
     <Segment>
       <h3>Market data endpoints</h3>
-      <h5>Base URL: https://marketdata.kryplproject.cz/</h5>
+      <h5>Base URL: https://marketdata.jankirchner.cz/</h5>
       <Segment>
         <h4>Actual info</h4>
         <Segment>
@@ -141,7 +141,7 @@ export default () => (
     </Segment>
     <Segment>
       <h3>Strategy info endpoints</h3>
-      <h5>Base URL: https://api.kryplproject.cz/</h5>
+      <h5>Base URL: https://api.jankirchner.cz/</h5>
       <div>
         <Segment>
           <h4>Get Strategy Assets</h4>
@@ -195,7 +195,7 @@ export default () => (
     </Segment>        
     <Segment>
       <h3>Trading endpoints</h3>
-      <h5>Base URL: https://api.kryplproject.cz</h5>
+      <h5>Base URL: https://api.jankirchner.cz</h5>
       <div>
         <Segment>
           <h4>Post Buy Order</h4>

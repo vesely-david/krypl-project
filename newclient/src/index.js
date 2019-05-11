@@ -13,8 +13,8 @@ if(env === 'development'){
   document.masterApi = 'http://localhost:54850';
   document.marketApi = 'http://localhost:9999';
 } else {
-  document.masterApi = 'https://api.kryplproject.cz';
-  document.marketApi = 'https://marketData.kryplproject.cz';
+  document.masterApi = 'https://api.jankirchner.cz';
+  document.marketApi = 'https://marketData.jankirchner.cz';
 }
 
 console.log(process.env.NODE_ENV);

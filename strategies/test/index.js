@@ -1,10 +1,10 @@
 var axios = require('axios');
 var program = require('commander');
 
-const marketUrl = 'http://localhost:9999';
-// const marketUrl = 'http://marketData.kryplproject.cz';
-// const masterUrl = 'http://api.kryplproject.cz';
-const masterUrl = 'http://localhost:54850';
+// const marketUrl = 'http://localhost:9999';
+const marketUrl = 'https://marketData.jankirchner.cz';
+const masterUrl = 'https://api.jankirchner.cz';
+// const masterUrl = 'http://localhost:54850';
 const exchange = 'poloniex';
 
 function getRandom(min, max) {

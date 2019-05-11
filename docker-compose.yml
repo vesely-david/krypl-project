@@ -12,8 +12,8 @@ services:
       dockerfile: Dockerfile
     environment:
       ASPNETCORE_ENVIRONMENT: Development
-      VIRTUAL_HOST: api.kryplproject.cz,www.api.kryplproject.cz
-      LETSENCRYPT_HOST: api.kryplproject.cz,www.api.kryplproject.cz
+      VIRTUAL_HOST: api.jankirchner.cz,www.api.jankirchner.cz
+      LETSENCRYPT_HOST: api.jankirchner.cz,www.api.jankirchner.cz
       LETSENCRYPT_EMAIL: h.kirchner@seznam.cz
 
   marketdataprovider:
@@ -28,8 +28,8 @@ services:
       context: ./marketDataProvider
       dockerfile: Dockerfile
     environment:
-      VIRTUAL_HOST: marketData.kryplproject.cz,www.marketData.kryplproject.cz
-      LETSENCRYPT_HOST: marketData.kryplproject.cz,www.marketData.kryplproject.cz
+      VIRTUAL_HOST: marketData.jankirchner.cz,www.marketData.jankirchner.cz
+      LETSENCRYPT_HOST: marketData.jankirchner.cz,www.marketData.jankirchner.cz
       LETSENCRYPT_EMAIL: h.kirchner@seznam.cz      
 
   web:
@@ -40,8 +40,8 @@ services:
     expose:
       - "80"
     environment:
-      VIRTUAL_HOST: kryplproject.cz,www.kryplproject.cz
-      LETSENCRYPT_HOST: kryplproject.cz,www.kryplproject.cz
+      VIRTUAL_HOST: jankirchner.cz,www.jankirchner.cz
+      LETSENCRYPT_HOST: jankirchner.cz,www.jankirchner.cz
       LETSENCRYPT_EMAIL: h.kirchner@seznam.cz      
 
   nginx-proxy:

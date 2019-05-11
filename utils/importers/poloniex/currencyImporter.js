@@ -1,6 +1,6 @@
 var axios = require('axios');
 
-var marketAPI = 'http://marketData.kryplproject.cz';
+var marketAPI = 'http://marketData.jankirchner.cz';
 
 const getBinanceCurrencies = async () => {
   var result = await axios.get(`${marketAPI}/exchanges`);
