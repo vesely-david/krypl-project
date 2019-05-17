@@ -67,8 +67,7 @@ class BaseMLStrategy(Strategy):
         return price_part / fee_part
 
     def trade(self):
-        target_i = 0
-        last_support = []
+        last_support = -1
         price_contract = self.contract_pair['priceContract']
         price_to_open = -1
         while self.data_manager.has_tick():
@@ -77,14 +76,17 @@ class BaseMLStrategy(Strategy):
             if history.shape[0] < self.history_len:
                 continue
 
+            history = history[0, :]
             support = history[0]
-            features = history[1:]
+            features = np.array([history[1:].tolist()])
             if not self.opened and last_support != support:
-                predicted_target = self.model.predict(features)
-                if predicted_target <= self.min_profit_target:
-                    price_to_open = support
-                else:
-                    price_to_open = -1
+                if not np.isnan(features).any():
+                    predicted_target = self.model.predict(features)[0]
+                    last_support = support
+                    if predicted_target >= self.min_profit_target:
+                        price_to_open = support
+                    else:
+                        price_to_open = -1
 
             if not self.opened and price <= price_to_open:
                 self.trade_size = self.start_trade_size
@@ -98,7 +100,8 @@ class BaseMLStrategy(Strategy):
                 price_bought = price
                 last_support = support
             elif self.opened and self.is_risky(price_bought, price):
-                self.sell_all(price)
+                t_price = self.target_price(-self.willing_loss, price_bought)
+                self.sell_all(t_price)
             elif self.opened and self.is_target_satisfied(price_bought, price):
                 t_price = self.target_price(self.target_profit, price_bought)
                 self.sell_all(t_price)

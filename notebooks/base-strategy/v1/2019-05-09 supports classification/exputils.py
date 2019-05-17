@@ -12,7 +12,11 @@ def read_data(pair, _dir, from_date=None, to_date=None):
 
 
 def read_train(pair, _dir):
-    return read_data(pair, _dir, '2016-01-01', '2018-01-01')
+    return read_data(pair, _dir, '2016-01-01', '2017-01-01')
+
+
+def read_val(pair, _dir):
+    return read_data(pair, _dir, '2017-01-01', '2018-01-01')
 
 
 def read_test(pair, _dir):
