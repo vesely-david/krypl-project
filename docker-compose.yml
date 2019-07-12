@@ -50,7 +50,7 @@ services:
       context: ./prices/server
       dockerfile: Dockerfile
     expose:
-      - "80"
+      - "1337"
     depends_on:
       - redis
     environment:

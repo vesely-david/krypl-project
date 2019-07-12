@@ -1,7 +1,7 @@
 "use strict";
 
 process.title = 'node-chat';
-var webSocketsServerPort = 80;
+var webSocketsServerPort = 1337;
 var webSocketServer = require('websocket').server;
 var uuid = require('node-uuid');
 var http = require('http');
