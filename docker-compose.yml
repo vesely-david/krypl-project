@@ -42,7 +42,34 @@ services:
     environment:
       VIRTUAL_HOST: jankirchner.cz,www.jankirchner.cz
       LETSENCRYPT_HOST: jankirchner.cz,www.jankirchner.cz
+      LETSENCRYPT_EMAIL: h.kirchner@seznam.cz
+
+  server:
+    image: server
+    build:
+      context: ./prices/server
+      dockerfile: Dockerfile
+    expose:
+      - "80"
+    depends_on:
+      - redis
+    environment:
+      VIRTUAL_HOST: prices.jankirchner.cz,www.prices.jankirchner.cz
+      LETSENCRYPT_HOST: prices.jankirchner.cz,www.prices.jankirchner.cz
       LETSENCRYPT_EMAIL: h.kirchner@seznam.cz      
+
+  fetcher:
+    image: fetcher
+    build:
+      context: ./prices/fetcher
+      dockerfile: Dockerfile
+    depends_on:
+      - redis    
+
+  redis:
+    image: redis:latest
+    hostname: redis
+
 
   nginx-proxy:
     image: jwilder/nginx-proxy
