@@ -1,0 +1,21 @@
+version: '3'
+services:
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+      - 1337:1337
+    depends_on:
+      - redis
+
+  fetcher:
+    build:
+      context: ./fetcher
+      dockerfile: Dockerfile
+    depends_on:
+      - redis    
+
+  redis:
+    image: redis:latest
+    hostname: redis

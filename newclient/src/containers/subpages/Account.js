@@ -5,6 +5,7 @@ import { userActions } from '../../actions/userActions'
 import { Segment, Button } from 'semantic-ui-react';
 import ApiKey from '../../components/Account/ApiKey';
 import { getExchangesWithApiKey } from '../../selectors/userSelectors';
+import EditAccountModal from '../modals/EditAccountModal';
 import styles from '../styles/subpages.module.scss';
 
 
@@ -26,7 +27,7 @@ class AccountContainer extends React.Component {
         <Segment loading={isAccountInfoFetching}>
           <div className={styles.heading_with_button}>
             <h2>Account settings</h2>
-            <Button primary>Edit</Button>
+            <EditAccountModal/>
           </div>
         </Segment>
         <Segment loading={isApiKeyFetching}>

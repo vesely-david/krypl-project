@@ -1,0 +1,19 @@
+{
+  "name": "krypl_candles_fetcher",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node fetcher.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.19.0",
+    "cron": "^1.7.1",
+    "moment": "^2.24.0",
+    "redis": "^2.8.0",
+    "ws": "^7.1.0"
+  }
+}
