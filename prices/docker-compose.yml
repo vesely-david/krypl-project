@@ -14,8 +14,14 @@ services:
       context: ./fetcher
       dockerfile: Dockerfile
     depends_on:
-      - redis    
+      - redis
+    networks:
+      - kryplproject_default
 
   redis:
     image: redis:latest
     hostname: redis
+    
+networks:
+  kryplproject_default:
+    external: true

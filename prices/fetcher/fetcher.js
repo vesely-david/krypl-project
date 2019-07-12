@@ -39,7 +39,7 @@ const sendCandles = (candleObj, channelId) => {
 }
 
 const createTranslationObj = async () => {
-  const poloniexData = (await axios.get('https://marketdata.jankirchner.cz/exchanges/poloniex')).data;
+  const poloniexData = (await axios.get('https://marketdataprovider/exchanges/poloniex')).data;
   poloniexData.markets.forEach(o => {
     if(currencyPairIds[o.marketExchangeId]){
       translationObj[currencyPairIds[o.marketExchangeId]] = o.id;
