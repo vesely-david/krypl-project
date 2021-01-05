@@ -12,7 +12,7 @@
     "@vx/scale": "^0.0.182",
     "@vx/shape": "^0.0.184",
     "@vx/threshold": "^0.0.184",
-    "axios": "^0.18.0",
+    "axios": "^0.21.1",
     "d3-time-format": "^2.1.3",
     "moment": "^2.24.0",
     "node-sass": "^4.11.0",
